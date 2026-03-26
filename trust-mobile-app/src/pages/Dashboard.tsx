@@ -13,8 +13,10 @@ import {
   Check,
   ClipboardList,
   History,
-  SendHorizontal
+  SendHorizontal,
+  FilePlus
 } from 'lucide-react';
+import { Browser } from '@capacitor/browser';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -23,6 +25,10 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onSync, onSettings }) => {
+  const handleNovaPeritagem = async () => {
+    await Browser.open({ url: 'https://www.trusttecnologia.com.br/nova-peritagem' });
+  };
+
   return (
     <div className="mobile-container">
       <div className="dashboard-page">
@@ -152,17 +158,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onSync, onSettings }) => {
            </p>
 
            <div className="action-grid">
-              <div className="action-card" onClick={onSync}>
+              <div className="action-card" onClick={handleNovaPeritagem}>
                  <div className="action-badge">1</div>
                  <div className="action-icon">
-                    <ClipboardList size={22} />
+                    <FilePlus size={22} />
                  </div>
                  <div className="action-info">
-                    <span>CONTRATOS</span>
+                    <span>NOVA PERITAGEM</span>
                  </div>
               </div>
 
-              <div className="action-card">
+              <div className="action-card" onClick={onSync}>
                  <div className="action-badge">0</div>
                  <div className="action-icon">
                     <History size={22} />
