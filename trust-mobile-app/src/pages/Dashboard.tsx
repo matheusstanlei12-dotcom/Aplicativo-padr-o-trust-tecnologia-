@@ -6,148 +6,187 @@ import {
   HardDrive, 
   RefreshCw, 
   CloudUpload,
-  FileText,
-  Clock,
-  Send,
   CheckCircle,
   Menu,
-  Star
+  Star,
+  Home,
+  Check,
+  ClipboardList,
+  History,
+  SendHorizontal
 } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {
   return (
     <div className="mobile-container">
-      <div className="dashboard-page animate-slide-up">
+      <div className="dashboard-page">
         {/* Header */}
         <header className="dashboard-header">
-          <button className="icon-btn">
-            <Menu size={24} />
-          </button>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button className="icon-btn">
+              <Menu size={28} />
+            </button>
+            <button className="icon-btn">
+              <Home size={28} />
+            </button>
+          </div>
           
-          <div className="header-logo">
-            <img src="/assets/logo.png" alt="Trust Logo" style={{ height: '32px', marginBottom: '4px' }} />
-            <span style={{ fontSize: '8px', opacity: 0.7, textTransform: 'uppercase', color: 'white' }}>
-              Formulários Inteligentes
+          <div className="header-center">
+            <span style={{ color: 'white', fontWeight: 800 }}>
+              INSPECT<small style={{ display: 'inline', fontSize: '12px' }}>APP</small>
+              <small style={{ display: 'block', fontSize: '8px', opacity: 0.7, textTransform: 'uppercase', fontWeight: 400 }}>
+                Formulários Inteligentes
+              </small>
             </span>
           </div>
           
-          <div style={{ display: 'flex', gap: '4px' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button className="icon-btn">
-              <Star size={20} />
+              <Star size={28} />
             </button>
             <button className="icon-btn" style={{ position: 'relative' }}>
-              <Bell size={20} />
-              <div className="badge-count" style={{ top: '-4px', right: '-4px', border: '2px solid var(--primary)' }}>3</div>
+              <Bell size={28} />
+              <div style={{ 
+                position: 'absolute', 
+                top: '4px', 
+                right: '4px', 
+                background: '#22c55e', 
+                color: 'white', 
+                borderRadius: '50%', 
+                width: '18px', 
+                height: '18px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                fontSize: '10px', 
+                border: '2px solid #2d2b7c',
+                fontWeight: 700
+              }}>0</div>
             </button>
           </div>
         </header>
 
-        {/* User Status Card */}
-        <div className="user-card glass-card">
-          <div className="user-info">
-            <div className="avatar-wrapper">
-              <img src="/assets/character/welcome.png" alt="User Avatar" />
+        {/* User Card */}
+        <div className="user-card-container">
+          <div className="user-card">
+            <div className="user-header">
+              <div className="avatar-wrapper">
+                <img src="/assets/character/welcome.png" alt="User" />
+              </div>
+              <div className="user-greeting">
+                <h3 style={{ margin: 0 }}>Bem-vindo,</h3>
+                <h2 style={{ margin: 0 }}>[Trust] Matheus</h2>
+              </div>
             </div>
-            <div className="user-greeting">
-              <h3>Bem-vindo,</h3>
-              <h2>[Trust] Matheus</h2>
+
+            <p className="card-intro">
+               Tenho algumas informações importantes para você:
+            </p>
+
+            <div className="status-grid">
+              <div className="status-item active">
+                <div className="status-icon-box">
+                  <MapPin size={28} strokeWidth={1.5} />
+                  <div className="check-badge">
+                    <Check size={12} strokeWidth={4} />
+                  </div>
+                </div>
+                <span>GPS</span>
+                <small>ATIVADO</small>
+              </div>
+              
+              <div className="status-item active">
+                <div className="status-icon-box">
+                  <Wifi size={28} strokeWidth={1.5} />
+                  <div className="check-badge">
+                    <Check size={12} strokeWidth={4} />
+                  </div>
+                </div>
+                <span>WI-FI</span>
+                <small>ATIVADO</small>
+              </div>
+
+              <div className="status-item active">
+                <div className="status-icon-box">
+                  <HardDrive size={28} strokeWidth={1.5} />
+                  <div className="check-badge">
+                    <Check size={12} strokeWidth={4} />
+                  </div>
+                </div>
+                <span>ESPAÇO</span>
+                <small>0 de 0</small>
+              </div>
             </div>
-            <div style={{ marginLeft: 'auto', opacity: 0.2 }}>
-               <img src="/assets/logo.png" alt="" style={{ height: '30px' }} />
+
+            {/* Sync Flow */}
+            <div className="sync-grid">
+              <div className="sync-item">
+                <RefreshCw size={24} color="#94a3b8" />
+                <span>BUSCAR FORMULÁRIOS</span>
+                <small>ÚLTIMA: HOJE</small>
+                <button className="btn-sync">ATUAL.</button>
+              </div>
+              <div className="sync-item">
+                <CloudUpload size={24} color="#94a3b8" />
+                <span>BACKUP DO APP</span>
+                <small>ÚLTIMA: NENHUM</small>
+                <button className="btn-sync" style={{ background: '#5250a1' }}>FAZER</button>
+              </div>
             </div>
           </div>
 
-          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', textAlign: 'center', margin: '4px 0' }}>
-            Tenho algumas informações importantes para você:
-          </p>
-
-          <div className="status-grid">
-            <div className="status-item active" style={{ position: 'relative' }}>
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '8px', borderRadius: '12px' }}>
-                <MapPin size={22} />
-              </div>
-              <span>GPS</span>
-              <small>ATIVADO</small>
-            </div>
-            <div className="status-item active">
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', padding: '8px', borderRadius: '12px' }}>
-                <Wifi size={22} />
-              </div>
-              <span>WI-FI</span>
-              <small>ATIVADO</small>
-            </div>
-            <div className="status-item">
-              <div style={{ background: 'rgba(148, 163, 184, 0.1)', padding: '8px', borderRadius: '12px' }}>
-                <HardDrive size={22} />
-              </div>
-              <span>ESPAÇO</span>
-              <small>0 de 0</small>
-            </div>
-          </div>
-
-          <div className="sync-row">
-            <div className="sync-button" style={{ position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-5px', right: '-5px', opacity: 0.1, transform: 'rotate(15deg)' }}>
-                <img src="/assets/logo.png" alt="" style={{ height: '25px' }} />
-              </div>
-              <RefreshCw size={18} color="var(--primary)" />
-              <span>BUSCAR FORMULÁRIOS</span>
-              <small>ÚLTIMA: HOJE</small>
-            </div>
-            <div className="sync-button" style={{ position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: '-5px', right: '-5px', opacity: 0.1, transform: 'rotate(15deg)' }}>
-                <img src="/assets/logo.png" alt="" style={{ height: '25px' }} />
-              </div>
-              <CloudUpload size={18} color="var(--primary)" />
-              <span>BACKUP DO APP</span>
-              <small>ÚLTIMA: NENHUM</small>
-            </div>
+          <div className="floating-character">
+            <img src="/assets/character/welcome.png" alt="" />
           </div>
         </div>
 
-        <p style={{ fontSize: '13px', color: 'white', textAlign: 'center', marginTop: '10px', opacity: 0.9 }}>
-          Gerencie suas atividades através das funcionalidades abaixo:
-        </p>
+        <div className="actions-section">
+           <p className="section-title">
+             Gerencie suas atividades através das funcionalidades abaixo:
+           </p>
 
-        {/* Action Grid */}
-        <div className="action-grid">
-          <div className="action-card glass-card">
-            <div className="badge-count">1</div>
-            <div className="icon-box bg-blue">
-              <FileText size={24} />
-            </div>
-            <span>CONTRATOS</span>
-          </div>
+           <div className="action-grid">
+              <div className="action-card">
+                 <div className="action-badge">1</div>
+                 <div className="action-icon">
+                    <ClipboardList size={22} />
+                 </div>
+                 <div className="action-info">
+                    <span>CONTRATOS</span>
+                 </div>
+              </div>
 
-          <div className="action-card glass-card">
-            <div className="badge-count">0</div>
-            <div className="icon-box bg-green">
-              <Clock size={24} />
-            </div>
-            <span>EM PREENCHIMENTO</span>
-          </div>
+              <div className="action-card">
+                 <div className="action-badge">0</div>
+                 <div className="action-icon">
+                    <History size={22} />
+                 </div>
+                 <div className="action-info">
+                    <span>EM PREENCHIMENTO</span>
+                 </div>
+              </div>
 
-          <div className="action-card glass-card">
-            <div className="badge-count">0</div>
-            <div className="icon-box bg-yellow">
-              <Send size={24} />
-            </div>
-            <span>AGUARDANDO ENVIO</span>
-          </div>
+              <div className="action-card disabled" style={{ background: '#bbdefb' }}>
+                 <div className="action-badge">0</div>
+                 <div className="action-icon">
+                    <SendHorizontal size={22} />
+                 </div>
+                 <div className="action-info" style={{ color: '#1e3a8a' }}>
+                    <span>AGUARDANDO ENVIO</span>
+                 </div>
+              </div>
 
-          <div className="action-card glass-card">
-            <div className="badge-count">8</div>
-            <div className="icon-box bg-purple">
-              <CheckCircle size={24} />
-            </div>
-            <span>CONCLUÍDOS (ONLINE)</span>
-          </div>
-        </div>
-
-        {/* Floating Character */}
-        <div className="character-box animate-float">
-          <img src="/assets/character/welcome.png" alt="Character" className="character-img" />
+              <div className="action-card disabled" style={{ background: '#bbdefb' }}>
+                 <div className="action-badge">8</div>
+                 <div className="action-icon">
+                    <CheckCircle size={22} />
+                 </div>
+                 <div className="action-info" style={{ color: '#1e3a8a' }}>
+                    <span>CONCLUÍDOS (ONLINE)</span>
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
     </div>

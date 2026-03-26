@@ -1,21 +1,25 @@
 :root {
-  --primary: #1e3a8a;
-  --primary-light: #2563eb;
-  --secondary: #06b6d4;
-  --accent: #10b981;
-  --background: #f1f5f9;
+  --primary: #2d2b7c;
+  --primary-light: #5250a1;
+  --secondary: #22c55e;
+  --secondary-light: #4ade80;
+  --accent: #3b82f6;
+  --background: #f3f4f6;
   --white: #ffffff;
-  --text-main: #0f172a;
-  --text-secondary: #475569;
+  --text-main: #1e1b4b;
+  --text-secondary: #64748b;
   --text-muted: #94a3b8;
   --danger: #ef4444;
   
-  --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 15px -6px rgba(0, 0, 0, 0.05);
-  --glass: rgba(255, 255, 255, 0.9);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   
-  --border-radius: 20px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --border-radius-card: 32px;
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
 * {
   box-sizing: border-box;
@@ -25,8 +29,8 @@
 }
 
 body {
-  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
-  background: linear-gradient(135deg, #1e3a8a 0%, #06b6d4 100%);
+  font-family: 'Outfit', sans-serif;
+  background: #f3f4f6;
   min-height: 100vh;
   color: var(--text-main);
   overflow-x: hidden;
