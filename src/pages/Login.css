@@ -115,10 +115,15 @@
 }
 
 .forgot-link {
-    color: var(--text-muted);
+    color: #4b5563; /* Darker than var(--text-muted) for better contrast */
     font-size: 0.75rem;
-    font-weight: 500;
-    text-decoration: none;
+    font-weight: 600; /* Slightly bolder */
+    text-decoration: underline; /* Added underline for clarity */
+    text-underline-offset: 2px;
+}
+
+.forgot-link:hover {
+    color: var(--primary);
 }
 
 .no-account {
