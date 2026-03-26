@@ -17,7 +17,12 @@ import {
 } from 'lucide-react';
 import './Dashboard.css';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onSync: () => void;
+  onSettings: () => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onSync, onSettings }) => {
   return (
     <div className="mobile-container">
       <div className="dashboard-page">
@@ -42,10 +47,10 @@ const Dashboard: React.FC = () => {
           </div>
           
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button className="icon-btn">
+            <button className="icon-btn" onClick={onSettings}>
               <Star size={28} />
             </button>
-            <button className="icon-btn" style={{ position: 'relative' }}>
+            <button className="icon-btn" style={{ position: 'relative' }} onClick={onSettings}>
               <Bell size={28} />
               <div style={{ 
                 position: 'absolute', 
@@ -125,13 +130,13 @@ const Dashboard: React.FC = () => {
                 <RefreshCw size={24} color="#94a3b8" />
                 <span>BUSCAR FORMULÁRIOS</span>
                 <small>ÚLTIMA: HOJE</small>
-                <button className="btn-sync">ATUAL.</button>
+                <button className="btn-sync" onClick={onSync}>ATUAL.</button>
               </div>
               <div className="sync-item">
                 <CloudUpload size={24} color="#94a3b8" />
                 <span>BACKUP DO APP</span>
                 <small>ÚLTIMA: NENHUM</small>
-                <button className="btn-sync" style={{ background: '#5250a1' }}>FAZER</button>
+                <button className="btn-sync" style={{ background: '#5250a1' }} onClick={onSync}>FAZER</button>
               </div>
             </div>
           </div>
@@ -147,7 +152,7 @@ const Dashboard: React.FC = () => {
            </p>
 
            <div className="action-grid">
-              <div className="action-card">
+              <div className="action-card" onClick={onSync}>
                  <div className="action-badge">1</div>
                  <div className="action-icon">
                     <ClipboardList size={22} />

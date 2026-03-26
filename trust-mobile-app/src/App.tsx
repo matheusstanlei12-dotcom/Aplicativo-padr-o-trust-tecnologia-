@@ -10,13 +10,14 @@ function App() {
   return (
     <div className="App">
       {currentScreen === 'dashboard' && (
-        <div onClick={() => setCurrentScreen('sync')}>
-           <Dashboard />
-        </div>
+        <Dashboard 
+          onSync={() => setCurrentScreen('sync')} 
+          onSettings={() => setCurrentScreen('settings')} 
+        />
       )}
       
       {currentScreen === 'sync' && (
-        <SyncScreen onBack={() => setCurrentScreen('settings')} />
+        <SyncScreen onBack={() => setCurrentScreen('dashboard')} />
       )}
 
       {currentScreen === 'settings' && (
