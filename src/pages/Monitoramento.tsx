@@ -59,8 +59,6 @@ interface Processo {
     tag?: string;
     tipo_cilindro?: string;
     os_interna?: string;
-    prioridade?: string;
-    data_execucao?: string;
 }
 
 interface Historico {
@@ -139,11 +137,10 @@ export const Monitoramento: React.FC = () => {
                 .from('peritagens')
                 .select(`
                     id, numero_peritagem, cliente, os_interna, status, os, tipo_cilindro, created_at, updated_at, 
-                    prioridade, data_execucao,
+                    created_at,
                     camisa_int, camisa_ext, camisa_comp, haste_diam, haste_comp, curso, montagem, pressao_nominal, 
                     fabricante_modelo, nota_fiscal, desenho_conjunto, lubrificante, volume, acoplamento_polia, 
-                    sistema_lubrificacao, outros_especificar, observacoes_gerais, fabricante, tipo_modelo, ni, ordem, tag,
-                    criador: profiles!criado_por(full_name, role)
+                    sistema_lubrificacao, outros_especificar, observacoes_gerais, fabricante, tipo_modelo, ni, ordem, tag
                 `);
 
             if (role === 'cliente') {
@@ -161,7 +158,6 @@ export const Monitoramento: React.FC = () => {
             if (error) throw error;
 
             const mappedData: Processo[] = data.map(p => {
-                const criador = Array.isArray(p.criador) ? p.criador[0] : p.criador;
 
                 return {
                     ...p,
@@ -170,8 +166,8 @@ export const Monitoramento: React.FC = () => {
                     equipamento: p.tipo_cilindro || 'Cilindro Hidráulico',
                     statusTexto: p.status,
                     etapaAtual: getEtapaIndex(p.status),
-                    criado_por_nome: criador?.full_name || 'Usuário do Sistema',
-                    criado_por_role: criador?.role || 'SISTEMA'
+                    criado_por_nome: 'Usuário do Sistema',
+                    criado_por_role: 'SISTEMA'
                 };
             });
 
@@ -550,11 +546,6 @@ export const Monitoramento: React.FC = () => {
                                         <div className="process-info">
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                                 <span className="process-tag" style={{ background: '#2d3748', color: 'white' }}>{processo.os_interna || processo.os}</span>
-                                                {processo.prioridade && (
-                                                    <span className={`priority-badge ${processo.prioridade.toLowerCase() === 'urgente' ? 'priority-urgente' : 'priority-normal'}`} style={{ fontSize: '0.6rem' }}>
-                                                        {processo.prioridade}
-                                                    </span>
-                                                )}
                                             </div>
                                             {processo.os_interna && (
                                                 <span style={{ fontSize: '0.65rem', color: '#718096', display: 'block', marginBottom: '4px' }}>
@@ -564,7 +555,7 @@ export const Monitoramento: React.FC = () => {
                                             <h3 className="process-title">{processo.cliente}</h3>
                                             <div style={{ display: 'flex', gap: '8px', color: '#718096', fontSize: '0.8rem', marginTop: '4px' }}>
                                                 <Calendar size={12} />
-                                                <span>{processo.data_execucao ? new Date(processo.data_execucao).toLocaleDateString('pt-BR') : 'Sem data'}</span>
+                                                <span>{processo.created_at ? new Date(processo.created_at).toLocaleDateString('pt-BR') : 'Sem data'}</span>
                                             </div>
                                             <span className="process-client">{processo.equipamento}</span>
                                         </div>

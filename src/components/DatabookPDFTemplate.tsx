@@ -10,7 +10,7 @@ export interface PeritagemData {
     ni: string;
     numero_pedido: string;
     nota_fiscal: string;
-    data_execucao: string;
+    created_at: string;
     local_equipamento: string;
     responsavel_tecnico: string;
     camisa_int: string;
@@ -266,7 +266,7 @@ export const DatabookPDF = ({ peritagem, itens }: { peritagem: PeritagemData, it
                         </View>
                         <View style={s.dataField}>
                             <Text style={s.dataLabel}>Data</Text>
-                            <Text style={s.dataValue}>{peritagem.data_execucao ? new Date(peritagem.data_execucao).toLocaleDateString('pt-BR') : '-'}</Text>
+                            <Text style={s.dataValue}>{peritagem.created_at ? new Date(peritagem.created_at).toLocaleDateString('pt-BR') : '-'}</Text>
                         </View>
                     </View>
                 </View>

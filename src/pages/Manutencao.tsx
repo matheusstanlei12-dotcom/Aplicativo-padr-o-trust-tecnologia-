@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, ExternalLink, Loader2, Wrench, Calendar, AlertCircle } from 'lucide-react';
+import { Search, ExternalLink, Loader2, Wrench, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,9 +9,8 @@ interface Peritagem {
     id: string;
     numero_peritagem: string;
     cliente: string;
-    data_execucao: string;
+    created_at: string;
     status: string;
-    prioridade: string;
     os_interna?: string;
 }
 
@@ -37,7 +36,7 @@ export const Manutencao: React.FC = () => {
             // Filtro para APP Android
             const isAndroidApp = window.location.hostname === 'localhost' || window.location.protocol === 'file:';
             if (isAndroidApp && role !== 'gestor' && role !== 'pcp' && user) {
-                query = query.eq('criado_por', user.id);
+                // query = query.eq('criado_por', user.id);
             }
 
             const { data, error } = await query;
@@ -104,14 +103,7 @@ export const Manutencao: React.FC = () => {
 
                                     <div className="info-row">
                                         <Calendar size={16} />
-                                        <span>{new Date(p.data_execucao).toLocaleDateString('pt-BR')}</span>
-                                    </div>
-
-                                    <div className="info-row">
-                                        <AlertCircle size={16} />
-                                        <span className={`priority-badge ${p.prioridade?.toLowerCase() === 'urgente' ? 'priority-urgente' : 'priority-normal'}`}>
-                                            Prioridade: {p.prioridade || 'Normal'}
-                                        </span>
+                                        <span>{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
                                     </div>
                                 </div>
 

@@ -6,6 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { USIMINAS_ITEMS } from '../constants/usiminasItems';
 import { STANDARD_ITEMS } from '../constants/standardItems';
 import { REDUTOR_ITEMS } from '../constants/redutorItems';
+import { MOTOR_ITEMS } from '../constants/motorItems';
 import { compressImage } from '../lib/imageUtils';
 import { DIMENSIONAL_ANOMALIES_SERVICES } from '../constants/dimensionalItems';
 import { syncPhotosToGallery } from '../lib/photoSync';
@@ -98,25 +99,9 @@ export const NovaPeritagem: React.FC = () => {
 
     const [motivoRejeicao, setMotivoRejeicao] = useState<string | null>(null);
 
-    const [isCustomClient, setIsCustomClient] = useState(false);
-    const [empresas, setEmpresas] = useState<{ id: string, nome: string }[]>([]);
 
-    const fetchEmpresas = async () => {
-        const { data } = await supabase.from('empresas').select('id, nome').eq('ativo', true).order('nome');
-        if (data) setEmpresas(data);
-    };
 
-    useEffect(() => {
-        fetchEmpresas();
-    }, []);
 
-    const PREDEFINED_CLIENTS = [
-        'GERDAU AÇOMINAS',
-        'GEOSOL',
-        'GEOSEDNA',
-        'FERRO MAIS MINERAÇÃO',
-        'IMIC'
-    ];
 
     // Dimensões
     const [dimensions, setDimensions] = useState({
@@ -197,8 +182,14 @@ export const NovaPeritagem: React.FC = () => {
                     os_interna: data.os_interna || ''
                 });
                 
-                // Sempre define um tipo padrão e avança para o formulário para mostrar os dados
-                setCylinderType('Cilindros');
+                // Tenta inferir o tipo pela descrição
+                if (data.descricao_equipamento?.toLowerCase().includes('redutor')) {
+                    setCylinderType('Redutores');
+                } else if (data.descricao_equipamento?.toLowerCase().includes('motor')) {
+                    setCylinderType('Motores');
+                } else {
+                    setCylinderType('Cilindros');
+                }
                 setStep(1);
             }
         } catch (err) {
@@ -278,8 +269,7 @@ export const NovaPeritagem: React.FC = () => {
                 os_interna: pData.os_interna || ''
             });
 
-            const isCustom = pData.cliente && !PREDEFINED_CLIENTS.includes(pData.cliente) && pData.cliente !== 'USIMINAS';
-            setIsCustomClient(!!isCustom);
+
 
             setDimensions({
                 diametroInterno: pData.camisa_int || '',
@@ -298,6 +288,10 @@ export const NovaPeritagem: React.FC = () => {
             let list = [];
             if (pData.cliente === 'USIMINAS') {
                 list = USIMINAS_ITEMS;
+            } else if (pData.tipo_cilindro === 'Redutores') {
+                list = REDUTOR_ITEMS;
+            } else if (pData.tipo_cilindro === 'Motores') {
+                list = MOTOR_ITEMS;
             } else {
                 list = STANDARD_ITEMS;
             }
@@ -408,6 +402,8 @@ export const NovaPeritagem: React.FC = () => {
                 list = USIMINAS_ITEMS;
             } else if (cylinderType === 'Redutores') {
                 list = REDUTOR_ITEMS;
+            } else if (cylinderType === 'Motores') {
+                list = MOTOR_ITEMS;
             } else {
                 list = STANDARD_ITEMS;
             }
@@ -710,7 +706,7 @@ export const NovaPeritagem: React.FC = () => {
                             descricao_equipamento: fixedData.observacoes_gerais,
                             area: fixedData.area,
                             linha: fixedData.linha,
-                            status: 'AGUARDANDO',
+                            status: 'AGUARDANDO APROVAÇÃO DO PCP',
                             empresa_id: user.user_metadata?.empresa_id
                         }]);
 
@@ -732,7 +728,7 @@ export const NovaPeritagem: React.FC = () => {
 
             // 1. Salvar ou Atualizar Peritagem
             let peritagemId = editId;
-            const empresa_id = !isCustomClient ? empresas.find(e => e.nome.toUpperCase().includes(fixedData.cliente.toUpperCase()))?.id : null;
+            const empresa_id = null;
 
             if (editId) {
                 // UPDATE
@@ -810,7 +806,6 @@ export const NovaPeritagem: React.FC = () => {
                         pressao_nominal: dimensions.pressaoNominal,
                         fabricante_modelo: dimensions.fabricanteModelo,
                         foto_frontal: fotoFrontal,
-                        criado_por: user?.id,
                         status: 'AGUARDANDO APROVAÇÃO DO PCP',
                         desenho_conjunto: fixedData.desenho_conjunto,
                         lubrificante: fixedData.lubrificante,
@@ -860,8 +855,7 @@ export const NovaPeritagem: React.FC = () => {
                     comprimento_encontrado: item.comprimento_encontrado,
                     comprimento_especificado: item.comprimento_especificado,
                     desvio_comprimento: item.desvio_comprimento,
-                    tipo: item.tipo || 'componente',
-                    status_indicador: 'azul'
+                    tipo: item.tipo || 'componente'
                 }));
 
             const analysesVedacoes = vedacoes
@@ -875,8 +869,7 @@ export const NovaPeritagem: React.FC = () => {
                     fotos: [],
                     dimensoes: item.unidade || '',
                     qtd: item.qtd,
-                    tipo: 'vedação',
-                    status_indicador: 'azul'
+                    tipo: 'vedação'
                 }));
 
             const allAnalyses = [...analyses, ...analysesVedacoes];
@@ -970,20 +963,27 @@ export const NovaPeritagem: React.FC = () => {
                 <div className="selection-card">
                     <h2>Selecione o Tipo de Cilindro</h2>
                     <p>Inicie o formulário de peritagem escolhendo a tecnologia do equipamento.</p>
-                    <div className="type-options">
-                        <button className={`type-btn ${cylinderType === 'Redutores' ? 'active' : ''}`} onClick={() => setCylinderType('Redutores')}>
-                            Relatorio Redutor
-                        </button>
-                        <div className="divider-or">ou atalho rápido</div>
-                        <button
-                            className="type-btn usiminas-btn"
-                            onClick={() => {
-                                setCylinderType('Motores');
-                                setFixedData(prev => ({ ...prev, cliente: 'USIMINAS' }));
-                                setStep(1);
-                            }}
+                    <div className="type-options" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
+                        <button 
+                            className={`type-btn ${cylinderType === 'Cilindros' ? 'active' : ''}`} 
+                            onClick={() => setCylinderType('Cilindros')}
+                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
                         >
-                            <span className="btn-label">Relatorio Motor diesel</span>
+                            Relatório Cilindro Hidráulico
+                        </button>
+                        <button 
+                            className={`type-btn ${cylinderType === 'Redutores' ? 'active' : ''}`} 
+                            onClick={() => setCylinderType('Redutores')}
+                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
+                        >
+                            Relatório Redutor
+                        </button>
+                        <button 
+                            className={`type-btn ${cylinderType === 'Motores' ? 'active' : ''}`} 
+                            onClick={() => setCylinderType('Motores')}
+                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
+                        >
+                            Relatório Motor Diesel
                         </button>
                     </div>
                     {motivoRejeicao && (
@@ -1144,49 +1144,13 @@ export const NovaPeritagem: React.FC = () => {
                                 </div>
                                 <div>
                                     <label style={{ fontWeight: 'bold', color: '#e67e22' }}>NOME DO CLIENTE</label>
-                                    {!isCustomClient ? (
-                                        <select
-                                            required
-                                            value={fixedData.cliente}
-                                            onChange={e => {
-                                                const val = e.target.value;
-                                                if (val === 'OUTROS') {
-                                                    setIsCustomClient(true);
-                                                    setFixedData({ ...fixedData, cliente: '' });
-                                                } else {
-                                                    setFixedData({ ...fixedData, cliente: val });
-                                                }
-                                            }}
-                                            style={{ width: '100%', borderBottom: '1px solid #e67e22', borderRadius: 0, padding: '5px', backgroundColor: '#fff8f0', color: '#333' }}
-                                        >
-                                            <option value="" disabled>Selecione o Cliente...</option>
-                                            {PREDEFINED_CLIENTS.map(c => (
-                                                <option key={c} value={c}>{c}</option>
-                                            ))}
-                                            {fixedData.cliente === 'USIMINAS' && <option value="USIMINAS">USIMINAS</option>}
-                                            <option value="OUTROS">OUTROS (DIGITAR MANUAL)</option>
-                                        </select>
-                                    ) : (
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                            <input
-                                                required
-                                                placeholder="Digite o Nome do Cliente"
-                                                value={fixedData.cliente}
-                                                onChange={e => setFixedData({ ...fixedData, cliente: e.target.value.toUpperCase() })}
-                                                style={{ width: '100%', borderBottom: '1px solid #e67e22', borderRadius: 0, padding: '5px', backgroundColor: '#fff8f0' }}
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setIsCustomClient(false);
-                                                    setFixedData({ ...fixedData, cliente: '' });
-                                                }}
-                                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#e67e22', display: 'flex', alignItems: 'center' }}
-                                            >
-                                                <X size={20} />
-                                            </button>
-                                        </div>
-                                    )}
+                                    <input
+                                        required
+                                        placeholder="Digite o Nome do Cliente"
+                                        value={fixedData.cliente}
+                                        onChange={e => setFixedData({ ...fixedData, cliente: e.target.value.toUpperCase() })}
+                                        style={{ width: '100%', borderBottom: '1px solid #e67e22', borderRadius: 0, padding: '5px', backgroundColor: '#fff8f0' }}
+                                    />
                                 </div>
                             </div>
                         </div>

@@ -13,7 +13,7 @@ interface Peritagem {
     id: string;
     numero_peritagem: string;
     cliente: string;
-    data_execucao: string;
+    // data_execucao removido
     status: string;
     os_interna?: string;
     os?: string;
@@ -121,7 +121,7 @@ export const ClientPeritagens: React.FC = () => {
                 laudoNum: String(peritagem.numero_peritagem || ''),
                 numero_os: String(peritagem.os || peritagem.numero_peritagem || peritagem.os_interna || ''),
                 data: new Date().toLocaleDateString('pt-BR'),
-                hora: peritagem.data_execucao ? new Date(peritagem.data_execucao).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '',
+                hora: peritagem.created_at ? new Date(peritagem.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '',
                 local_equipamento: String(peritagem.local_equipamento || 'OFICINA'),
                 equipamento: String(peritagem.equipamento || 'CILINDRO HIDRÁULICO'),
                 tag: String(peritagem.tag || 'N/A'),
@@ -356,7 +356,7 @@ export const ClientPeritagens: React.FC = () => {
                         <div className="card-body">
                             <div className="info-row">
                                 <Calendar size={16} />
-                                <span>{new Date(p.data_execucao).toLocaleDateString('pt-BR')}</span>
+                                <span>{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
                             </div>
                             <div className="info-row" style={{ marginTop: '4px' }}>
                                 <FileText size={16} />

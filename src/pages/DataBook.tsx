@@ -27,7 +27,7 @@ interface DataBookFolder {
     pedido_compra?: string;
     nota_fiscal?: string;
     responsavel?: string;
-    criado_por?: string;
+    // criado_por removido
     empresa_id?: string;
     created_at: string;
     is_peritagem?: boolean;
@@ -304,7 +304,6 @@ export const DataBook: React.FC = () => {
                     nota_fiscal: formData.nota_fiscal,
                     responsavel: formData.responsavel,
                     empresa_id: formData.empresa_id || null,
-                    criado_por: user?.id
                 }])
                 .select()
                 .single();

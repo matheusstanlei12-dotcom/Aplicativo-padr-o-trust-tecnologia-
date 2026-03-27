@@ -30,7 +30,7 @@ export const PcpLiberaPedido: React.FC = () => {
             const { data, error } = await supabase
                 .from('peritagens')
                 .select('id, numero_peritagem, cliente, status, numero_pedido, os_interna, created_at')
-                .or('status.eq.AGUARDANDO APROVAÇÃO DO CLIENTE,status.eq.Aguardando Clientes')
+                .or('status.eq.AGUARDANDO LIBERAÇÃO DO PEDIDO,status.eq.AGUARDANDO APROVAÇÃO DO CLIENTE,status.eq.Aguardando Clientes')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -63,7 +63,7 @@ export const PcpLiberaPedido: React.FC = () => {
 
             await supabase.from('peritagem_historico').insert([{
                 peritagem_id: id,
-                status_antigo: 'AGUARDANDO APROVAÇÃO DO CLIENTE',
+                status_antigo: 'AGUARDANDO LIBERAÇÃO DO PEDIDO',
                 status_novo: 'EM MANUTENÇÃO',
                 alterado_por: user.id
             }]);

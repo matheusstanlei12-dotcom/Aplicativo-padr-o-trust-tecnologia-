@@ -11,7 +11,7 @@ interface Peritagem {
     id: string;
     numero_peritagem: string;
     cliente: string;
-    data_execucao: string;
+    created_at: string;
     status: string;
     // Dados completos para o relatório
     os?: string;
@@ -64,7 +64,7 @@ export const Relatorios: React.FC = () => {
         try {
             const { data, error } = await supabase
                 .from('peritagens')
-                .select('id, numero_peritagem, cliente, data_execucao, status, os_interna, area, linha')
+                .select('id, numero_peritagem, cliente, status, os_interna, area, linha, created_at')
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -102,7 +102,7 @@ export const Relatorios: React.FC = () => {
                 laudoNum: String(fullPeritagem.numero_peritagem || ''),
                 numero_os: String(fullPeritagem.os || fullPeritagem.numero_peritagem || fullPeritagem.os_interna || ''),
                 data: new Date().toLocaleDateString('pt-BR'),
-                hora: fullPeritagem.data_execucao ? new Date(fullPeritagem.data_execucao).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '',
+                hora: fullPeritagem.created_at ? new Date(fullPeritagem.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '',
                 area: String(fullPeritagem.area || '-'),
                 linha: String(fullPeritagem.linha || '-'),
                 local_equipamento: String(fullPeritagem.local_equipamento || 'OFICINA'),
@@ -305,7 +305,7 @@ export const Relatorios: React.FC = () => {
                                     <h3 className="report-client">{p.cliente}</h3>
                                     <div className="report-row">
                                         <Calendar size={16} />
-                                        <span>{new Date(p.data_execucao).toLocaleDateString('pt-BR')}</span>
+                                        <span>{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
                                     </div>
                                     <div className="report-row">
                                         <FileText size={16} />

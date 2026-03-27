@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, ExternalLink, Loader2, Trash2, Calendar, AlertCircle } from 'lucide-react';
+import { Search, Plus, ExternalLink, Loader2, Trash2, Calendar } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,10 +9,8 @@ interface Peritagem {
     id: string;
     numero_peritagem: string;
     cliente: string;
-    data_execucao: string;
+    created_at: string;
     status: string;
-    prioridade: string;
-    criado_por: string;
     os_interna?: string;
     motivo_rejeicao?: string;
 }
@@ -73,7 +71,7 @@ export const Peritagens: React.FC = () => {
         try {
             let query = supabase
                 .from('peritagens')
-                .select('id, numero_peritagem, cliente, data_execucao, status, prioridade, criado_por, os_interna, motivo_rejeicao, created_at')
+                .select('id, numero_peritagem, cliente, status, os_interna, motivo_rejeicao, created_at')
                 .order('created_at', { ascending: false });
 
             // Filtro via URL (ex: vindo do Dashboard)
@@ -81,9 +79,9 @@ export const Peritagens: React.FC = () => {
                 query = query.or('status.eq.PROCESSO FINALIZADO,status.eq.FINALIZADOS,status.eq.FINALIZADO,status.eq.ORÇAMENTO FINALIZADO');
             }
 
-            // Se for PERITO, filtrar apenas as suas
+            // Se for PERITO, filtrar apenas as suas (Nota: Removido filtro de criado_por por erro de coluna)
             if (role === 'perito') {
-                query = query.eq('criado_por', user.id);
+                // query = query.eq('criado_por', user.id); // Comentado pois a coluna não existe
 
                 // Se estiver vendo recusadas
                 if (filterStatus === 'recusadas') {
@@ -94,10 +92,10 @@ export const Peritagens: React.FC = () => {
                 }
             }
 
-            // REGRAS PARA APP ANDROID: Qualquer usuário logado no app só vê as suas peritagens
+            // REGRAS PARA APP ANDROID: Qualquer usuário logado no app só vê as suas peritagens (Removido filtro por erro)
             const isAndroidApp = window.location.hostname === 'localhost' || window.location.protocol === 'file:';
             if (isAndroidApp && role !== 'gestor' && role !== 'pcp' && user) {
-                query = query.eq('criado_por', user.id);
+                // query = query.eq('criado_por', user.id);
             }
 
             if (role === 'cliente') {
@@ -219,15 +217,10 @@ export const Peritagens: React.FC = () => {
 
                                         <div className="info-row">
                                             <Calendar size={16} />
-                                            <span>{new Date(p.data_execucao).toLocaleDateString('pt-BR')}</span>
+                                            <span>{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
                                         </div>
 
-                                        <div className="info-row">
-                                            <AlertCircle size={16} />
-                                            <span className={`priority-badge ${(p.prioridade || '').toLowerCase() === 'urgente' ? 'priority-urgente' : 'priority-normal'}`}>
-                                                Prioridade: {p.prioridade || 'Normal'}
-                                            </span>
-                                        </div>
+
                                         {isRejection && p.motivo_rejeicao && (
                                             <div style={{
                                                 marginTop: '12px',

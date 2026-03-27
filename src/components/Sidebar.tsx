@@ -11,11 +11,9 @@ import {
     ShoppingCart,
     ClipboardSignature,
     QrCode,
-    Building2,
-    Book,
     Clock,
     RefreshCcw,
-    Folder
+    Building2,
 } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -172,16 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                             <span>4. Conferência Final</span>
                         </NavLink>
 
-                        <div className="sidebar-divider"></div>
 
-                        <NavLink to="/registro-fotos" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                            <Folder size={20} />
-                            <span>Arquivo Geral (Fotos/Vídeos)</span>
-                        </NavLink>
-                        <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                            <Book size={20} />
-                            <span>Databook</span>
-                        </NavLink>
                         <NavLink to="/workflow" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <RefreshCcw size={20} />
                             <span>Fluxo de QR code</span>
@@ -250,10 +239,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                             <FileSpreadsheet size={20} />
                             <span>Relatórios</span>
                         </NavLink>
-                        <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                            <Book size={20} />
-                            <span>Databook</span>
-                        </NavLink>
+
                     </>
                 )}
 
@@ -294,16 +280,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                             <span>4. Conferência Final</span>
                         </NavLink>
 
-                        <div className="sidebar-divider"></div>
 
-                        <NavLink to="/registro-fotos" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                            <Folder size={20} />
-                            <span>Arquivo Geral (Fotos/Vídeos)</span>
-                        </NavLink>
-                        <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                            <Book size={20} />
-                            <span>Databook</span>
-                        </NavLink>
                         <NavLink to="/workflow" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <RefreshCcw size={20} />
                             <span>Fluxo de QR code</span>

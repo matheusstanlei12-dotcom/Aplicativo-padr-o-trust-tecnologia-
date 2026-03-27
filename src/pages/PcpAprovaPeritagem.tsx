@@ -110,8 +110,8 @@ export const PcpAprovaPeritagem: React.FC = () => {
             const { error } = await supabase
                 .from('peritagens')
                 .update({
-                    status: 'AGUARDANDO APROVAÇÃO DO CLIENTE',
-                    etapa_atual: 'montagem'
+                    status: 'AGUARDANDO LIBERAÇÃO DO PEDIDO',
+                    etapa_atual: 'peritagem'
                 })
                 .eq('id', id);
 
@@ -120,12 +120,12 @@ export const PcpAprovaPeritagem: React.FC = () => {
             await supabase.from('peritagem_historico').insert([{
                 peritagem_id: id,
                 status_antigo: 'AGUARDANDO APROVAÇÃO DO PCP',
-                status_novo: 'AGUARDANDO APROVAÇÃO DO CLIENTE',
+                status_novo: 'AGUARDANDO LIBERAÇÃO DO PEDIDO',
                 alterado_por: user.id
             }]);
 
             setPeritagens(prev => prev.filter(p => p.id !== id));
-            alert('Peritagem aprovada e enviada para o comercial.');
+            alert('Peritagem aprovada e enviada para liberação do pedido.');
         } catch (err) {
             alert('Erro ao aprovar.');
         }

@@ -89,8 +89,7 @@ export const PcpFinalizaProcesso: React.FC = () => {
             const { error } = await supabase
                 .from('peritagens')
                 .update({
-                    status: 'PROCESSO FINALIZADO',
-                    data_finalizacao: new Date().toISOString()
+                    status: 'PROCESSO FINALIZADO'
                 })
                 .eq('id', id);
 

@@ -173,6 +173,7 @@ export const WorkflowPage: React.FC = () => {
             const updateData: any = { etapa_atual: targetStage };
             if (targetStage === 'finalizado') {
                 updateData.databook_pronto = true;
+                updateData.status = 'AGUARDANDO CONFERÊNCIA FINAL';
             } else {
                 updateData.databook_pronto = false;
             }

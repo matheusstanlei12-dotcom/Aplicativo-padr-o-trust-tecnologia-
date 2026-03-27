@@ -7,7 +7,6 @@ export interface PeritagemData {
     haste_diam?: string;
     curso?: string;
     camisa_comp?: string;
-    prioridade?: string;
 }
 
 export interface AnaliseItem {
@@ -62,9 +61,9 @@ export function generateTechnicalOpinion(peritagem: PeritagemData, analyses: Ana
     }
 
     // 6. CONCLUSÃO TÉCNICA AUTOMÁTICA
-    // Lógica de criticidade baseada no número de não conformidades ou prioridade
+    // Lógica de criticidade baseada no número de não conformidades
     let gravity = 'baixa';
-    if (peritagem.prioridade === 'Urgente' || nonConformities.length > 3) {
+    if (nonConformities.length > 3) {
         gravity = 'alta';
     } else if (nonConformities.length > 0) {
         gravity = 'media';

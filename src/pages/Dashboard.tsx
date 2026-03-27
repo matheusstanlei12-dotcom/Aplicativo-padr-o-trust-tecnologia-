@@ -103,7 +103,7 @@ export const Dashboard: React.FC = () => {
             console.log('📊 Dashboard: Iniciando busca de dados para role:', role);
 
             // Selecionar apenas colunas necessárias para contagem e dashboard (evita carregar fotos pesadas)
-            let query = supabase.from('peritagens').select('status, created_at, data_execucao, data_finalizacao, cliente, empresa_id');
+            let query = supabase.from('peritagens').select('status, created_at, cliente');
 
             if (role === 'cliente') {
                 if (empresaId) {
@@ -145,9 +145,9 @@ export const Dashboard: React.FC = () => {
                     status: (p.status || "").toUpperCase().trim()
                 }));
 
-                const pendentePcp = normalizedData.filter((p: any) => p.status === 'AGUARDANDO APROVAÇÃO DO PCP' || p.status === 'PERITAGEM CRIADA' || p.status === 'PERITAGEM FINALIZADA').length;
-                const aguardandoCliente = normalizedData.filter((p: any) => p.status === 'AGUARDANDO APROVAÇÃO DO CLIENTE' || p.status === 'AGUARDANDO CLIENTES' || p.status === 'AGUARDANDO ORÇAMENTO' || p.status === 'ORÇAMENTO ENVIADO').length;
-                const manutencao = normalizedData.filter((p: any) => p.status === 'EM MANUTENÇÃO' || p.status === 'CILINDROS EM MANUTENÇÃO' || p.status === 'OS EM ABERTO').length;
+                const pendentePcp = normalizedData.filter((p: any) => p.status === 'AGUARDANDO APROVAÇÃO DO PCP' || p.status === 'PERITAGEM CRIADA').length;
+                const aguardandoCliente = normalizedData.filter((p: any) => p.status === 'AGUARDANDO LIBERAÇÃO DO PEDIDO' || p.status === 'AGUARDANDO APROVAÇÃO DO CLIENTE' || p.status === 'AGUARDANDO CLIENTES' || p.status === 'AGUARDANDO ORÇAMENTO' || p.status === 'ORÇAMENTO ENVIADO').length;
+                const manutencao = normalizedData.filter((p: any) => p.status === 'EM MANUTENÇÃO' || p.status === 'CILINDROS EM MANUTENÇÃO' || p.status === 'MANUTENÇÃO' || p.status === 'OFICINA' || p.status === 'OS EM ABERTO').length;
                 const conferenciaFinal = normalizedData.filter((p: any) => p.status === 'AGUARDANDO CONFERÊNCIA FINAL').length;
 
                 const finishedItems = normalizedData.filter((p: any) =>
@@ -168,9 +168,8 @@ export const Dashboard: React.FC = () => {
                     // Como não temos updated_at, usamos data_execucao se disponível, senão usamos created_at (o que dará lead time 0 mas evita erro)
                     if (item.created_at) {
                         const start = new Date(item.created_at);
-                        // Usar data_finalizacao se disponível, senão data_execucao, senão created_at
-                        const end = item.data_finalizacao ? new Date(item.data_finalizacao) :
-                            (item.data_execucao ? new Date(item.data_execucao) : new Date(item.created_at));
+                        // Usar data_finalizacao se disponível, senão created_at
+                        const end = item.data_finalizacao ? new Date(item.data_finalizacao) : new Date(item.created_at);
 
                         const diffTime = Math.abs(end.getTime() - start.getTime());
                         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

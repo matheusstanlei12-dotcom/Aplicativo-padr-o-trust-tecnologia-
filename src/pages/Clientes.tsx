@@ -8,9 +8,8 @@ interface Peritagem {
     id: string;
     numero_peritagem: string;
     cliente: string;
-    data_execucao: string;
+    created_at: string;
     status: string;
-    prioridade: string;
     os_interna?: string;
 }
 
@@ -91,7 +90,7 @@ export const Clientes: React.FC = () => {
                                 <tr key={p.id}>
                                     <td className="peritagem-id">{p.numero_peritagem}</td>
                                     <td>{p.cliente}</td>
-                                    <td>{new Date(p.data_execucao).toLocaleDateString('pt-BR')}</td>
+                                    <td>{new Date(p.created_at).toLocaleDateString('pt-BR')}</td>
                                     <td>
                                         <span className={`status-badge aguardando-clientes`}>
                                             {p.status}

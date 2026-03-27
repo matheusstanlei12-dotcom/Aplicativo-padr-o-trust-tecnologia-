@@ -15,7 +15,7 @@ interface PhotoFolder {
     data_saida?: string;
     pedido_compra?: string;
     responsavel?: string;
-    criado_por?: string;
+    // criado_por removido
     created_at: string;
 }
 
@@ -28,7 +28,7 @@ interface PhotoItem {
 }
 
 export const RegistroFotos: React.FC = () => {
-    const { role, user } = useAuth();
+    const { role } = useAuth();
     const [folders, setFolders] = useState<PhotoFolder[]>([]);
     const [currentFolder, setCurrentFolder] = useState<PhotoFolder | null>(null);
     const [photos, setPhotos] = useState<PhotoItem[]>([]);
@@ -167,8 +167,7 @@ export const RegistroFotos: React.FC = () => {
                     data_entrada: formData.data_entrada || null,
                     data_saida: formData.data_saida || null,
                     pedido_compra: formData.pedido_compra,
-                    responsavel: formData.responsavel,
-                    criado_por: user?.id
+                    responsavel: formData.responsavel
                 }])
                 .select()
                 .single();
