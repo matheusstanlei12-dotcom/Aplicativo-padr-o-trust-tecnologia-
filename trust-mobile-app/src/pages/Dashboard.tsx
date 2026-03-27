@@ -11,13 +11,11 @@ import {
   Star,
   Home,
   Check,
-  ClipboardList,
   History,
   SendHorizontal,
-  FilePlus,
   Plus
 } from 'lucide-react';
-import { Browser } from '@capacitor/browser';
+import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -26,13 +24,10 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onSync, onSettings }) => {
-  const handleNovaPeritagem = async () => {
-    try {
-      await Browser.open({ url: 'https://www.trusttecnologia.com.br/nova-peritagem' });
-    } catch (e) {
-      console.error('Error opening browser', e);
-      window.open('https://www.trusttecnologia.com.br/nova-peritagem', '_blank');
-    }
+  const navigate = useNavigate();
+
+  const handleNovaPeritagem = () => {
+    navigate('/nova-peritagem');
   };
 
   return (

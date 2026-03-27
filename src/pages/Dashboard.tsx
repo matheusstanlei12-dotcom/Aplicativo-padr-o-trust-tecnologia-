@@ -294,7 +294,10 @@ export const Dashboard: React.FC = () => {
         beforeDraw: (chart: any) => {
             const { ctx, chartArea: { width, height } } = chart;
             ctx.save();
-            const total = chart.config.data.datasets[0].data.reduce((a: number, b: number) => a + b, 0);
+            const datasets = chart.config.data.datasets;
+            const total = (datasets && datasets[0] && datasets[0].data) 
+                ? datasets[0].data.reduce((a: number, b: number) => a + b, 0) 
+                : 0;
 
             ctx.font = '800 2.5rem sans-serif';
             ctx.textAlign = 'center';

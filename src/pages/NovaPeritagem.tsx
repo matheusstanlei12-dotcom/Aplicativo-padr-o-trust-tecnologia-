@@ -1916,10 +1916,10 @@ export const NovaPeritagem: React.FC = () => {
                                                         }
                                                     }
 
-                                                    const anomaliesList = detectedComponent ? DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent]?.anomalies : [];
-                                                    const servicesList = detectedComponent ? DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent]?.services : [];
+                                                    const anomaliesList = (detectedComponent && DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent]) ? DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent].anomalies : [];
+                                                    const servicesList = (detectedComponent && DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent]) ? DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent].services : [];
 
-                                                    const hasDropdowns = anomaliesList && anomaliesList.length > 0;
+                                                    const hasDropdowns = anomaliesList.length > 0;
 
 
                                                     const activeAnomalies = item.anomaliasSet || [{ value: item.anomalia || '', isCustom: false }];
