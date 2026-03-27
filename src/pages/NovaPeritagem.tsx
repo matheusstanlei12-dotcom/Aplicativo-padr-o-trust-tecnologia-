@@ -937,6 +937,75 @@ export const NovaPeritagem: React.FC = () => {
         }
     };
 
+    const handleClearForm = () => {
+        if (window.confirm('Tem certeza que deseja limpar todos os dados deste formulário?')) {
+            setFixedData({
+                tag: '',
+                local_equipamento: '',
+                data_inspecao: new Date().toISOString().split('T')[0],
+                responsavel_tecnico: '',
+                cliente: '',
+                numero_os: '',
+                ni: '',
+                pedido: '',
+                ordem: '',
+                nota_fiscal: '',
+                desenho_conjunto: '',
+                tipo_modelo: '',
+                fabricante: '',
+                lubrificante: '',
+                volume: '',
+                acoplamento_polia: '',
+                sistema_lubrificacao: '',
+                outros_especificar: '',
+                observacoes_gerais: '',
+                area: '',
+                linha: '',
+                os_interna: ''
+            });
+            setDimensions({
+                diametroInterno: '',
+                diametroHaste: '',
+                curso: '',
+                comprimentoTotal: '',
+                diametroExterno: '',
+                comprimentoHaste: '',
+                montagem: '',
+                pressaoNominal: '',
+                fabricanteModelo: ''
+            });
+            setFotoFrontal('');
+            setDimStatus('vermelho');
+            
+            // Re-inicializa o checklist baseado no tipo atual
+            let list = [];
+            if (fixedData.cliente === 'USIMINAS') {
+                list = USIMINAS_ITEMS;
+            } else if (cylinderType === 'Redutores') {
+                list = REDUTOR_ITEMS;
+            } else if (cylinderType === 'Motores') {
+                list = MOTOR_ITEMS;
+            } else {
+                list = STANDARD_ITEMS;
+            }
+
+            setChecklistItems(list.map((text) => ({
+                id: crypto.randomUUID(),
+                text,
+                status: 'vermelho',
+                conformidade: null,
+                anomalia: '',
+                anomaliasSet: [{ value: '', isCustom: false }],
+                solucao: '',
+                solucoesSet: [{ value: '', isCustom: false }],
+                fotos: [],
+                dimensoes: '',
+                qtd: '',
+                tipo: 'componente'
+            })));
+        }
+    };
+
     const renderIndicator = (status: StatusColor) => {
         const colors = {
             vermelho: '#ff4d4d',
@@ -1031,7 +1100,11 @@ export const NovaPeritagem: React.FC = () => {
                         <span className="subtitle">Preencha os dados técnicos abaixo</span>
                     </div>
                 </div>
-                <div className="header-actions-top">
+                <div className="header-actions-top" style={{ display: 'flex', gap: '10px' }}>
+                    <button type="button" className="btn-save-top" style={{ backgroundColor: '#718096' }} onClick={handleClearForm}>
+                        <ArrowLeft size={20} />
+                        Limpar Dados
+                    </button>
                     <button className="btn-save-top" onClick={handleSubmit} disabled={loading}>
                         <Save size={20} />
                         {loading ? 'Salvando...' : fromWaitlist ? 'Salvar na Lista' : 'Salvar Peritagem'}
