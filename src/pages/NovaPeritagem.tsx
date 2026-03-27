@@ -466,10 +466,8 @@ export const NovaPeritagem: React.FC = () => {
                         pressaoNominal: data.pressao_nominal || '',
                         fabricanteModelo: data.fabricante_modelo || ''
                     });
-                    setDimStatus('verde');
                     setFixedData(prev => ({ ...prev, local_equipamento: data.local_equipamento || prev.local_equipamento, cliente: data.cliente || prev.cliente }));
                 } else if (fixedData.tag.length > 0) {
-                    setDimStatus('amarelo');
                 }
             }
         };
@@ -882,7 +880,6 @@ export const NovaPeritagem: React.FC = () => {
 
             // Atualizar status local para azul
             setChecklistItems(prev => prev.map(item => ({ ...item, status: 'azul' })));
-            setDimStatus('azul');
 
             // 3. Atualizar status na tabela 'aguardando_peritagem' se existir
             if (idWaitlist || fixedData.os_interna) {
