@@ -1,0 +1,22 @@
+export const REDUTOR_ITEMS = [
+    "Caixa (carcassa) - Verificar rachaduras, deformações, corrosão e integridade das superfícies de montagem.",
+    "Vedações e retentores - Inspecionar vazamentos de óleo, desgaste, endurecimento do material e ressecamento.",
+    "Pintura e proteção - Avaliar condição da pintura, presença de ferrugem ou danos na proteção anticorrosiva.",
+    "Acoplamentos e flanges - Checar alinhamento, folgas e desgaste nas interfaces de conexão.",
+    "Eixo de Entrada - Verificar desgaste no assento de rolamento, sulcos de chaveta, empenamento e sinais de pitting nas engrenagens.",
+    "Eixo Intermediário - Inspecionar engrenagens por escoriação nos flancos, backlash excessivo, folga nos rolamentos e corrosão interna.",
+    "Eixo de Saída - Avaliar ovalização, pitting nas engrenagens finais, desgaste no acoplamento de saída e torque residual.",
+    "Rolamentos (todos os eixos) - Analisar desgaste, folga axial/radial, ruído e sinais de superaquecimento (descoloração).",
+    "Engrenagens Gerais - Examinar desgaste nos dentes (pitting, escoriação), backlash excessivo, quebra ou fadiga, perfil dos dentes.",
+    "Chaves e estrias - Inspecionar desgaste, folgas e integridade das transmissões de torque.",
+    "Buchas de bronze - Verificar desgaste, ovalização e folga.",
+    "Selos internos - Inspecionar condição geral, ressecamento e sinais de vazamento.",
+    "Sistema de lubrificação - Avaliar bomba (se houver), filtros, respiradores e qualidade do óleo residual.",
+    "Parafusos e fixações - Checar aperto, oxidação, alongamento e integridade das roscas.",
+    "Flanges de conexão - Verificar planicidade e danos nas superfícies de vedação.",
+    "Defletores de óleo - Inspecionar integridade e posicionamento.",
+    "Dispositivos de respiro - Verificar obstruções e funcionamento.",
+    "Canais de lubrificação - Inspecionar obstruções e limpeza.",
+    "Placas de identificação - Verificar legibilidade e fixação.",
+    "Alinhamento pré-desmontagem - Medir e registrar desalinhamentos antes da desmontagem."
+];

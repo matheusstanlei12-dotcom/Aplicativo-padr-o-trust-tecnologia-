@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { USIMINAS_ITEMS } from '../constants/usiminasItems';
 import { STANDARD_ITEMS } from '../constants/standardItems';
+import { REDUTOR_ITEMS } from '../constants/redutorItems';
 import { compressImage } from '../lib/imageUtils';
 import { DIMENSIONAL_ANOMALIES_SERVICES } from '../constants/dimensionalItems';
 import { syncPhotosToGallery } from '../lib/photoSync';
@@ -65,7 +66,7 @@ export const NovaPeritagem: React.FC = () => {
     const galleryInputRef = React.useRef<HTMLInputElement>(null);
 
     // Pergunta Inicial
-    const [cylinderType, setCylinderType] = useState<'Cilindros' | null>(null);
+    const [cylinderType, setCylinderType] = useState<'Cilindros' | 'Redutores' | 'Motores' | null>(null);
 
     // Campos Fixos
     const [fixedData, setFixedData] = useState({
@@ -239,7 +240,6 @@ export const NovaPeritagem: React.FC = () => {
             if (aError) throw aError;
 
             // Populate States
-            setStep(1);
             setCylinderType(pData.tipo_cilindro || 'Cilindros');
             setStep(1);
             setCylinderType(pData.tipo_cilindro || 'Cilindros');
@@ -406,6 +406,8 @@ export const NovaPeritagem: React.FC = () => {
             let list = [];
             if (fixedData.cliente === 'USIMINAS') {
                 list = USIMINAS_ITEMS;
+            } else if (cylinderType === 'Redutores') {
+                list = REDUTOR_ITEMS;
             } else {
                 list = STANDARD_ITEMS;
             }
@@ -969,14 +971,14 @@ export const NovaPeritagem: React.FC = () => {
                     <h2>Selecione o Tipo de Cilindro</h2>
                     <p>Inicie o formulário de peritagem escolhendo a tecnologia do equipamento.</p>
                     <div className="type-options">
-                        <button className={`type-btn ${cylinderType === 'Cilindros' ? 'active' : ''}`} onClick={() => setCylinderType('Cilindros')}>
+                        <button className={`type-btn ${cylinderType === 'Redutores' ? 'active' : ''}`} onClick={() => setCylinderType('Redutores')}>
                             Relatorio Redutor
                         </button>
                         <div className="divider-or">ou atalho rápido</div>
                         <button
                             className="type-btn usiminas-btn"
                             onClick={() => {
-                                setCylinderType('Cilindros');
+                                setCylinderType('Motores');
                                 setFixedData(prev => ({ ...prev, cliente: 'USIMINAS' }));
                                 setStep(1);
                             }}
