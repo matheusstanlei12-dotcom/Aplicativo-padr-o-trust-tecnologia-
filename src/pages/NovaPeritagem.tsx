@@ -961,7 +961,7 @@ export const NovaPeritagem: React.FC = () => {
         return (
             <div className="nova-peritagem-container start-screen">
                 <div className="selection-card">
-                    <h2>Selecione o Tipo de Cilindro</h2>
+                    <h2>Selecione o formulário para continuar</h2>
                     <p>Inicie o formulário de peritagem escolhendo a tecnologia do equipamento.</p>
                     <div className="type-options" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
                         <button 
