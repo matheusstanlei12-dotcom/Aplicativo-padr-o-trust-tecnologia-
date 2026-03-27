@@ -14,7 +14,8 @@ import {
   ClipboardList,
   History,
   SendHorizontal,
-  FilePlus
+  FilePlus,
+  Plus
 } from 'lucide-react';
 import { Browser } from '@capacitor/browser';
 import './Dashboard.css';
@@ -26,7 +27,12 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ onSync, onSettings }) => {
   const handleNovaPeritagem = async () => {
-    await Browser.open({ url: 'https://www.trusttecnologia.com.br/nova-peritagem' });
+    try {
+      await Browser.open({ url: 'https://www.trusttecnologia.com.br/nova-peritagem' });
+    } catch (e) {
+      console.error('Error opening browser', e);
+      window.open('https://www.trusttecnologia.com.br/nova-peritagem', '_blank');
+    }
   };
 
   return (
@@ -161,7 +167,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onSync, onSettings }) => {
               <div className="action-card" onClick={handleNovaPeritagem}>
                  <div className="action-badge">1</div>
                  <div className="action-icon">
-                    <FilePlus size={22} />
+                    <Plus size={22} strokeWidth={3} />
                  </div>
                  <div className="action-info">
                     <span>NOVA PERITAGEM</span>
