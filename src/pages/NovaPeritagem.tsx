@@ -103,7 +103,19 @@ export const NovaPeritagem: React.FC = () => {
 
 
 
-
+    // Dimensões
+    const [dimensions, setDimensions] = useState({
+        diametroInterno: '',
+        diametroHaste: '',
+        curso: '',
+        comprimentoTotal: '',
+        diametroExterno: '',
+        comprimentoHaste: '',
+        montagem: '',
+        pressaoNominal: '',
+        fabricanteModelo: ''
+    });
+    const [dimStatus, setDimStatus] = useState<StatusColor>('vermelho');
     const [fotoFrontal, setFotoFrontal] = useState<string>('');
 
     const frontalCameraRef = React.useRef<HTMLInputElement>(null);
@@ -259,7 +271,17 @@ export const NovaPeritagem: React.FC = () => {
 
 
 
-
+            setDimensions({
+                diametroInterno: pData.camisa_int || '',
+                diametroHaste: pData.haste_diam || '',
+                curso: pData.curso || '',
+                comprimentoTotal: pData.camisa_comp || '',
+                diametroExterno: pData.camisa_ext || '',
+                comprimentoHaste: pData.haste_comp || '',
+                montagem: pData.montagem || '',
+                pressaoNominal: pData.pressao_nominal || '',
+                fabricanteModelo: pData.fabricante_modelo || ''
+            });
 
             // Map Analyses to Checklist/Vedacoes
             // First, re-initialize list based on client to preserve order and structure
@@ -434,10 +456,21 @@ export const NovaPeritagem: React.FC = () => {
                     .single();
 
                 if (data && !error) {
-
+                    setDimensions({
+                        diametroInterno: data.camisa_int || '',
+                        diametroHaste: data.haste_diam || '',
+                        curso: data.curso || '',
+                        comprimentoTotal: data.camisa_comp || '',
+                        diametroExterno: data.camisa_ext || '',
+                        comprimentoHaste: data.haste_comp || '',
+                        montagem: data.montagem || '',
+                        pressaoNominal: data.pressao_nominal || '',
+                        fabricanteModelo: data.fabricante_modelo || ''
+                    });
+                    setDimStatus('verde');
                     setFixedData(prev => ({ ...prev, local_equipamento: data.local_equipamento || prev.local_equipamento, cliente: data.cliente || prev.cliente }));
                 } else if (fixedData.tag.length > 0) {
-
+                    setDimStatus('amarelo');
                 }
             }
         };
@@ -712,7 +745,15 @@ export const NovaPeritagem: React.FC = () => {
                         numero_pedido: fixedData.pedido,
                         ordem: fixedData.ordem,
                         nota_fiscal: fixedData.nota_fiscal,
-
+                        camisa_int: dimensions.diametroInterno,
+                        camisa_ext: dimensions.diametroExterno,
+                        haste_diam: dimensions.diametroHaste,
+                        haste_comp: dimensions.comprimentoHaste,
+                        curso: dimensions.curso,
+                        camisa_comp: dimensions.comprimentoTotal,
+                        montagem: dimensions.montagem,
+                        pressao_nominal: dimensions.pressaoNominal,
+                        fabricante_modelo: dimensions.fabricanteModelo,
                         foto_frontal: fotoFrontal,
                         status: 'AGUARDANDO APROVAÇÃO DO PCP', // Reseta status ao editar
                         desenho_conjunto: fixedData.desenho_conjunto,
@@ -755,7 +796,15 @@ export const NovaPeritagem: React.FC = () => {
                         numero_pedido: fixedData.pedido,
                         ordem: fixedData.ordem,
                         nota_fiscal: fixedData.nota_fiscal,
-
+                        camisa_int: dimensions.diametroInterno,
+                        camisa_ext: dimensions.diametroExterno,
+                        haste_diam: dimensions.diametroHaste,
+                        haste_comp: dimensions.comprimentoHaste,
+                        curso: dimensions.curso,
+                        camisa_comp: dimensions.comprimentoTotal,
+                        montagem: dimensions.montagem,
+                        pressao_nominal: dimensions.pressaoNominal,
+                        fabricante_modelo: dimensions.fabricanteModelo,
                         foto_frontal: fotoFrontal,
                         status: 'AGUARDANDO APROVAÇÃO DO PCP',
                         desenho_conjunto: fixedData.desenho_conjunto,
@@ -834,7 +883,7 @@ export const NovaPeritagem: React.FC = () => {
 
             // Atualizar status local para azul
             setChecklistItems(prev => prev.map(item => ({ ...item, status: 'azul' })));
-
+            setDimStatus('azul');
 
             // 3. Atualizar status na tabela 'aguardando_peritagem' se existir
             if (idWaitlist || fixedData.os_interna) {
@@ -888,7 +937,15 @@ export const NovaPeritagem: React.FC = () => {
         }
     };
 
-
+    const renderIndicator = (status: StatusColor) => {
+        const colors = {
+            vermelho: '#ff4d4d',
+            amarelo: '#ffcc00',
+            verde: '#27ae60',
+            azul: '#2980b9'
+        };
+        return <div className="status-dot-animated" style={{ backgroundColor: colors[status], width: '14px', height: '14px' }} />;
+    };
 
     if (step === 0) {
         if (loading) {
@@ -904,10 +961,16 @@ export const NovaPeritagem: React.FC = () => {
         return (
             <div className="nova-peritagem-container start-screen">
                 <div className="selection-card">
-                    <h2>Selecione o formulário para continuar</h2>
+                    <h2>Selecione o Tipo de Cilindro</h2>
                     <p>Inicie o formulário de peritagem escolhendo a tecnologia do equipamento.</p>
                     <div className="type-options" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
-
+                        <button 
+                            className={`type-btn ${cylinderType === 'Cilindros' ? 'active' : ''}`} 
+                            onClick={() => setCylinderType('Cilindros')}
+                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
+                        >
+                            Relatório Cilindro Hidráulico
+                        </button>
                         <button 
                             className={`type-btn ${cylinderType === 'Redutores' ? 'active' : ''}`} 
                             onClick={() => setCylinderType('Redutores')}
@@ -915,15 +978,13 @@ export const NovaPeritagem: React.FC = () => {
                         >
                             Relatório Redutor
                         </button>
-{/* 
-                         <button 
-                             className={`type-btn ${cylinderType === 'Motores' ? 'active' : ''}`} 
-                             onClick={() => setCylinderType('Motores')}
-                             style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
-                         >
-                             Relatório Motor Diesel
-                         </button>
-                        */}
+                        <button 
+                            className={`type-btn ${cylinderType === 'Motores' ? 'active' : ''}`} 
+                            onClick={() => setCylinderType('Motores')}
+                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
+                        >
+                            Relatório Motor Diesel
+                        </button>
                     </div>
                     {motivoRejeicao && (
                         <div style={{
@@ -1065,7 +1126,7 @@ export const NovaPeritagem: React.FC = () => {
                         <CheckCircle className="header-icon-blue" />
                         <div className="header-titles">
                             <h3>FORMULÁRIO DE PERITAGEM</h3>
-
+                            <span className="subtitle">CILINDROS HIDRÁULICOS E PNEUMÁTICOS | PÁG.: 1 DE 2</span>
                         </div>
                     </div>
                     <div className="grid-form">
@@ -1329,7 +1390,40 @@ export const NovaPeritagem: React.FC = () => {
                     </div>
                 </section>
 
+                {/* DIMENSÕES */}
+                <section className="form-card dimensions-section">
+                    <div className="card-header">
+                        {renderIndicator(dimStatus)}
+                        <h3>Dimensões do Cilindro</h3>
 
+                    </div>
+                    <div className="dimensions-horizontal-grid">
+                        <div className="dim-group-main">
+                            <span className="dim-label">DIMENSÕES:</span>
+                            <div className="dim-fields-wrapper">
+                                <div className="dim-part">
+                                    <span>CAMISA ØINT.</span>
+                                    <input placeholder="ØINT" value={dimensions.diametroInterno} onChange={e => { setDimensions({ ...dimensions, diametroInterno: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
+                                    <span>x Ø EXT.</span>
+                                    <input placeholder="ØEXT" value={dimensions.diametroExterno} onChange={e => { setDimensions({ ...dimensions, diametroExterno: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
+                                    <span>X COMP.</span>
+                                    <input placeholder="COMP" value={dimensions.comprimentoTotal} onChange={e => { setDimensions({ ...dimensions, comprimentoTotal: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
+                                </div>
+                                <div className="dim-part divider-left">
+                                    <span>/ HASTE Ø</span>
+                                    <input placeholder="Ø" value={dimensions.diametroHaste} onChange={e => { setDimensions({ ...dimensions, diametroHaste: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
+                                    <span>X COMP.</span>
+                                    <input placeholder="COMP" value={dimensions.comprimentoHaste} onChange={e => { setDimensions({ ...dimensions, comprimentoHaste: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
+                                </div>
+                                <div className="dim-part divider-left">
+                                    <span>/ CURSO:</span>
+                                    <input placeholder="CURSO" value={dimensions.curso} onChange={e => { setDimensions({ ...dimensions, curso: e.target.value }); setDimStatus('verde'); }} className="dim-input-medium" />
+                                    <span>MM</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 {/* CHECKLIST TÉCNICO */}
                 <section className="form-card">
