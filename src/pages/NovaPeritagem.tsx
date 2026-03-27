@@ -1122,7 +1122,7 @@ export const NovaPeritagem: React.FC = () => {
                         <CheckCircle className="header-icon-blue" />
                         <div className="header-titles">
                             <h3>FORMULÁRIO DE PERITAGEM</h3>
-                            <span className="subtitle">CILINDROS HIDRÁULICOS E PNEUMÁTICOS | PÁG.: 1 DE 2</span>
+
                         </div>
                     </div>
                     <div className="grid-form">
