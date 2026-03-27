@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Trust Mobile</string>
-    <string name="title_activity_main">Trust Mobile</string>
-    <string name="package_name">com.trust.mobileapp</string>
-    <string name="custom_url_scheme">com.trust.mobileapp</string>
-</resources>

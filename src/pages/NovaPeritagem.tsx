@@ -970,7 +970,7 @@ export const NovaPeritagem: React.FC = () => {
                     <p>Inicie o formulário de peritagem escolhendo a tecnologia do equipamento.</p>
                     <div className="type-options">
                         <button className={`type-btn ${cylinderType === 'Cilindros' ? 'active' : ''}`} onClick={() => setCylinderType('Cilindros')}>
-                            Relatório Padrão
+                            Relatorio Redutor
                         </button>
                         <div className="divider-or">ou atalho rápido</div>
                         <button
@@ -981,7 +981,7 @@ export const NovaPeritagem: React.FC = () => {
                                 setStep(1);
                             }}
                         >
-                            <span className="btn-label">Relatório Usiminas</span>
+                            <span className="btn-label">Relatorio Motor diesel</span>
                         </button>
                     </div>
                     {motivoRejeicao && (

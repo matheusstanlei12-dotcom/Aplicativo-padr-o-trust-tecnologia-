@@ -1,0 +1,212 @@
+:root {
+  --prime-blue: #1e2a5a;
+  --prime-blue-light: #3b82f6;
+  --prime-yellow: #fac70b;
+  --prime-yellow-dark: #d9a800;
+  --prime-bg: #f8fafc;
+  --prime-surface: #ffffff;
+  --prime-text: #0f172a;
+  --prime-text-muted: #64748b;
+  --prime-border: #e2e8f0;
+  --prime-header-height: 70px;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  background-color: var(--prime-bg);
+  color: var(--prime-text);
+  overflow: hidden;
+}
+
+.prime-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: white;
+}
+
+.prime-header {
+  height: var(--prime-header-height);
+  background: var(--prime-blue);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.prime-card {
+  background: var(--prime-surface);
+  border-radius: 16px;
+  border: 1px solid var(--prime-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  padding: 24px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.prime-btn-primary {
+  background: var(--prime-yellow);
+  color: var(--prime-blue);
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(250, 199, 11, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.prime-btn-primary:active {
+  transform: scale(0.97);
+  background: var(--prime-yellow-dark);
+}
+
+/* Texture overlay for industrial feel */
+.nexus-container::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20L0 20z' fill='%23ffffff' fill-opacity='.01'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Action Strips */
+.nexus-action-strip {
+  background: var(--nexus-panel);
+  border-left: 4px solid var(--nexus-border);
+  margin: 8px 16px;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.nexus-action-strip:active {
+  transform: scale(0.98);
+  border-left-color: var(--nexus-accent);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.nexus-action-strip.active {
+  border-left-color: var(--nexus-accent);
+  box-shadow: 0 0 20px var(--nexus-accent-glow);
+}
+
+.nexus-strip-icon {
+  background: rgba(255, 255, 255, 0.03);
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nexus-text-muted);
+  transition: all 0.3s ease;
+}
+
+.nexus-action-strip:active .nexus-strip-icon {
+  color: var(--nexus-accent);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.nexus-strip-content {
+  flex: 1;
+  margin-left: 16px;
+}
+
+.nexus-strip-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--nexus-text);
+  margin-bottom: 2px;
+}
+
+.nexus-strip-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--nexus-text-muted);
+}
+
+/* Status Indicators */
+.nexus-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+.nexus-status-dot.active {
+  background: var(--nexus-accent);
+  box-shadow: 0 0 8px var(--nexus-accent-glow);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+.nexus-header {
+  height: var(--nexus-header-height);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--nexus-border);
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.nexus-avatar-ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--nexus-border);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.nexus-avatar-ring:active {
+  border-color: var(--nexus-accent);
+}
