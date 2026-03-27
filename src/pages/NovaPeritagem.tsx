@@ -978,13 +978,15 @@ export const NovaPeritagem: React.FC = () => {
                         >
                             Relatório Redutor
                         </button>
-                        <button 
-                            className={`type-btn ${cylinderType === 'Motores' ? 'active' : ''}`} 
-                            onClick={() => setCylinderType('Motores')}
-                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
-                        >
-                            Relatório Motor Diesel
-                        </button>
+{/* 
+                         <button 
+                             className={`type-btn ${cylinderType === 'Motores' ? 'active' : ''}`} 
+                             onClick={() => setCylinderType('Motores')}
+                             style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
+                         >
+                             Relatório Motor Diesel
+                         </button>
+                        */}
                     </div>
                     {motivoRejeicao && (
                         <div style={{
