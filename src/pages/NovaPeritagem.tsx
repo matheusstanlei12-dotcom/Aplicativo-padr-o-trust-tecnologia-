@@ -964,13 +964,7 @@ export const NovaPeritagem: React.FC = () => {
                     <h2>Selecione o formulário para continuar</h2>
                     <p>Inicie o formulário de peritagem escolhendo a tecnologia do equipamento.</p>
                     <div className="type-options" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
-                        <button 
-                            className={`type-btn ${cylinderType === 'Cilindros' ? 'active' : ''}`} 
-                            onClick={() => setCylinderType('Cilindros')}
-                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
-                        >
-                            Relatório Cilindro Hidráulico
-                        </button>
+
                         <button 
                             className={`type-btn ${cylinderType === 'Redutores' ? 'active' : ''}`} 
                             onClick={() => setCylinderType('Redutores')}
