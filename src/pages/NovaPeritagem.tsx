@@ -115,7 +115,6 @@ export const NovaPeritagem: React.FC = () => {
         pressaoNominal: '',
         fabricanteModelo: ''
     });
-    const [dimStatus, setDimStatus] = useState<StatusColor>('vermelho');
     const [fotoFrontal, setFotoFrontal] = useState<string>('');
 
     const frontalCameraRef = React.useRef<HTMLInputElement>(null);
@@ -975,8 +974,6 @@ export const NovaPeritagem: React.FC = () => {
                 fabricanteModelo: ''
             });
             setFotoFrontal('');
-            setDimStatus('vermelho');
-            
             // Re-inicializa o checklist baseado no tipo atual
             let list = [];
             if (fixedData.cliente === 'USIMINAS') {
@@ -1006,15 +1003,6 @@ export const NovaPeritagem: React.FC = () => {
         }
     };
 
-    const renderIndicator = (status: StatusColor) => {
-        const colors = {
-            vermelho: '#ff4d4d',
-            amarelo: '#ffcc00',
-            verde: '#27ae60',
-            azul: '#2980b9'
-        };
-        return <div className="status-dot-animated" style={{ backgroundColor: colors[status], width: '14px', height: '14px' }} />;
-    };
 
     if (step === 0) {
         if (loading) {
