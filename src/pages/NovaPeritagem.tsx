@@ -1448,40 +1448,6 @@ export const NovaPeritagem: React.FC = () => {
                     </div>
                 </section>
 
-                {/* DIMENSÕES */}
-                <section className="form-card dimensions-section">
-                    <div className="card-header">
-                        {renderIndicator(dimStatus)}
-                        <h3>Dimensões do Cilindro</h3>
-
-                    </div>
-                    <div className="dimensions-horizontal-grid">
-                        <div className="dim-group-main">
-                            <span className="dim-label">DIMENSÕES:</span>
-                            <div className="dim-fields-wrapper">
-                                <div className="dim-part">
-                                    <span>CAMISA ØINT.</span>
-                                    <input placeholder="ØINT" value={dimensions.diametroInterno} onChange={e => { setDimensions({ ...dimensions, diametroInterno: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
-                                    <span>x Ø EXT.</span>
-                                    <input placeholder="ØEXT" value={dimensions.diametroExterno} onChange={e => { setDimensions({ ...dimensions, diametroExterno: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
-                                    <span>X COMP.</span>
-                                    <input placeholder="COMP" value={dimensions.comprimentoTotal} onChange={e => { setDimensions({ ...dimensions, comprimentoTotal: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
-                                </div>
-                                <div className="dim-part divider-left">
-                                    <span>/ HASTE Ø</span>
-                                    <input placeholder="Ø" value={dimensions.diametroHaste} onChange={e => { setDimensions({ ...dimensions, diametroHaste: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
-                                    <span>X COMP.</span>
-                                    <input placeholder="COMP" value={dimensions.comprimentoHaste} onChange={e => { setDimensions({ ...dimensions, comprimentoHaste: e.target.value }); setDimStatus('verde'); }} className="dim-input-mini" />
-                                </div>
-                                <div className="dim-part divider-left">
-                                    <span>/ CURSO:</span>
-                                    <input placeholder="CURSO" value={dimensions.curso} onChange={e => { setDimensions({ ...dimensions, curso: e.target.value }); setDimStatus('verde'); }} className="dim-input-medium" />
-                                    <span>MM</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
 
                 {/* CHECKLIST TÉCNICO */}
                 <section className="form-card">
