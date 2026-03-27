@@ -1030,29 +1030,15 @@ export const NovaPeritagem: React.FC = () => {
         return (
             <div className="nova-peritagem-container start-screen">
                 <div className="selection-card">
-                    <h2>Selecione o Tipo de Cilindro</h2>
+                    <h2>Selecione o formulário para continuar</h2>
                     <p>Inicie o formulário de peritagem escolhendo a tecnologia do equipamento.</p>
                     <div className="type-options" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '15px' }}>
-                        <button 
-                            className={`type-btn ${cylinderType === 'Cilindros' ? 'active' : ''}`} 
-                            onClick={() => setCylinderType('Cilindros')}
-                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
-                        >
-                            Relatório Cilindro Hidráulico
-                        </button>
                         <button 
                             className={`type-btn ${cylinderType === 'Redutores' ? 'active' : ''}`} 
                             onClick={() => setCylinderType('Redutores')}
                             style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
                         >
                             Relatório Redutor
-                        </button>
-                        <button 
-                            className={`type-btn ${cylinderType === 'Motores' ? 'active' : ''}`} 
-                            onClick={() => setCylinderType('Motores')}
-                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
-                        >
-                            Relatório Motor Diesel
                         </button>
                     </div>
                     {motivoRejeicao && (
@@ -1199,7 +1185,6 @@ export const NovaPeritagem: React.FC = () => {
                         <CheckCircle className="header-icon-blue" />
                         <div className="header-titles">
                             <h3>FORMULÁRIO DE PERITAGEM</h3>
-                            <span className="subtitle">CILINDROS HIDRÁULICOS E PNEUMÁTICOS | PÁG.: 1 DE 2</span>
                         </div>
                     </div>
                     <div className="grid-form">
