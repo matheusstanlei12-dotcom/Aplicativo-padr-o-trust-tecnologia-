@@ -79,13 +79,26 @@ const ETAPAS = [
 ];
 
 const getEtapaIndex = (status: string) => {
-    const s = (status || "").toUpperCase();
-    if (s === 'PERITAGEM CRIADA' || s === 'REVISÃO NECESSÁRIA') return 1;
-    if (s === 'AGUARDANDO APROVAÇÃO DO PCP' || s === 'PERITAGEM FINALIZADA' || s === 'AGUARDANDO PCP') return 2;
-    if (s === 'AGUARDANDO APROVAÇÃO DO CLIENTE' || s === 'AGUARDANDO CLIENTES' || s === 'AGUARDANDO ORÇAMENTO' || s === 'AGUARDANDO APROVAÇÃO DE ORÇAMENTO') return 3;
-    if (s === 'EM MANUTENÇÃO' || s === 'CILINDROS EM MANUTENÇÃO' || s === 'CILINDRO EM MANUTENÇÃO' || s === 'COMPONENTE EM MANUTENÇÃO') return 4;
-    if (s === 'AGUARDANDO CONFERÊNCIA FINAL') return 5;
-    if (s === 'PROCESSO FINALIZADO' || s === 'FINALIZADOS' || s === 'FINALIZADO' || s === 'FINALIZADA') return 6;
+    const s = (status || "").toUpperCase().trim();
+    
+    // 1. PERITAGEM CRIADA
+    if (s === 'PERITAGEM CRIADA' || s === 'REVISÃO NECESSÁRIA' || s === 'PERITADO') return 1;
+    
+    // 2. EM ANÁLISE PCP
+    if (s === 'AGUARDANDO APROVAÇÃO DO PCP' || s === 'PERITAGEM FINALIZADA' || s === 'AGUARDANDO PCP' || s === 'EM ANÁLISE PCP') return 2;
+    
+    // 3. AGUARDANDO CLIENTE
+    if (s.includes('AGUARDANDO APROVAÇÃO DO CLIENTE') || s.includes('AGUARDANDO CLIENTE') || s.includes('AGUARDANDO ORÇAMENTO') || s.includes('ORÇAMENTO ENVIADO') || s.includes('AGUARDANDO LIBERAÇÃO DO PEDIDO') || s === 'EM ANÁLISE COMERCIAL') return 3;
+    
+    // 4. EM MANUTENÇÃO
+    if (s.includes('MANUTENÇÃO') || s === 'OFICINA' || s === 'EM REPARO') return 4;
+    
+    // 5. CONFERÊNCIA FINAL
+    if (s.includes('CONFERÊNCIA FINAL') || s === 'AGUARDANDO TESTE' || s === 'TESTE') return 5;
+    
+    // 6. PROCESSO FINALIZADO
+    if (s.includes('FINALIZADO') || s.includes('FINALIZADA') || s === 'EXPEDIÇÃO' || s === 'ENTREGUE') return 6;
+    
     return 1;
 };
 
