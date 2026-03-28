@@ -315,21 +315,13 @@ export const Relatorios: React.FC = () => {
 
                                 <div className="report-actions">
                                     <button
-                                        className="btn-report btn-report-outline"
-                                        onClick={() => handleDownloadPdf(p, 'peritagem')}
-                                        disabled={generatingPdf && selectedId === p.id}
-                                    >
-                                        {generatingPdf && selectedId === p.id ? <Loader2 size={16} className="animate-spin" /> : <FileText size={16} />}
-                                        <span>PDF Peritagem</span>
-                                    </button>
-
-                                    <button
                                         className="btn-report btn-report-primary"
                                         onClick={() => handleDownloadPdf(p, 'laudo')}
                                         disabled={generatingPdf && selectedId === p.id}
+                                        style={{ width: '100%' }}
                                     >
                                         {generatingPdf && selectedId === p.id ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-                                        <span>{generatingPdf && selectedId === p.id ? 'Gerando...' : 'PDF Cliente'}</span>
+                                        <span>{generatingPdf && selectedId === p.id ? 'Gerando...' : 'Extrair PDF'}</span>
                                     </button>
                                 </div>
                             </div>
