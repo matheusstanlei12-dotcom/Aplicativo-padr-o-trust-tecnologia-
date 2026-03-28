@@ -398,18 +398,20 @@ export const Monitoramento: React.FC = () => {
                 {selectedProcess.statusTexto === 'EM MANUTENÇÃO' && (isAdmin || role === 'montagem') && (
                     <div className="process-detail-actions">
                         <div className="action-card-highlight">
-                            <div className="action-icon-bg">
-                                <Wrench size={32} />
-                            </div>
-                            <div className="action-text">
-                                <h3>Manutenção em Andamento</h3>
-                                <p>Este cilindro está atualmente na oficina. Quando o serviço for concluído, finalize para enviar para conferência.</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                                <div className="action-icon-bg" style={{ width: '70px', height: '70px', borderRadius: '20px' }}>
+                                    <Wrench size={32} />
+                                </div>
+                                <div className="action-text">
+                                    <h3 style={{ fontSize: '1.5rem', letterSpacing: '-0.02em' }}>Manutenção em Andamento</h3>
+                                    <p style={{ fontSize: '1rem', opacity: 0.8 }}>Este cilindro está atualmente na oficina. Quando o trabalho for concluído, finalize para conferência.</p>
+                                </div>
                             </div>
                             <button
                                 className="btn-finalizar-grande"
                                 onClick={() => handleUpdateStatus(selectedProcess, 'AGUARDANDO CONFERÊNCIA FINAL', { etapa_atual: 'teste' })}
                             >
-                                <Check size={20} /> FINALIZAR MANUTENÇÃO
+                                <CheckCircle size={24} /> FINALIZAR MANUTENÇÃO
                             </button>
                         </div>
                     </div>
