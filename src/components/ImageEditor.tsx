@@ -11,7 +11,7 @@ export const ImageEditor: React.FC<ImageEditorProps> = ({ src, onSave, onCancel 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
-    const [ctx, setCtx] = useState<CanvasRenderingContext2Array | null>(null);
+    const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
     const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {
