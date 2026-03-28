@@ -247,19 +247,32 @@ export const Peritagens: React.FC = () => {
                                     </div>
 
                                     <div className="card-actions">
-                                        <button
-                                            className={`btn-main-action ${canEdit ? 'btn-main-edit' : 'btn-main-view'}`}
-                                            onClick={() => {
-                                                if (canEdit) {
-                                                    navigate(`/nova-peritagem?id=${p.id}`);
-                                                } else {
-                                                    navigate(`/monitoramento?id=${p.id}`);
-                                                }
-                                            }}
-                                        >
-                                            {canEdit ? (isRejection ? 'CORRIGIR' : 'EDITAR') : 'VER DETALHES'}
-                                            <ExternalLink size={16} />
-                                        </button>
+                                        {canEdit ? (
+                                            <>
+                                                <button
+                                                    className="btn-main-action btn-main-edit"
+                                                    onClick={() => navigate(`/nova-peritagem?id=${p.id}`)}
+                                                >
+                                                    {isRejection ? 'CORRIGIR' : 'EDITAR'}
+                                                    <ExternalLink size={16} />
+                                                </button>
+                                                <button
+                                                    className="btn-main-action btn-main-view"
+                                                    onClick={() => navigate(`/monitoramento?id=${p.id}`)}
+                                                >
+                                                    STATUS
+                                                    <ExternalLink size={16} />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <button
+                                                className="btn-main-action btn-main-view"
+                                                onClick={() => navigate(`/monitoramento?id=${p.id}`)}
+                                            >
+                                                STATUS
+                                                <ExternalLink size={16} />
+                                            </button>
+                                        )}
 
                                         {role === 'gestor' && (
                                             <button
