@@ -2219,6 +2219,18 @@ export const NovaPeritagem: React.FC = () => {
                 accept="image/*"
                 onChange={onFileChange}
             />
+
+            {editorOpen && (
+                <ImageEditor 
+                    src={imageToEdit} 
+                    onSave={handleSaveEditedImage}
+                    onCancel={() => {
+                        setEditorOpen(false);
+                        setImageToEdit('');
+                        setEditorTarget(null);
+                    }}
+                />
+            )}
         </div >
     );
 };
