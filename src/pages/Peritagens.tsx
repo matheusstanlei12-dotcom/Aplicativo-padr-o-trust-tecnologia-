@@ -110,14 +110,20 @@ export const Peritagens: React.FC = () => {
 
             const { data, error } = await query;
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase error:', error);
+                throw error;
+            }
+            
+            console.log('Fetched peritagens:', data?.length);
             setPeritagens(data || []);
             setErrorMsg(null);
         } catch (err: any) {
-            console.error('Erro ao buscar peritagens:', err);
-            setErrorMsg(err.message || 'Erro desconhecido');
+            console.error('Erro ao buscar peritagens - stack:', err);
+            setErrorMsg(err.message || String(err) || 'Erro desconhecido');
         } finally {
             setLoading(false);
+            console.log('Peritagens load complete');
         }
     };
 
