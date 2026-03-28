@@ -295,7 +295,7 @@ export const NovaPeritagem: React.FC = () => {
                 list = USIMINAS_ITEMS;
             } else if (pData.tipo_cilindro === 'Redutores') {
                 list = REDUTOR_ITEMS;
-            } else if (pData.tipo_cilindro === 'Motores') {
+            } else if (pData.tipo_cilindro === 'Motores' || pData.tipo_cilindro === 'CilindrosHidraulicos') {
                 list = MOTOR_ITEMS;
             } else {
                 list = STANDARD_ITEMS;
@@ -996,7 +996,7 @@ export const NovaPeritagem: React.FC = () => {
                 list = USIMINAS_ITEMS;
             } else if (cylinderType === 'Redutores') {
                 list = REDUTOR_ITEMS;
-            } else if (cylinderType === 'Motores') {
+            } else if (cylinderType === 'Motores' || cylinderType === 'CilindrosHidraulicos') {
                 list = MOTOR_ITEMS;
             } else {
                 list = STANDARD_ITEMS;
