@@ -191,7 +191,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                         </NavLink>
                         <NavLink to="/manutencao" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <Wrench size={20} />
-                            <span>Componentes em Manutenção</span>
+                            <span>Componente em Manutenção</span>
                         </NavLink>
                         <NavLink to="/workflow#etapa2" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <RefreshCcw size={20} />

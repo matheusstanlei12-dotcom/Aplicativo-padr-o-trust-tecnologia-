@@ -59,7 +59,7 @@ export const Manutencao: React.FC = () => {
     return (
         <div className="peritagens-container">
             <div className="header-actions">
-                <h1 className="page-title">Componentes em Manutenção</h1>
+                <h1 className="page-title">Componente em Manutenção</h1>
                 <div className="summary-badge maintenance">
                     <Wrench size={20} />
                     <span>Total: {peritagens.length}</span>
