@@ -411,7 +411,7 @@ export const Monitoramento: React.FC = () => {
                                 className="btn-finalizar-grande"
                                 onClick={() => handleUpdateStatus(selectedProcess, 'AGUARDANDO CONFERÊNCIA FINAL', { etapa_atual: 'teste' })}
                             >
-                                <CheckCircle size={24} /> FINALIZAR MANUTENÇÃO
+                                <CheckCircle2 size={24} /> FINALIZAR MANUTENÇÃO
                             </button>
                         </div>
                     </div>
