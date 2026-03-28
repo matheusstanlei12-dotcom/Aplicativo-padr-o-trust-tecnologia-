@@ -376,7 +376,7 @@ export const ClientPeritagens: React.FC = () => {
                                 ) : (
                                     <Download size={14} />
                                 )}
-                                {generatingPdf && selectedId === p.id && generatingType === 'premium' ? 'GERANDO...' : 'EXTRAIR PDF'}
+                                {generatingPdf && selectedId === p.id && generatingType === 'premium' ? 'GERANDO...' : 'BAIXAR PDF'}
                             </button>
                         </div>
                     </div>

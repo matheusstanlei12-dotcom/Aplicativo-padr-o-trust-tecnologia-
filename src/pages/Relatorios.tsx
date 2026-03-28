@@ -321,7 +321,7 @@ export const Relatorios: React.FC = () => {
                                         style={{ width: '100%' }}
                                     >
                                         {generatingPdf && selectedId === p.id ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-                                        <span>{generatingPdf && selectedId === p.id ? 'Gerando...' : 'Extrair PDF'}</span>
+                                        <span>{generatingPdf && selectedId === p.id ? 'Gerando...' : 'Baixar PDF'}</span>
                                     </button>
                                 </div>
                             </div>
