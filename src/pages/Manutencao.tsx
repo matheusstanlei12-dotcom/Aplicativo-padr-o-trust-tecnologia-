@@ -30,7 +30,7 @@ export const Manutencao: React.FC = () => {
             let query = supabase
                 .from('peritagens')
                 .select('*')
-                .or('status.eq.EM MANUTENÇÃO,status.eq.MANUTENÇÃO,status.eq.OFICINA')
+                .or('status.eq.EM MANUTENÇÃO,status.eq.MANUTENÇÃO,status.eq.OFICINA,status.eq.COMPONENTE EM MANUTENÇÃO,status.eq.CILINDRO EM MANUTENÇÃO')
                 .order('created_at', { ascending: false });
 
             // Filtro para APP Android
