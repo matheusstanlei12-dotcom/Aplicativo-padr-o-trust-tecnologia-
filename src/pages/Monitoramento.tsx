@@ -538,7 +538,7 @@ export const Monitoramento: React.FC = () => {
                             const showActions = (role === 'pcp' || role === 'gestor' || role === 'perito');
                             const isPcpAwaiting = processo.statusTexto === 'PERITAGEM CRIADA' || processo.statusTexto === 'AGUARDANDO APROVAÇÃO DO PCP';
                             const isClientAwaiting = processo.statusTexto === 'AGUARDANDO APROVAÇÃO DO CLIENTE' || processo.statusTexto === 'AGUARDANDO CLIENTES';
-                            const isMaintenance = processo.statusTexto === 'EM MANUTENÇÃO' || processo.statusTexto === 'CILINDROS EM MANUTENÇÃO';
+                            const isMaintenance = processo.statusTexto === 'EM MANUTENÇÃO' || processo.statusTexto === 'CILINDROS EM MANUTENÇÃO' || processo.statusTexto === 'CILINDRO EM MANUTENÇÃO' || processo.statusTexto === 'COMPONENTE EM MANUTENÇÃO';
 
                             return (
                                 <div key={processo.id} className="process-card">
@@ -602,7 +602,7 @@ export const Monitoramento: React.FC = () => {
                                                                 <span>Liberação do Pedido</span>
                                                             </button>
                                                         )}
-                                                        {(isMaintenance || statusUpper === 'CILINDRO EM MANUTENÇÃO') && (isAdmin || (role as string) === 'montagem') && (
+                                                        {(isMaintenance || statusUpper === 'CILINDRO EM MANUTENÇÃO' || statusUpper === 'COMPONENTE EM MANUTENÇÃO') && (isAdmin || (role as string) === 'montagem') && (
                                                             <button
                                                                 className="btn-quick-finish"
                                                                 onClick={(e) => { e.stopPropagation(); handleUpdateStatus(processo, 'AGUARDANDO CONFERÊNCIA FINAL', { etapa_atual: 'teste' }); }}
