@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
     },
     coverLogo: {
         width: 180,
-        marginBottom: -35,
-        marginTop: -30
+        marginBottom: 25,
+        marginTop: 0
     },
     coverTitle: {
         fontSize: 22,
