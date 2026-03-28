@@ -68,7 +68,7 @@ export const NovaPeritagem: React.FC = () => {
     const galleryInputRef = React.useRef<HTMLInputElement>(null);
 
     // Pergunta Inicial
-    const [cylinderType, setCylinderType] = useState<'Cilindros' | 'Redutores' | 'Motores' | null>(null);
+    const [cylinderType, setCylinderType] = useState<'Cilindros' | 'Redutores' | 'Motores' | 'CilindrosHidraulicos' | null>(null);
 
     // Campos Fixos
     const [fixedData, setFixedData] = useState({
@@ -407,7 +407,7 @@ export const NovaPeritagem: React.FC = () => {
                 list = USIMINAS_ITEMS;
             } else if (cylinderType === 'Redutores') {
                 list = REDUTOR_ITEMS;
-            } else if (cylinderType === 'Motores') {
+            } else if (cylinderType === 'Motores' || cylinderType === 'CilindrosHidraulicos') {
                 list = MOTOR_ITEMS;
             } else {
                 list = STANDARD_ITEMS;
@@ -1043,6 +1043,13 @@ export const NovaPeritagem: React.FC = () => {
                             style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
                         >
                             Relatório Motor Diesel
+                        </button>
+                        <button 
+                            className={`type-btn ${cylinderType === 'CilindrosHidraulicos' ? 'active' : ''}`} 
+                            onClick={() => setCylinderType('CilindrosHidraulicos')}
+                            style={{ padding: '20px', fontSize: '1.1rem', fontWeight: '800' }}
+                        >
+                            Cilindros Hidráulicos
                         </button>
                     </div>
                     {motivoRejeicao && (
