@@ -549,9 +549,10 @@ export const Monitoramento: React.FC = () => {
                     <>
                         {filteredProcessos.map(processo => {
                             const showActions = (role === 'pcp' || role === 'gestor' || role === 'perito');
-                            const isPcpAwaiting = processo.statusTexto === 'PERITAGEM CRIADA' || processo.statusTexto === 'AGUARDANDO APROVAÇÃO DO PCP';
-                            const isClientAwaiting = processo.statusTexto === 'AGUARDANDO APROVAÇÃO DO CLIENTE' || processo.statusTexto === 'AGUARDANDO CLIENTES';
-                            const isMaintenance = processo.statusTexto === 'EM MANUTENÇÃO' || processo.statusTexto === 'CILINDROS EM MANUTENÇÃO' || processo.statusTexto === 'CILINDRO EM MANUTENÇÃO' || processo.statusTexto === 'COMPONENTE EM MANUTENÇÃO';
+                            const statusUpper = (processo.statusTexto || "").toUpperCase().trim();
+                            const isPcpAwaiting = ['PERITAGEM CRIADA', 'AGUARDANDO APROVAÇÃO DO PCP', 'PERITAGEM FINALIZADA', 'AGUARDANDO PCP', 'EM ANÁLISE PCP', 'PERITADO'].includes(statusUpper);
+                            const isClientAwaiting = statusUpper.includes('AGUARDANDO APROVAÇÃO DO CLIENTE') || statusUpper.includes('AGUARDANDO CLIENTE') || statusUpper.includes('ORÇAMENTO ENVIADO') || statusUpper.includes('LIBERAÇÃO DO PEDIDO');
+                            const isMaintenance = statusUpper.includes('MANUTENÇÃO') || statusUpper === 'OFICINA' || statusUpper === 'EM REPARO';
 
                             return (
                                 <div key={processo.id} className="process-card">
