@@ -223,7 +223,11 @@ export const Peritagens: React.FC = () => {
 
                                         <div className="info-row">
                                             <Calendar size={16} />
-                                            <span>{new Date(p.created_at).toLocaleDateString('pt-BR')}</span>
+                                            <span>
+                                                {p.created_at 
+                                                  ? new Date(p.created_at).toLocaleDateString('pt-BR') 
+                                                  : 'Data não disponível'}
+                                            </span>
                                         </div>
 
 
