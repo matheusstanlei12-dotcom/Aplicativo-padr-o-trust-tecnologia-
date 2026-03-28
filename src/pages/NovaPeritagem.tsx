@@ -11,6 +11,7 @@ import { compressImage } from '../lib/imageUtils';
 import { DIMENSIONAL_ANOMALIES_SERVICES } from '../constants/dimensionalItems';
 import { syncPhotosToGallery } from '../lib/photoSync';
 import type { SyncPhoto } from '../lib/photoSync';
+import { ImageEditor } from '../components/ImageEditor';
 import './NovaPeritagem.css';
 
 type StatusColor = 'vermelho' | 'amarelo' | 'verde' | 'azul';
@@ -123,6 +124,11 @@ export const NovaPeritagem: React.FC = () => {
     // Checklist
     const [checklistItems, setChecklistItems] = useState<ChecklistItem[]>([]);
     const [vedacoes, setVedacoes] = useState<ChecklistItem[]>([]);
+
+    // Estados para o Editor de Imagem
+    const [editorOpen, setEditorOpen] = useState(false);
+    const [imageToEdit, setImageToEdit] = useState('');
+    const [editorTarget, setEditorTarget] = useState<'item' | 'frontal' | null>(null);
 
     useEffect(() => {
         if (!editId) {
@@ -636,11 +642,9 @@ export const NovaPeritagem: React.FC = () => {
         if (file && editingItemId) {
             try {
                 const compressed = await compressImage(file, 1024, 1024, 0.7);
-                const currentItem = checklistItems.find(i => i.id === editingItemId);
-                if (currentItem) {
-                    const newPhotos = [...currentItem.fotos, compressed];
-                    updateItemDetails(editingItemId, 'fotos', newPhotos);
-                }
+                setImageToEdit(compressed);
+                setEditorTarget('item');
+                setEditorOpen(true);
             } catch (error) {
                 console.error('Erro ao comprimir imagem:', error);
                 alert('Erro ao processar foto.');
@@ -648,6 +652,21 @@ export const NovaPeritagem: React.FC = () => {
         }
         // Reset input
         e.target.value = '';
+    };
+
+    const handleSaveEditedImage = (editedImage: string) => {
+        if (editorTarget === 'item' && editingItemId) {
+            const currentItem = checklistItems.find(i => i.id === editingItemId);
+            if (currentItem) {
+                const newPhotos = [...currentItem.fotos, editedImage];
+                updateItemDetails(editingItemId, 'fotos', newPhotos);
+            }
+        } else if (editorTarget === 'frontal') {
+            setFotoFrontal(editedImage);
+        }
+        setEditorOpen(false);
+        setImageToEdit('');
+        setEditorTarget(null);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -1134,12 +1153,15 @@ export const NovaPeritagem: React.FC = () => {
                                 if (file) {
                                     try {
                                         const compressed = await compressImage(file, 1024, 1024, 0.7);
-                                        setFotoFrontal(compressed);
+                                        setImageToEdit(compressed);
+                                        setEditorTarget('frontal');
+                                        setEditorOpen(true);
                                     } catch (error) {
                                         console.error('Erro ao comprimir foto frontal:', error);
                                         alert('Erro ao processar foto frontal.');
                                     }
                                 }
+                                e.target.value = '';
                             }}
                         />
 
@@ -1154,12 +1176,15 @@ export const NovaPeritagem: React.FC = () => {
                                 if (file) {
                                     try {
                                         const compressed = await compressImage(file, 1024, 1024, 0.7);
-                                        setFotoFrontal(compressed);
+                                        setImageToEdit(compressed);
+                                        setEditorTarget('frontal');
+                                        setEditorOpen(true);
                                     } catch (error) {
                                         console.error('Erro ao comprimir foto frontal:', error);
                                         alert('Erro ao processar foto frontal.');
                                     }
                                 }
+                                e.target.value = '';
                             }}
                         />
                     </div>
