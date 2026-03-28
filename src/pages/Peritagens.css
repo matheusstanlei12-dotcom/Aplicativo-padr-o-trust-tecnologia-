@@ -119,6 +119,8 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .os-badge {
@@ -254,7 +256,6 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    white-space: nowrap;
 }
 
 /* Status colors */
