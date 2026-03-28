@@ -83,7 +83,7 @@ const getEtapaIndex = (status: string) => {
     if (s === 'PERITAGEM CRIADA' || s === 'REVISÃO NECESSÁRIA') return 1;
     if (s === 'AGUARDANDO APROVAÇÃO DO PCP' || s === 'PERITAGEM FINALIZADA' || s === 'AGUARDANDO PCP') return 2;
     if (s === 'AGUARDANDO APROVAÇÃO DO CLIENTE' || s === 'AGUARDANDO CLIENTES' || s === 'AGUARDANDO ORÇAMENTO' || s === 'AGUARDANDO APROVAÇÃO DE ORÇAMENTO') return 3;
-    if (s === 'EM MANUTENÇÃO' || s === 'CILINDROS EM MANUTENÇÃO' || s === 'CILINDRO EM MANUTENÇÃO') return 4;
+    if (s === 'EM MANUTENÇÃO' || s === 'CILINDROS EM MANUTENÇÃO' || s === 'CILINDRO EM MANUTENÇÃO' || s === 'COMPONENTES EM MANUTENÇÃO') return 4;
     if (s === 'AGUARDANDO CONFERÊNCIA FINAL') return 5;
     if (s === 'PROCESSO FINALIZADO' || s === 'FINALIZADOS' || s === 'FINALIZADO' || s === 'FINALIZADA') return 6;
     return 1;

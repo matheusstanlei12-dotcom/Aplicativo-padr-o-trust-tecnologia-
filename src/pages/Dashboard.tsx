@@ -251,7 +251,7 @@ export const Dashboard: React.FC = () => {
             show: isAdmin && role !== 'cliente' && ['gestor', 'pcp'].includes(role || '')
         },
         {
-            label: '3. Cilindros em Manutenção',
+            label: '3. Componentes em Manutenção',
             value: counts.manutencao,
             icon: <Wrench size={24} />,
             color: 'rgba(16, 185, 129, 0.15)',
