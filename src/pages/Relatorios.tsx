@@ -186,7 +186,8 @@ export const Relatorios: React.FC = () => {
                 acoplamento_polia: String(fullPeritagem.acoplamento_polia || 'NÃO'),
                 sistema_lubrificacao: String(fullPeritagem.sistema_lubrificacao || 'NÃO'),
                 outros_especificar: String(fullPeritagem.outros_especificar || '-'),
-                observacoes_gerais: String(fullPeritagem.observacoes_gerais || '-')
+                observacoes_gerais: String(fullPeritagem.observacoes_gerais || '-'),
+                tipo_cilindro: fullPeritagem.tipo_cilindro
             };
 
             setFullReportData(reportData);

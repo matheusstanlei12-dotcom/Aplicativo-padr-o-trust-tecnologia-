@@ -50,7 +50,7 @@ export const WorkflowPage: React.FC = () => {
         try {
             const { data, error } = await supabase
                 .from('peritagens')
-                .select('id, tag, cliente, os_interna, etapa_atual, databook_pronto, fotos_montagem, fotos_videos_teste, foto_pintura_final')
+                .select('id, tag, cliente, os_interna, etapa_atual, databook_pronto')
                 .neq('etapa_atual', 'finalizado')
                 .order('created_at', { ascending: false });
 
@@ -97,13 +97,8 @@ export const WorkflowPage: React.FC = () => {
                 updateData.foto_pintura_final = newUrls[0]; // Só uma foto final
             }
 
-            const { error } = await supabase
-                .from('peritagens')
-                .update(updateData)
-                .eq('id', selectedPeritagem.id);
-
-            if (error) throw error;
-
+            const { fotos_montagem, fotos_videos_teste, foto_pintura_final, ...safeUpdateData } = updateData;
+            
             // Sincronizar com o Arquivo Geral
             const syncItems: SyncPhoto[] = newUrls.map((data, idx) => ({
                 data,
@@ -111,11 +106,21 @@ export const WorkflowPage: React.FC = () => {
                 type: files[idx].type.startsWith('video/') ? 'video' : 'image'
             }));
 
-            syncPhotosToGallery(
+            await syncPhotosToGallery(
                 selectedPeritagem.os_interna,
                 selectedPeritagem.cliente,
                 syncItems
             );
+
+            // Atualiza apenas etapa_atual se necessário, omitindo fotos das colunas da tabela peritagens
+            // (pois as colunas não existem no banco de dados atual)
+            if (Object.keys(safeUpdateData).length > 0) {
+                const { error } = await supabase
+                    .from('peritagens')
+                    .update(safeUpdateData)
+                    .eq('id', selectedPeritagem.id);
+                if (error) throw error;
+            }
 
             // Atualiza estado local
             setSelectedPeritagem({ ...selectedPeritagem, ...updateData });
@@ -149,12 +154,15 @@ export const WorkflowPage: React.FC = () => {
                 updateData.foto_pintura_final = null;
             }
 
-            const { error } = await supabase
-                .from('peritagens')
-                .update(updateData)
-                .eq('id', selectedPeritagem.id);
+            const { fotos_montagem, fotos_videos_teste, foto_pintura_final, ...safeUpdateData } = updateData;
 
-            if (error) throw error;
+            if (Object.keys(safeUpdateData).length > 0) {
+                const { error } = await supabase
+                    .from('peritagens')
+                    .update(safeUpdateData)
+                    .eq('id', selectedPeritagem.id);
+                if (error) throw error;
+            }
 
             setSelectedPeritagem({ ...selectedPeritagem, ...updateData });
             fetchPeritagens();
@@ -187,6 +195,8 @@ export const WorkflowPage: React.FC = () => {
 
             alert(`Etapa alterada para: ${targetStage.toUpperCase()}`);
             if (targetStage === 'finalizado') {
+                // Responsive filtering: Remove from the main list immediately
+                setPeritagens(prev => prev.filter(p => p.id !== selectedPeritagem.id));
                 setSelectedPeritagem(null);
             } else {
                 setSelectedPeritagem({ ...selectedPeritagem, ...updateData });
@@ -374,8 +384,8 @@ export const WorkflowPage: React.FC = () => {
                                         <button
                                             className="btn-next-stage"
                                             onClick={advanceStage}
-                                            disabled={uploading || !selectedPeritagem.fotos_montagem || selectedPeritagem.fotos_montagem.length === 0}
-                                            title={(!selectedPeritagem.fotos_montagem || selectedPeritagem.fotos_montagem.length === 0) ? 'Adicione pelo menos uma foto para prosseguir' : ''}
+                                            disabled={uploading}
+                                            title="Concluir Montagem e Ir para Testes"
                                         >
                                             Concluir Montagem e Ir para Testes <ArrowRight size={18} />
                                         </button>
@@ -425,8 +435,8 @@ export const WorkflowPage: React.FC = () => {
                                         <button
                                             className="btn-next-stage"
                                             onClick={advanceStage}
-                                            disabled={uploading || !selectedPeritagem.fotos_videos_teste || selectedPeritagem.fotos_videos_teste.length === 0}
-                                            title={(!selectedPeritagem.fotos_videos_teste || selectedPeritagem.fotos_videos_teste.length === 0) ? 'Adicione pelo menos uma foto ou vídeo para prosseguir' : ''}
+                                            disabled={uploading}
+                                            title="Concluir Testes e Ir para Pintura"
                                         >
                                             Concluir Testes e Ir para Pintura <ArrowRight size={18} />
                                         </button>
@@ -468,7 +478,7 @@ export const WorkflowPage: React.FC = () => {
                                                 </div>
                                             </div>
                                         )}
-                                        <button className="btn-finalize-workflow" onClick={advanceStage} disabled={uploading || !selectedPeritagem.foto_pintura_final}>
+                                        <button className="btn-finalize-workflow" onClick={advanceStage} disabled={uploading}>
                                             FINALIZAR PROCESSO E GERAR DATABOOK <CheckCircle2 size={18} />
                                         </button>
                                     </div>

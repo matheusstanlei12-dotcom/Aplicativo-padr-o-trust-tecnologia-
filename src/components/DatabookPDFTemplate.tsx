@@ -28,6 +28,10 @@ export interface PeritagemData {
     fotos_videos_teste?: string[];
     foto_pintura_final?: string;
     databook_pronto?: boolean;
+    tipo_cilindro?: string;
+    fabricante?: string;
+    volume?: string;
+    lubrificante?: string;
 }
 
 export interface AnaliseItem {
@@ -243,10 +247,6 @@ export const DatabookPDF = ({ peritagem, itens }: { peritagem: PeritagemData, it
                 <View style={s.dataBox}>
                     <View style={s.dataRow}>
                         <View style={s.dataField}>
-                            <Text style={s.dataLabel}>TAG</Text>
-                            <Text style={s.dataValue}>{peritagem.tag || '-'}</Text>
-                        </View>
-                        <View style={s.dataField}>
                             <Text style={s.dataLabel}>Cliente</Text>
                             <Text style={s.dataValue}>{peritagem.cliente}</Text>
                         </View>
@@ -255,20 +255,72 @@ export const DatabookPDF = ({ peritagem, itens }: { peritagem: PeritagemData, it
                             <Text style={s.dataValue}>{peritagem.os_interna || peritagem.os || '-'}</Text>
                         </View>
                     </View>
-                    <View style={s.dataRow}>
-                        <View style={s.dataField}>
-                            <Text style={s.dataLabel}>Pedido</Text>
-                            <Text style={s.dataValue}>{peritagem.numero_pedido || '-'}</Text>
-                        </View>
-                        <View style={s.dataField}>
-                            <Text style={s.dataLabel}>NF</Text>
-                            <Text style={s.dataValue}>{peritagem.nota_fiscal || '-'}</Text>
-                        </View>
-                        <View style={s.dataField}>
-                            <Text style={s.dataLabel}>Data</Text>
-                            <Text style={s.dataValue}>{peritagem.created_at ? new Date(peritagem.created_at).toLocaleDateString('pt-BR') : '-'}</Text>
-                        </View>
-                    </View>
+
+                    {peritagem.tipo_cilindro === 'Motores' ? (
+                        <>
+                            <View style={s.dataRow}>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>MARCA / FABRICANTE</Text>
+                                    <Text style={s.dataValue}>{peritagem.fabricante || '-'}</Text>
+                                </View>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>MODELO DO MOTOR</Text>
+                                    <Text style={s.dataValue}>{peritagem.tipo_modelo || '-'}</Text>
+                                </View>
+                            </View>
+                            <View style={s.dataRow}>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>NÚMERO DE SÉRIE</Text>
+                                    <Text style={s.dataValue}>{peritagem.ni || '-'}</Text>
+                                </View>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>POTÊNCIA / RPM</Text>
+                                    <Text style={s.dataValue}>{peritagem.volume || '-'}</Text>
+                                </View>
+                            </View>
+                            <View style={s.dataRow}>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>HORÍMETRO</Text>
+                                    <Text style={s.dataValue}>{peritagem.lubrificante || '-'}</Text>
+                                </View>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>APLICAÇÃO</Text>
+                                    <Text style={s.dataValue}>{peritagem.desenho_conjunto || '-'}</Text>
+                                </View>
+                            </View>
+                        </>
+                    ) : (
+                        <>
+                            <View style={s.dataRow}>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>TAG</Text>
+                                    <Text style={s.dataValue}>{peritagem.tag || '-'}</Text>
+                                </View>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>Pedido</Text>
+                                    <Text style={s.dataValue}>{peritagem.numero_pedido || '-'}</Text>
+                                </View>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>O.S</Text>
+                                    <Text style={s.dataValue}>{peritagem.os_interna || peritagem.os || '-'}</Text>
+                                </View>
+                            </View>
+                            <View style={s.dataRow}>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>Pedido</Text>
+                                    <Text style={s.dataValue}>{peritagem.numero_pedido || '-'}</Text>
+                                </View>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>NF</Text>
+                                    <Text style={s.dataValue}>{peritagem.nota_fiscal || '-'}</Text>
+                                </View>
+                                <View style={s.dataField}>
+                                    <Text style={s.dataLabel}>Data</Text>
+                                    <Text style={s.dataValue}>{peritagem.created_at ? new Date(peritagem.created_at).toLocaleDateString('pt-BR') : '-'}</Text>
+                                </View>
+                            </View>
+                        </>
+                    )}
                 </View>
 
                 {/* 1. Peritagem */}

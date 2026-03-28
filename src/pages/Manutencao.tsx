@@ -29,7 +29,7 @@ export const Manutencao: React.FC = () => {
         try {
             let query = supabase
                 .from('peritagens')
-                .select('*')
+                .select('id, numero_peritagem, cliente, created_at, status, os_interna')
                 .or('status.eq.EM MANUTENÇÃO,status.eq.MANUTENÇÃO,status.eq.OFICINA,status.eq.COMPONENTE EM MANUTENÇÃO,status.eq.CILINDRO EM MANUTENÇÃO')
                 .order('created_at', { ascending: false });
 
@@ -126,9 +126,25 @@ export const Manutencao: React.FC = () => {
                                                 .eq('id', p.id);
 
                                             if (!error) {
+                                                // Responsive filtering: Remove from local state immediately
+                                                setPeritagens(prev => prev.filter(item => item.id !== p.id));
+                                                
+                                                // Optional: Add history log for consistency
+                                                if (user) {
+                                                    supabase.from('peritagem_historico').insert([{
+                                                        peritagem_id: p.id,
+                                                        status_antigo: p.status,
+                                                        status_novo: 'AGUARDANDO CONFERÊNCIA FINAL',
+                                                        alterado_por: user.id
+                                                    }]).then(({ error: hError }) => {
+                                                        if (hError) console.warn('Erro ao gravar histórico:', hError);
+                                                    });
+                                                }
+
                                                 alert('Finalizado e enviado para conferência do PCP!');
                                                 fetchPeritagens();
                                             } else {
+                                                console.error('Erro detail:', error);
                                                 alert('Erro ao finalizar.');
                                             }
                                         }}

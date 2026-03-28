@@ -677,39 +677,115 @@
     transform: scale(1.1);
 }
 
-.conformity-toggle {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+/* Novo Design de Status Check */
+.performance-status-strip {
+    display: flex;
     gap: 0.5rem;
     width: 100%;
-    margin-top: 0.5rem;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 12px;
 }
 
-.conf-btn {
-    height: var(--btn-height-mobile);
-    border: 1px solid var(--border-color);
-    border-radius: 0.75rem;
-    background: white;
-    font-size: 0.8125rem;
+.status-btn-v3 {
+    flex: 1;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #64748b;
     font-weight: 700;
+    font-size: 0.75rem;
+}
+
+.status-btn-v3 .btn-icon-v3 {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e2e8f0;
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.status-btn-v3.conforme.active {
+    background: #ffffff;
+    color: #059669;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.15);
+}
+.status-btn-v3.conforme.active .btn-icon-v3 { background: #059669; color: white; }
+
+.status-btn-v3.nao-conforme.active {
+    background: #ffffff;
+    color: #dc2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+.status-btn-v3.nao-conforme.active .btn-icon-v3 { background: #dc2626; color: white; }
+
+.status-btn-v3.na.active {
+    background: #ffffff;
+    color: #475569;
+    box-shadow: 0 4px 12px rgba(71, 85, 105, 0.15);
+}
+.status-btn-v3.na.active .btn-icon-v3 { background: #475569; color: white; }
+
+/* Criticidade Selector */
+.criticidade-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.critic-btn {
+    padding: 8px 4px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: white;
+    font-size: 10px;
+    font-weight: 800;
     text-transform: uppercase;
     cursor: pointer;
     transition: all 0.2s;
+    color: #64748b;
 }
 
-.conf-btn.conforme.active {
-    background: var(--success-color);
-    color: white;
-    border-color: var(--success-color);
-    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+.critic-btn.baixa.active { background: #dcfce7; color: #166534; border-color: #166534; }
+.critic-btn.média.active { background: #fef9c3; color: #854d0e; border-color: #854d0e; }
+.critic-btn.alta.active { background: #fee2e2; color: #991b1b; border-color: #991b1b; }
+.critic-btn.crítica.active { background: #450a0a; color: #ffffff; border-color: #450a0a; }
+
+/* Quick Tags */
+.quick-tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
 }
 
-.conf-btn.nao-conforme.active {
-    background: var(--danger-color);
-    color: white;
-    border-color: var(--danger-color);
-    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+.tag-btn {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.1s;
 }
+
+.tag-btn:hover { background: #e2e8f0; }
+.tag-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
+
 
 /* Bloco Não Conforme */
 .non-conformity-block {
@@ -1359,4 +1435,51 @@ input.no-spinner {
         padding: 6px 4px;
         font-size: 0.85rem;
     }
+}
+
+/* Premium Item Detail Form */
+.premium-field-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.premium-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.premium-textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 0.875rem;
+    color: #1e293b;
+    resize: none;
+    transition: all 0.2s;
+}
+
+.premium-textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05);
+    outline: none;
+}
+
+.item-detail-premium {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    animation: premiumFadeIn 0.3s ease-out;
+}
+
+@keyframes premiumFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
 }

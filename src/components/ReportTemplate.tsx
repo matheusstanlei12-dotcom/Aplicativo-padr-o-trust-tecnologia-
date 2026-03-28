@@ -322,6 +322,7 @@ interface ReportData {
     observacoes_gerais?: string;
     area?: string;
     linha?: string;
+    tipo_cilindro?: string;
 }
 
 export const ReportTemplate: React.FC<{ data: ReportData }> = ({ data }) => (
@@ -381,35 +382,72 @@ export const ReportTemplate: React.FC<{ data: ReportData }> = ({ data }) => (
                                     <Text style={{ fontSize: 9 }}>{data.numero_os}</Text>
                                 </View>
                             )}
-                            {hasValue(data.ni) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>NI:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.ni}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.tipo_modelo) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>TIPO/ MODELO:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.tipo_modelo}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.lubrificante) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>LUBRIFICANTE:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.lubrificante}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.acoplamento_polia) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>ACOPLAMENTO / POLIA:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.acoplamento_polia}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.outros_especificar) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>OUTROS:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.outros_especificar}</Text>
-                                </View>
+                            {data.tipo_cilindro === 'Motores' ? (
+                                <>
+                                    {hasValue(data.ni) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>NÚMERO DE SÉRIE:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.ni}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.tipo_modelo) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>MODELO DO MOTOR:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.tipo_modelo}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.lubrificante) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>HORÍMETRO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.lubrificante}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.acoplamento_polia) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>SISTEMA DE ARREFECIMENTO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.acoplamento_polia}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.outros_especificar) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>ASPIRAÇÃO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.outros_especificar}</Text>
+                                        </View>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    {hasValue(data.ni) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>NI:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.ni}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.tipo_modelo) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>TIPO/ MODELO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.tipo_modelo}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.lubrificante) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>LUBRIFICANTE:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.lubrificante}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.acoplamento_polia) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>ACOPLAMENTO / POLIA:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.acoplamento_polia}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.outros_especificar) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>OUTROS:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.outros_especificar}</Text>
+                                        </View>
+                                    )}
+                                </>
                             )}
                         </View>
 
@@ -421,29 +459,60 @@ export const ReportTemplate: React.FC<{ data: ReportData }> = ({ data }) => (
                                     <Text style={{ fontSize: 9 }}>{data.nota_fiscal}</Text>
                                 </View>
                             )}
-                            {hasValue(data.desenho_conjunto) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>DESENHO:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.desenho_conjunto}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.fabricante) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>FABRICANTE:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.fabricante}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.volume) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>VOLUME:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.volume}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.sistema_lubrificacao) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>SISTEMA DE LUBRIFICAÇÃO:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.sistema_lubrificacao}</Text>
-                                </View>
+                            {data.tipo_cilindro === 'Motores' ? (
+                                <>
+                                    {hasValue(data.desenho_conjunto) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>APLICAÇÃO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.desenho_conjunto}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.fabricante) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>MARCA / FABRICANTE:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.fabricante}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.volume) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>POTÊNCIA / RPM:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.volume}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.sistema_lubrificacao) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>SISTEMA DE INJEÇÃO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.sistema_lubrificacao}</Text>
+                                        </View>
+                                    )}
+                                </>
+                            ) : (
+                                <>
+                                    {hasValue(data.desenho_conjunto) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>DESENHO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.desenho_conjunto}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.fabricante) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>FABRICANTE:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.fabricante}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.volume) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>VOLUME:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.volume}</Text>
+                                        </View>
+                                    )}
+                                    {hasValue(data.sistema_lubrificacao) && (
+                                        <View style={{ marginBottom: 8 }}>
+                                            <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>SISTEMA DE LUBRIFICAÇÃO:</Text>
+                                            <Text style={{ fontSize: 9 }}>{data.sistema_lubrificacao}</Text>
+                                        </View>
+                                    )}
+                                </>
                             )}
                             {hasValue(data.observacoes_gerais) && (
                                 <View style={{ marginBottom: 8 }}>

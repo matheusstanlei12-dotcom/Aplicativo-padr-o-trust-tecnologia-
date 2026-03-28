@@ -12,15 +12,16 @@ import { DIMENSIONAL_ANOMALIES_SERVICES } from '../constants/dimensionalItems';
 import { syncPhotosToGallery } from '../lib/photoSync';
 import type { SyncPhoto } from '../lib/photoSync';
 import { ImageEditor } from '../components/ImageEditor';
+import { QUICK_TAGS } from '../constants/peritagemStandard';
 import './NovaPeritagem.css';
 
-type StatusColor = 'vermelho' | 'amarelo' | 'verde' | 'azul';
+type StatusColor = 'vermelho' | 'amarelo' | 'verde' | 'azul' | 'cinza';
 
 interface ChecklistItem {
     id: string;
     text: string;
     status: StatusColor;
-    conformidade: 'conforme' | 'não conforme' | null;
+    conformidade: 'conforme' | 'não conforme' | 'n/a' | null;
     anomalia: string;
     solucao: string;
     fotos: string[];
@@ -50,6 +51,9 @@ interface ChecklistItem {
     isManualInput?: boolean;
     isCustomAnomaly?: boolean;
     isCustomSolucao?: boolean;
+    criticidade?: 'baixa' | 'média' | 'alta' | 'crítica';
+    parecer_item?: string;
+    nao_aplicavel?: boolean;
 }
 
 
@@ -491,10 +495,16 @@ export const NovaPeritagem: React.FC = () => {
         }));
     };
 
-    const handleResponse = (itemId: string, conformidade: 'conforme' | 'não conforme') => {
+    const handleResponse = (itemId: string, response: 'conforme' | 'não conforme' | 'n/a') => {
         setChecklistItems(prev => prev.map(item => {
             if (item.id === itemId) {
-                return { ...item, conformidade, status: 'verde' };
+                const newStatus = response === 'conforme' ? 'verde' : response === 'n/a' ? 'cinza' : 'vermelho';
+                return { 
+                    ...item, 
+                    conformidade: response === 'n/a' ? null : response as any, 
+                    status: newStatus,
+                    nao_aplicavel: response === 'n/a'
+                };
             }
             return item;
         }));
@@ -509,7 +519,7 @@ export const NovaPeritagem: React.FC = () => {
         }));
     };
 
-    const updateItemDetails = (itemId: string, field: 'anomalia' | 'solucao' | 'fotos' | 'text' | 'dimensoes' | 'qtd' | 'diametro_encontrado' | 'diametro_ideal' | 'material_faltante' | 'diametro_externo_encontrado' | 'diametro_externo_especificado' | 'desvio_externo' | 'diametro_interno_encontrado' | 'diametro_interno_especificado' | 'desvio_interno' | 'comprimento_encontrado' | 'comprimento_especificado' | 'desvio_comprimento' | 'isCustomAnomaly' | 'isCustomSolucao' | 'isManualInput', value: any) => {
+    const updateItemDetails = (itemId: string, field: 'anomalia' | 'solucao' | 'fotos' | 'text' | 'dimensoes' | 'qtd' | 'diametro_encontrado' | 'diametro_ideal' | 'material_faltante' | 'diametro_externo_encontrado' | 'diametro_externo_especificado' | 'desvio_externo' | 'diametro_interno_encontrado' | 'diametro_interno_especificado' | 'desvio_interno' | 'comprimento_encontrado' | 'comprimento_especificado' | 'desvio_comprimento' | 'isCustomAnomaly' | 'isCustomSolucao' | 'isManualInput' | 'criticidade' | 'parecer_item' | 'nao_aplicavel', value: any) => {
         setChecklistItems(prev => prev.map(item => {
             if (item.id === itemId) {
                 // Se estiver alterando o texto de um componente novo, vira amarelo
@@ -848,7 +858,7 @@ export const NovaPeritagem: React.FC = () => {
 
             // 2. Salvar Itens do Checklist
             const analyses = checklistItems
-                .filter(item => item.conformidade !== null)
+                .filter(item => item.conformidade !== null || item.nao_aplicavel)
                 .map(item => ({
                     peritagem_id: peritagemId,
                     componente: item.text,
@@ -871,7 +881,11 @@ export const NovaPeritagem: React.FC = () => {
                     comprimento_encontrado: item.comprimento_encontrado,
                     comprimento_especificado: item.comprimento_especificado,
                     desvio_comprimento: item.desvio_comprimento,
-                    tipo: item.tipo || 'componente'
+                    tipo: item.tipo || 'componente',
+                    // NOVOS CAMPOS PROFISSIONAIS
+                    criticidade: item.criticidade,
+                    parecer_item: item.parecer_item,
+                    nao_aplicavel: item.nao_aplicavel
                 }));
 
             const analysesVedacoes = vedacoes
@@ -1332,6 +1346,273 @@ export const NovaPeritagem: React.FC = () => {
                                     />
                                 </div>
                             </div>
+                        ) : cylinderType === 'Motores' ? (
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0', width: '100%' }}>
+
+                                {/* SECAO 1: IDENTIFICACAO */}
+                                <div style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '16px', marginBottom: '16px' }}>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#e53e3e', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                                        📋 Identificação
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>ORDEM DE SERVIÇO *</label>
+                                            <input
+                                                required
+                                                placeholder="Ex: OS-1234"
+                                                value={fixedData.numero_os}
+                                                onChange={e => setFixedData({ ...fixedData, numero_os: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '2px solid #e53e3e', borderRadius: 0, padding: '8px 5px', fontWeight: '700' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>NOTA FISCAL (NF)</label>
+                                            <input
+                                                placeholder="Ex: 9012"
+                                                value={fixedData.nota_fiscal}
+                                                onChange={e => setFixedData({ ...fixedData, nota_fiscal: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>DATA DA INSPEÇÃO</label>
+                                            <input
+                                                type="date"
+                                                value={fixedData.data_inspecao}
+                                                onChange={e => setFixedData({ ...fixedData, data_inspecao: e.target.value })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>RESPONSÁVEL TÉCNICO</label>
+                                            <input
+                                                placeholder="Nome do inspetor..."
+                                                value={fixedData.responsavel_tecnico}
+                                                onChange={e => setFixedData({ ...fixedData, responsavel_tecnico: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>TAG DO MOTOR</label>
+                                            <input
+                                                placeholder="Ex: MTR-001"
+                                                value={fixedData.tag}
+                                                onChange={e => setFixedData({ ...fixedData, tag: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>LOCAL / EQUIPAMENTO</label>
+                                            <input
+                                                placeholder="Ex: Planta Norte - Bomba #3"
+                                                value={fixedData.local_equipamento}
+                                                onChange={e => setFixedData({ ...fixedData, local_equipamento: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* SECAO 2: DADOS TECNICOS */}
+                                <div style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '16px', marginBottom: '16px' }}>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#2b6cb0', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                                        ⚙️ Dados Técnicos do Motor
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>MARCA / FABRICANTE</label>
+                                            <input
+                                                placeholder="Ex: Cummins, Caterpillar, MWM..."
+                                                value={fixedData.fabricante}
+                                                onChange={e => setFixedData({ ...fixedData, fabricante: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>MODELO DO MOTOR</label>
+                                            <input
+                                                placeholder="Ex: QSB6.7, C7.1, D229-4..."
+                                                value={fixedData.tipo_modelo}
+                                                onChange={e => setFixedData({ ...fixedData, tipo_modelo: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>NÚMERO DE SÉRIE</label>
+                                            <input
+                                                placeholder="Nº gravado no bloco..."
+                                                value={fixedData.ni}
+                                                onChange={e => setFixedData({ ...fixedData, ni: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>POTÊNCIA / RPM NOMINAIS</label>
+                                            <input
+                                                placeholder="Ex: 250 CV / 2200 RPM"
+                                                value={fixedData.volume}
+                                                onChange={e => setFixedData({ ...fixedData, volume: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>HORÍMETRO (horas)</label>
+                                            <input
+                                                placeholder="Ex: 12.450 h"
+                                                value={fixedData.lubrificante}
+                                                onChange={e => setFixedData({ ...fixedData, lubrificante: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>APLICAÇÃO</label>
+                                            <input
+                                                placeholder="Ex: Gerador, Veicular, Industrial..."
+                                                value={fixedData.desenho_conjunto}
+                                                onChange={e => setFixedData({ ...fixedData, desenho_conjunto: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* SECAO 3: SISTEMAS */}
+                                <div style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '16px', marginBottom: '16px' }}>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#276749', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                                        🔧 Sistemas do Motor
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>ASPIRAÇÃO</label>
+                                            <select
+                                                value={fixedData.outros_especificar}
+                                                onChange={e => setFixedData({ ...fixedData, outros_especificar: e.target.value })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0, padding: '8px 5px', fontSize: '0.95rem', background: 'transparent' }}
+                                            >
+                                                <option value="">Selecione...</option>
+                                                <option value="NATURAL">NATURAL</option>
+                                                <option value="TURBO">TURBO</option>
+                                                <option value="TURBO INTERCOOLER">TURBO INTERCOOLER</option>
+                                                <option value="TURBO COMPOUND">TURBO COMPOUND</option>
+                                                <option value="OUTROS">OUTROS</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>ARREFECIMENTO</label>
+                                            <select
+                                                value={fixedData.acoplamento_polia}
+                                                onChange={e => setFixedData({ ...fixedData, acoplamento_polia: e.target.value })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0, padding: '8px 5px', fontSize: '0.95rem', background: 'transparent' }}
+                                            >
+                                                <option value="">Selecione...</option>
+                                                <option value="ÁGUA (FECHADO)">ÁGUA (FECHADO)</option>
+                                                <option value="ÁGUA (ABERTO)">ÁGUA (ABERTO)</option>
+                                                <option value="AR FORÇADO">AR FORÇADO</option>
+                                                <option value="OIL COOLING">OIL COOLING</option>
+                                                <option value="OUTROS">OUTROS</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>SISTEMA DE INJEÇÃO</label>
+                                            <select
+                                                value={fixedData.sistema_lubrificacao}
+                                                onChange={e => setFixedData({ ...fixedData, sistema_lubrificacao: e.target.value })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0, padding: '8px 5px', fontSize: '0.95rem', background: 'transparent' }}
+                                            >
+                                                <option value="">Selecione...</option>
+                                                <option value="BOMBA LINHA (MECÂNICO)">BOMBA LINHA (MECÂNICO)</option>
+                                                <option value="BOMBA DISTRIBUIDORA (ROTATIVA)">BOMBA DISTRIBUIDORA (ROTATIVA)</option>
+                                                <option value="COMMON RAIL (ELETRÔNICO)">COMMON RAIL (ELETRÔNICO)</option>
+                                                <option value="UNIDADE BOMBEADORA (ELETRÔNICO)">UNIDADE BOMBEADORA (ELETRÔNICO)</option>
+                                                <option value="OUTROS">OUTROS</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>TIPO DE COMBUSTÍVEL</label>
+                                            <select
+                                                value={fixedData.pedido}
+                                                onChange={e => setFixedData({ ...fixedData, pedido: e.target.value })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderTop: 'none', borderLeft: 'none', borderRight: 'none', borderRadius: 0, padding: '8px 5px', fontSize: '0.95rem', background: 'transparent' }}
+                                            >
+                                                <option value="">Selecione...</option>
+                                                <option value="DIESEL S10">DIESEL S10</option>
+                                                <option value="DIESEL S500">DIESEL S500</option>
+                                                <option value="GAS NATURAL">GAS NATURAL</option>
+                                                <option value="BIODIESEL">BIODIESEL</option>
+                                                <option value="OUTROS">OUTROS</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>ÁREA / SETOR</label>
+                                            <input
+                                                placeholder="Ex: Manutenção, Produção..."
+                                                value={fixedData.area}
+                                                onChange={e => setFixedData({ ...fixedData, area: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>LINHA</label>
+                                            <input
+                                                placeholder="Ex: Linha 01..."
+                                                value={fixedData.linha}
+                                                onChange={e => setFixedData({ ...fixedData, linha: e.target.value.toUpperCase() })}
+                                                style={{ width: '100%', borderBottom: '1px solid #cbd5e0', borderRadius: 0, padding: '8px 5px' }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* SECAO 4: CONDICOES DE RECEBIMENTO */}
+                                <div style={{ borderBottom: '2px solid #e2e8f0', paddingBottom: '16px', marginBottom: '16px' }}>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#b7791f', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                                        📦 Condições de Recebimento
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>MOTOR RECEBIDO COMPLETO?</label>
+                                            <div style={{ display: 'flex', gap: '15px', marginTop: '8px' }}>
+                                                {['SIM', 'NÃO', 'PARCIAL'].map(opt => (
+                                                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'normal', cursor: 'pointer', fontSize: '0.85rem' }}>
+                                                        <input type="radio" name="motor_completo_r" value={opt}
+                                                            checked={fixedData.ordem === opt}
+                                                            onChange={e => setFixedData({ ...fixedData, ordem: e.target.value })}
+                                                            style={{ width: '16px', height: '16px' }} />
+                                                        {opt}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold', fontSize: '11px' }}>CONDIÇÃO DE ENTREGA</label>
+                                            <div style={{ display: 'flex', gap: '15px', marginTop: '8px' }}>
+                                                {['LIMPO', 'SUJO', 'DANIFICADO'].map(opt => (
+                                                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontWeight: 'normal', cursor: 'pointer', fontSize: '0.85rem' }}>
+                                                        <input type="radio" name="cond_entrega_r" value={opt}
+                                                            checked={fixedData.desenho_conjunto === `COND:${opt}`}
+                                                            onChange={() => setFixedData({ ...fixedData, desenho_conjunto: `COND:${opt}` })}
+                                                            style={{ width: '16px', height: '16px' }} />
+                                                        {opt}
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* SECAO 5: OBSERVACOES */}
+                                <div>
+                                    <div style={{ fontSize: '11px', fontWeight: '800', color: '#553c9a', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
+                                        📝 Observações Gerais / Queixa do Cliente
+                                    </div>
+                                    <textarea
+                                        style={{ width: '100%', minHeight: '80px', padding: '10px', borderRadius: '8px', border: '2px solid #e2e8f0', fontSize: '0.95rem' }}
+                                        placeholder="Descreva aqui a condição geral do motor, queixa do cliente, histórico de falhas e qualquer informação relevante para a inspeção..."
+                                        value={fixedData.observacoes_gerais}
+                                        onChange={e => setFixedData({ ...fixedData, observacoes_gerais: e.target.value.toUpperCase() })}
+                                    />
+                                </div>
+                            </div>
                         ) : (
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', width: '100%' }}>
                                 <div className="form-group full-row">
@@ -1559,20 +1840,30 @@ export const NovaPeritagem: React.FC = () => {
                                     </div>
 
 
-                                    <div className="conformity-toggle">
+                                    <div className="performance-status-strip">
                                         <button
                                             type="button"
-                                            className={`conf-btn conforme ${item.conformidade === 'conforme' ? 'active' : ''}`}
+                                            className={`status-btn-v3 conforme ${item.conformidade === 'conforme' ? 'active' : ''}`}
                                             onClick={(e) => { e.stopPropagation(); handleResponse(item.id, 'conforme'); }}
                                         >
-                                            Conforme
+                                            <div className="btn-icon-v3">✓</div>
+                                            <span>CONFORME</span>
                                         </button>
                                         <button
                                             type="button"
-                                            className={`conf-btn nao-conforme ${item.conformidade === 'não conforme' ? 'active' : ''}`}
+                                            className={`status-btn-v3 nao-conforme ${item.conformidade === 'não conforme' ? 'active' : ''}`}
                                             onClick={(e) => { e.stopPropagation(); handleResponse(item.id, 'não conforme'); }}
                                         >
-                                            Não Conforme
+                                            <div className="btn-icon-v3">✕</div>
+                                            <span>NÃO CONFORME</span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`status-btn-v3 na ${item.nao_aplicavel ? 'active' : ''}`}
+                                            onClick={(e) => { e.stopPropagation(); handleResponse(item.id, 'n/a'); }}
+                                        >
+                                            <div className="btn-icon-v3">/</div>
+                                            <span>N/A</span>
                                         </button>
                                     </div>
                                     {item.conformidade && (
@@ -1624,9 +1915,100 @@ export const NovaPeritagem: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="usiminas-item-fields" style={{ marginBottom: '1rem' }}>
-                                                <div className="input-field" style={{ flex: '0 0 80px' }}>
-                                                    <label>Qtd</label>
+                                            <div className="item-detail-premium">
+                                                {/* Criticidade */}
+                                                <div className="premium-field-group">
+                                                    <label className="premium-label">Criticidade da Falha</label>
+                                                    <div className="criticidade-selector">
+                                                        {['baixa', 'média', 'alta', 'crítica'].map(level => (
+                                                            <button
+                                                                key={level}
+                                                                type="button"
+                                                                className={`critic-btn ${level} ${item.criticidade === level ? 'active' : ''}`}
+                                                                onClick={() => updateItemDetails(item.id, 'criticidade', level)}
+                                                            >
+                                                                {level}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Anomalias Quick Selection */}
+                                                <div className="premium-field-group" style={{ marginTop: '1.5rem' }}>
+                                                    <label className="premium-label">Anomalias (Seleção Rápida)</label>
+                                                    <div className="quick-tags-container">
+                                                        {(QUICK_TAGS[cylinderType as keyof typeof QUICK_TAGS]?.anomalies || []).map(tag => (
+                                                            <button
+                                                                key={tag}
+                                                                type="button"
+                                                                className={`tag-btn ${item.anomalia?.includes(tag) ? 'active' : ''}`}
+                                                                onClick={() => {
+                                                                    const current = item.anomalia || '';
+                                                                    const newVal = current.includes(tag) 
+                                                                        ? current.replace(new RegExp(`\\s*${tag}\\s*`, 'g'), '').trim()
+                                                                        : `${current} ${tag}`.trim();
+                                                                    updateItemDetails(item.id, 'anomalia', newVal);
+                                                                }}
+                                                            >
+                                                                {tag}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    <textarea 
+                                                        placeholder="Detalhes adicionais da anomalia..."
+                                                        value={item.anomalia}
+                                                        onChange={e => updateItemDetails(item.id, 'anomalia', e.target.value)}
+                                                        className="premium-textarea"
+                                                        style={{ marginTop: '10px' }}
+                                                    />
+                                                </div>
+
+                                                {/* Serviços Quick Selection */}
+                                                <div className="premium-field-group" style={{ marginTop: '1.5rem' }}>
+                                                    <label className="premium-label">Serviços / Soluções (Seleção Rápida)</label>
+                                                    <div className="quick-tags-container">
+                                                        {(QUICK_TAGS[cylinderType as keyof typeof QUICK_TAGS]?.services || []).map(tag => (
+                                                            <button
+                                                                key={tag}
+                                                                type="button"
+                                                                className={`tag-btn ${item.solucao?.includes(tag) ? 'active' : ''}`}
+                                                                onClick={() => {
+                                                                    const current = item.solucao || '';
+                                                                    const newVal = current.includes(tag) 
+                                                                        ? current.replace(new RegExp(`\\s*${tag}\\s*`, 'g'), '').trim()
+                                                                        : `${current} ${tag}`.trim();
+                                                                    updateItemDetails(item.id, 'solucao', newVal);
+                                                                }}
+                                                            >
+                                                                {tag}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    <textarea 
+                                                        placeholder="Detalhes adicionais da solução..."
+                                                        value={item.solucao}
+                                                        onChange={e => updateItemDetails(item.id, 'solucao', e.target.value)}
+                                                        className="premium-textarea"
+                                                        style={{ marginTop: '10px' }}
+                                                    />
+                                                </div>
+
+                                                {/* Parecer Técnico */}
+                                                <div className="premium-field-group" style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+                                                    <label className="premium-label">Parecer Técnico do Item</label>
+                                                    <textarea 
+                                                        placeholder="Escreva aqui sua análise técnica detalhada sobre este componente..."
+                                                        value={item.parecer_item}
+                                                        onChange={e => updateItemDetails(item.id, 'parecer_item', e.target.value)}
+                                                        className="premium-textarea"
+                                                        style={{ minHeight: '100px' }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="usiminas-item-fields" style={{ marginBottom: '1rem', display: 'flex', gap: '15px' }}>
+                                                <div className="input-field" style={{ flex: '0 0 100px' }}>
+                                                    <label>Qtd Peças</label>
                                                     <input
                                                         type="text"
                                                         placeholder="Qtd"

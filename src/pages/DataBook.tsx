@@ -215,7 +215,7 @@ export const DataBook: React.FC = () => {
                 // Fetch from peritagens table
                 const { data, error } = await supabase
                     .from('peritagens')
-                    .select('foto_frontal, fotos_montagem, fotos_videos_teste, foto_pintura_final')
+                    .select('foto_frontal')
                     .eq('id', currentFolder.peritagem_id)
                     .single();
 
@@ -223,17 +223,10 @@ export const DataBook: React.FC = () => {
 
                 const peritagemItems: DataBookItem[] = [];
                 if (data.foto_frontal) peritagemItems.push({ id: 'frontal', file_data: data.foto_frontal, description: 'Foto Frontal', file_type: 'image', created_at: '', processo: 'Peritagem' });
+                
+                // Nota: Fotos de montagem, teste e pintura devem ser buscadas na tabela photo_items
+                // via os_interna para este databook se is_peritagem for true.
 
-                (data.fotos_montagem || []).forEach((url: string, idx: number) => {
-                    peritagemItems.push({ id: `montagem_${idx}`, file_data: url, description: `Montagem / Recuperação ${idx + 1}`, file_type: 'image', created_at: '', processo: 'Montagem' });
-                });
-
-                (data.fotos_videos_teste || []).forEach((url: string, idx: number) => {
-                    const isVideo = url.toLowerCase().endsWith('.mp4') || url.toLowerCase().startsWith('data:video');
-                    peritagemItems.push({ id: `teste_${idx}`, file_data: url, description: `Teste de Qualidade ${idx + 1}`, file_type: isVideo ? 'video' : 'image', created_at: '', processo: 'Pintura' });
-                });
-
-                if (data.foto_pintura_final) peritagemItems.push({ id: 'pintura', file_data: data.foto_pintura_final, description: 'Pintura/Acabamento Final', file_type: 'image', created_at: '', processo: 'Pintura' });
 
                 setItems(peritagemItems);
             } else {

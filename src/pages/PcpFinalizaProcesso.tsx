@@ -49,7 +49,7 @@ export const PcpFinalizaProcesso: React.FC = () => {
         try {
             const { data, error } = await supabase
                 .from('peritagens')
-                .select('id, numero_peritagem, cliente, status, numero_pedido, os_interna, tag, foto_frontal, fotos_montagem, fotos_videos_teste, foto_pintura_final, etapa_atual, responsavel_tecnico, created_at')
+                .select('id, numero_peritagem, cliente, status, numero_pedido, os_interna, tag, foto_frontal, etapa_atual, responsavel_tecnico, created_at')
                 .eq('status', 'AGUARDANDO CONFERÊNCIA FINAL')
                 .order('created_at', { ascending: false });
 
