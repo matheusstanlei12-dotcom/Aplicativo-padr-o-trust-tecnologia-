@@ -364,30 +364,19 @@ export const ClientPeritagens: React.FC = () => {
                             </div>
                         </div>
 
-                        <div className="card-actions-dual">
-                            <button
-                                className="btn-pdf-peritagem"
-                                onClick={() => handleDownloadPdf(p, 'technical')}
-                                disabled={generatingPdf && selectedId === p.id}
-                            >
-                                {generatingPdf && selectedId === p.id && generatingType === 'technical' ? (
-                                    <Loader2 className="animate-spin" size={14} />
-                                ) : (
-                                    <FileText size={14} />
-                                )}
-                                PDF PERITAGEM
-                            </button>
+                        <div className="card-actions-dual" style={{ gridTemplateColumns: '1fr' }}>
                             <button
                                 className="btn-pdf-cliente"
                                 onClick={() => handleDownloadPdf(p, 'premium')}
                                 disabled={generatingPdf && selectedId === p.id}
+                                style={{ width: '100%' }}
                             >
                                 {generatingPdf && selectedId === p.id && generatingType === 'premium' ? (
                                     <Loader2 className="animate-spin" size={14} />
                                 ) : (
                                     <Download size={14} />
                                 )}
-                                {generatingPdf && selectedId === p.id && generatingType === 'premium' ? 'GERANDO...' : 'BAIXAR EM PDF'}
+                                {generatingPdf && selectedId === p.id && generatingType === 'premium' ? 'GERANDO...' : 'EXTRAIR PDF'}
                             </button>
                         </div>
                     </div>
