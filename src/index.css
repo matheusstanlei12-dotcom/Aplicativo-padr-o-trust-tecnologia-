@@ -2,13 +2,13 @@
 
 :root {
   /* Core Colors - Matched to Trust Tecnologia Logo */
-  --primary: #21408e;
+  --primary: #0066cc;
   /* Logo Blue */
-  --primary-hover: #19316d;
-  --primary-light: #f0f4ff;
-  --accent: #e31b23;
-  /* Logo Red */
-  --accent-hover: #c4171d;
+  --primary-hover: #0052a3;
+  --primary-light: #eef7ff;
+  --accent: #00bcd4;
+  /* Logo Cyan */
+  --accent-hover: #009eb3;
 
   /* Neutral Palette */
   --bg-main: #f1f4f9;

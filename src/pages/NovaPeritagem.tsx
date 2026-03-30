@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Camera, Image as ImageIcon, X, CheckCircle, AlertCircle, Save, Info } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -1140,7 +1140,7 @@ export const NovaPeritagem: React.FC = () => {
                         <span className="subtitle">Preencha os dados técnicos abaixo</span>
                     </div>
                 </div>
-                <div className="header-actions-top" style={{ display: 'flex', gap: '10px' }}>
+                <div className="header-actions-top">
                     <button type="button" className="btn-save-top" style={{ backgroundColor: '#718096' }} onClick={handleClearForm}>
                         <ArrowLeft size={20} />
                         Limpar Dados
@@ -1250,7 +1250,7 @@ export const NovaPeritagem: React.FC = () => {
                     <div className="grid-form">
                         {/* CAMPOS INTERNOS (TELA APENAS) */}
                         <div className="form-group full-row" style={{ marginBottom: '20px', borderBottom: '2px dashed #eee', paddingBottom: '15px' }}>
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                            <div className="grid-responsive-2">
                                 <div>
                                     <label style={{ fontWeight: 'bold', color: '#e67e22' }}>ORDEM DE SERVIÇO INTERNA (USO INTERNO)</label>
                                     <input
@@ -1274,7 +1274,7 @@ export const NovaPeritagem: React.FC = () => {
                         </div>
 
                         {fixedData.cliente === 'USIMINAS' ? (
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', width: '100%' }}>
+                            <div className="grid-responsive-3">
 
 
                                 {/* LINHA 1: NOTA/LAUDO | PROCESSO | DATA */}
@@ -1383,7 +1383,7 @@ export const NovaPeritagem: React.FC = () => {
                                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#e53e3e', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
                                         📋 Identificação
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                                    <div className="grid-responsive-2" style={{ gap: '12px' }}>
                                         <div className="form-group">
                                             <label style={{ fontWeight: 'bold', fontSize: '11px' }}>ORDEM DE SERVIÇO *</label>
                                             <input
@@ -1597,7 +1597,7 @@ export const NovaPeritagem: React.FC = () => {
                                     <div style={{ fontSize: '11px', fontWeight: '800', color: '#b7791f', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '12px' }}>
                                         📦 Condições de Recebimento
                                     </div>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                                    <div className="grid-responsive-2">
                                         <div className="form-group">
                                             <label style={{ fontWeight: 'bold', fontSize: '11px' }}>MOTOR RECEBIDO COMPLETO?</label>
                                             <div style={{ display: 'flex', gap: '15px', marginTop: '8px' }}>
@@ -1643,7 +1643,7 @@ export const NovaPeritagem: React.FC = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '20px', width: '100%' }}>
+                            <div className="grid-responsive-1" style={{ gap: '20px' }}>
                                 <div className="form-group full-row">
                                     <label style={{ fontWeight: 'bold' }}>ORDEM DE SERVIÇO</label>
                                     <input
@@ -2035,7 +2035,7 @@ export const NovaPeritagem: React.FC = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="usiminas-item-fields" style={{ marginBottom: '1rem', display: 'flex', gap: '15px' }}>
+                                            <div className="usiminas-item-fields" style={{ marginBottom: '1rem', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
                                                 <div className="input-field" style={{ flex: '0 0 100px' }}>
                                                     <label>Qtd Peças</label>
                                                     <input
@@ -2296,70 +2296,85 @@ export const NovaPeritagem: React.FC = () => {
                         <h3>Material</h3>
                     </div>
                     <div className="vedacoes-list">
-                        <div className="vedacao-row header" style={{ background: '#f8fafc', fontWeight: 'bold', fontSize: '0.7rem', display: 'flex', borderBottom: '1px solid #e2e8f0', padding: '10px' }}>
-                            <span style={{ width: '60px' }}>N°</span>
-                            <span style={{ flex: 1 }}>DESCRIÇÃO DO MATERIAL</span>
-                            <span style={{ width: '60px', textAlign: 'center' }}>QTD</span>
-                            <span style={{ width: '60px', textAlign: 'center' }}>UN.</span>
-                            <span style={{ flex: 1 }}>OBSERVAÇÃO</span>
+                        <div className="vedacao-row header vedacao-header-row">
+                            <span className="v-col-num">N°</span>
+                            <span className="v-col-desc">DESCRIÇÃO DO MATERIAL</span>
+                            <span className="v-col-qtd">QTD</span>
+                            <span className="v-col-un">UN.</span>
+                            <span className="v-col-obs">OBSERVAÇÃO</span>
+                            <span className="v-col-x"></span>
                         </div>
                         {vedacoes.map((item, index) => (
-                            <div key={item.id} className="vedacao-row" style={{ display: 'flex', alignItems: 'center', padding: '5px 10px', borderBottom: '1px solid #f1f3f5' }}>
-                                <div style={{ width: '60px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div key={item.id} className="vedacao-row">
+                                <div className="v-col-num" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                     <div className={`status-dot-animated ${item.text.trim() !== '' ? 'verde' : 'vermelho'}`} />
                                     <span style={{ fontSize: '0.8rem', color: '#7f8c8d' }}>{index + 1}</span>
                                 </div>
-                                <input
-                                    placeholder="Descrição do material..."
-                                    value={item.text}
-                                    onChange={e => {
-                                        const newVedacoes = [...vedacoes];
-                                        newVedacoes[index].text = e.target.value;
-                                        setVedacoes(newVedacoes);
-                                    }}
-                                    style={{ flex: 1, border: 'none', borderBottom: '1px solid #edf2f7', margin: '0 5px', fontSize: '0.85rem' }}
-                                />
-                                <input
-                                    placeholder="Qtd"
-                                    value={item.qtd}
-                                    onChange={e => {
-                                        const newVedacoes = [...vedacoes];
-                                        newVedacoes[index].qtd = e.target.value;
-                                        setVedacoes(newVedacoes);
-                                    }}
-                                    style={{ width: '60px', textAlign: 'center', border: 'none', borderBottom: '1px solid #edf2f7', margin: '0 5px', fontSize: '0.85rem' }}
-                                />
-                                <input
-                                    placeholder="UN"
-                                    value={item.unidade}
-                                    onChange={e => {
-                                        const newVedacoes = [...vedacoes];
-                                        newVedacoes[index].unidade = e.target.value;
-                                        setVedacoes(newVedacoes);
-                                    }}
-                                    style={{ width: '60px', textAlign: 'center', border: 'none', borderBottom: '1px solid #edf2f7', margin: '0 5px', fontSize: '0.85rem' }}
-                                />
-                                <input
-                                    placeholder="Obs..."
-                                    value={item.observacao}
-                                    onChange={e => {
-                                        const newVedacoes = [...vedacoes];
-                                        newVedacoes[index].observacao = e.target.value;
-                                        setVedacoes(newVedacoes);
-                                    }}
-                                    style={{ flex: 1, border: 'none', borderBottom: '1px solid #edf2f7', margin: '0 5px', fontSize: '0.85rem' }}
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const newVedacoes = vedacoes.filter((_, i) => i !== index);
-                                        setVedacoes(newVedacoes);
-                                    }}
-                                    style={{ background: 'transparent', border: 'none', color: '#e53e3e', cursor: 'pointer', padding: '5px' }}
-                                    title="Remover vedação"
-                                >
-                                    <X size={18} />
-                                </button>
+                                <div className="v-col-desc">
+                                    <label className="mobile-label">Descrição</label>
+                                    <input
+                                        placeholder="Descrição do material..."
+                                        value={item.text}
+                                        onChange={e => {
+                                            const newVedacoes = [...vedacoes];
+                                            newVedacoes[index].text = e.target.value;
+                                            setVedacoes(newVedacoes);
+                                        }}
+                                        className="vedacao-input"
+                                    />
+                                </div>
+                                <div className="v-col-qtd">
+                                    <label className="mobile-label">QTD</label>
+                                    <input
+                                        placeholder="Qtd"
+                                        value={item.qtd}
+                                        onChange={e => {
+                                            const newVedacoes = [...vedacoes];
+                                            newVedacoes[index].qtd = e.target.value;
+                                            setVedacoes(newVedacoes);
+                                        }}
+                                        className="vedacao-input text-center"
+                                    />
+                                </div>
+                                <div className="v-col-un">
+                                    <label className="mobile-label">UN</label>
+                                    <input
+                                        placeholder="UN"
+                                        value={item.unidade}
+                                        onChange={e => {
+                                            const newVedacoes = [...vedacoes];
+                                            newVedacoes[index].unidade = e.target.value;
+                                            setVedacoes(newVedacoes);
+                                        }}
+                                        className="vedacao-input text-center"
+                                    />
+                                </div>
+                                <div className="v-col-obs">
+                                    <label className="mobile-label">OBS</label>
+                                    <input
+                                        placeholder="Obs..."
+                                        value={item.observacao}
+                                        onChange={e => {
+                                            const newVedacoes = [...vedacoes];
+                                            newVedacoes[index].observacao = e.target.value;
+                                            setVedacoes(newVedacoes);
+                                        }}
+                                        className="vedacao-input"
+                                    />
+                                </div>
+                                <div className="v-col-x">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            const newVedacoes = vedacoes.filter((_, i) => i !== index);
+                                            setVedacoes(newVedacoes);
+                                        }}
+                                        className="btn-remove-vedacao"
+                                        title="Remover vedação"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
