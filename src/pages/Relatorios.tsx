@@ -145,7 +145,7 @@ export const Relatorios: React.FC = () => {
                         qtd: String(i.qtd || '1'),
                         dimensoes: String(i.dimensoes || '-'),
                         conformidade: String(i.conformidade || ''),
-                        selecionado: i.conformidade === 'não conforme',
+                        selecionado: i.conformidade === 'não conforme' || (i.anomalias && String(i.anomalias).trim() !== ''),
                         diametro_encontrado: i.diametro_encontrado,
                         diametro_ideal: i.diametro_ideal,
                         material_faltante: i.material_faltante,

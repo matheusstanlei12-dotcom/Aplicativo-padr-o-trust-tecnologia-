@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Camera, Image as ImageIcon, X, CheckCircle, AlertCircle, Save, Info } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -681,6 +681,8 @@ export const NovaPeritagem: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (loading) return;
         setLoading(true);
 
         if (!fotoFrontal && !fromWaitlist) {
@@ -806,7 +808,22 @@ export const NovaPeritagem: React.FC = () => {
                 await supabase.from('peritagem_analise_tecnica').delete().eq('peritagem_id', editId);
 
             } else {
-                // INSERT
+                // INSERT - Antes de inserir, verificar se já existe (Prevenir clique duplo ou OS duplicada de verdade)
+                // Só checa duplicata se o usuário digitou um número de OS manualmente
+                if (fixedData.numero_os) {
+                    const { data: existingPeritagem } = await supabase
+                        .from('peritagens')
+                        .select('id')
+                        .eq('os', numeroPeritagem)
+                        .maybeSingle();
+                    
+                    if (existingPeritagem) {
+                        alert('Já existe um registro com esta O.S/Referência. Por favor, verifique se o relatório já foi salvo ou use uma numeração diferente.');
+                        setLoading(false);
+                        return;
+                    }
+                }
+
                 const { data: peritagem, error: pError } = await supabase
                     .from('peritagens')
                     .insert([{
@@ -858,11 +875,17 @@ export const NovaPeritagem: React.FC = () => {
 
             // 2. Salvar Itens do Checklist
             const analyses = checklistItems
-                .filter(item => item.conformidade !== null || item.nao_aplicavel)
+                .filter(item =>
+                    item.conformidade !== null ||
+                    item.nao_aplicavel ||
+                    (item.anomalia && item.anomalia.trim() !== '') ||
+                    (item.solucao && item.solucao.trim() !== '')
+                )
                 .map(item => ({
                     peritagem_id: peritagemId,
                     componente: item.text,
-                    conformidade: item.conformidade,
+                    conformidade: item.conformidade ||
+                        ((item.anomalia && item.anomalia.trim() !== '') || (item.solucao && item.solucao.trim() !== '') ? 'não conforme' : null),
                     anomalias: item.anomalia,
                     solucao: item.solucao,
                     fotos: item.fotos,
@@ -956,8 +979,14 @@ export const NovaPeritagem: React.FC = () => {
             navigate('/peritagens');
         } catch (err: any) {
             console.error('❌ Erro detalhado ao salvar:', err);
-            if (err.code === '23505' || err.message?.includes('duplicate key')) {
+            console.error('Código do erro:', err.code);
+            console.error('Detalhes:', err.details);
+            console.error('Hint:', err.hint);
+            // Só mostra mensagem de OS duplicada se o erro for especificamente na coluna 'os'
+            if (err.code === '23505' && (err.details?.includes('os') || err.message?.includes('"os"'))) {
                 alert('Já existe uma peritagem com este número de OS/Laudo. Por favor, verifique ou use um número diferente.');
+            } else if (err.code === '23505') {
+                alert('Erro de duplicidade ao salvar: ' + (err.details || err.message || 'Verifique os dados e tente novamente.'));
             } else {
                 alert('Erro ao salvar peritagem: ' + (err.message || 'Erro interno'));
             }
@@ -1116,7 +1145,7 @@ export const NovaPeritagem: React.FC = () => {
                         <ArrowLeft size={20} />
                         Limpar Dados
                     </button>
-                    <button className="btn-save-top" onClick={handleSubmit} disabled={loading}>
+                    <button type="button" className="btn-save-top" onClick={handleSubmit} disabled={loading}>
                         <Save size={20} />
                         {loading ? 'Salvando...' : fromWaitlist ? 'Salvar na Lista' : 'Salvar Peritagem'}
                     </button>
@@ -2015,238 +2044,6 @@ export const NovaPeritagem: React.FC = () => {
                                                         value={item.qtd}
                                                         onChange={e => updateItemDetails(item.id, 'qtd', e.target.value)}
                                                     />
-                                                </div>
-                                            </div>
-
-                                            {/* BLOCO DE DIMENSÕES PADRONIZADO */}
-                                            <div className="dimensional-block" style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px', padding: '15px', background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                                                <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#2d3748', borderBottom: '1px solid #cbd5e0', paddingBottom: '5px' }}>ANÁLISE DIMENSIONAL</div>
-
-                                                {/* 1. Diâmetro Interno */}
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Diâmetro Interno Encontrado</label>
-                                                        <div style={{ position: 'relative', width: '100%' }}>
-                                                            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#4a5568', fontWeight: 'bold' }}>Ø</span>
-                                                            <input
-                                                                type="number"
-                                                                className="no-spinner"
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
-                                                                }}
-                                                                step="0.0001"
-                                                                placeholder="0.0000"
-                                                                style={{ paddingLeft: '30px', width: '100%' }}
-                                                                value={item.diametro_interno_encontrado || ''}
-                                                                onChange={e => {
-                                                                    const val = e.target.value;
-                                                                    const found = parseFloat(val || '0');
-                                                                    const spec = parseFloat(item.diametro_interno_especificado || '0');
-                                                                    const diff = (found - spec).toFixed(4);
-                                                                    updateItemDetails(item.id, 'diametro_interno_encontrado', val);
-                                                                    if (val && item.diametro_interno_especificado) {
-                                                                        updateItemDetails(item.id, 'desvio_interno', diff);
-                                                                    } else {
-                                                                        updateItemDetails(item.id, 'desvio_interno', '');
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Diâmetro Interno Especificado</label>
-                                                        <div style={{ position: 'relative', width: '100%' }}>
-                                                            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#4a5568', fontWeight: 'bold' }}>Ø</span>
-                                                            <input
-                                                                type="number"
-                                                                className="no-spinner"
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
-                                                                }}
-                                                                step="0.0001"
-                                                                placeholder="0.0000"
-                                                                style={{ paddingLeft: '30px', width: '100%' }}
-                                                                value={item.diametro_interno_especificado || ''}
-                                                                onChange={e => {
-                                                                    const val = e.target.value;
-                                                                    const found = parseFloat(item.diametro_interno_encontrado || '0');
-                                                                    const spec = parseFloat(val || '0');
-                                                                    const diff = (found - spec).toFixed(4);
-                                                                    updateItemDetails(item.id, 'diametro_interno_especificado', val);
-                                                                    if (val && item.diametro_interno_encontrado) {
-                                                                        updateItemDetails(item.id, 'desvio_interno', diff);
-                                                                    } else {
-                                                                        updateItemDetails(item.id, 'desvio_interno', '');
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Desvio</label>
-                                                        <div style={{
-                                                            height: '38px',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            background: '#e2e8f0',
-                                                            borderRadius: '4px',
-                                                            fontWeight: 'bold',
-                                                            fontSize: '13px',
-                                                            color: item.desvio_interno ? (parseFloat(item.desvio_interno) < 0 ? '#e53e3e' : '#2f855a') : '#a0aec0'
-                                                        }}>
-                                                            {item.desvio_interno ? `${parseFloat(item.desvio_interno) >= 0 ? '+' : ''}${item.desvio_interno.replace('.', ',')} mm` : '-'}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* 2. Diâmetro Externo */}
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Diâmetro Externo Encontrado</label>
-                                                        <div style={{ position: 'relative', width: '100%' }}>
-                                                            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#4a5568', fontWeight: 'bold' }}>Ø</span>
-                                                            <input
-                                                                type="number"
-                                                                className="no-spinner"
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
-                                                                }}
-                                                                step="0.0001"
-                                                                placeholder="0.0000"
-                                                                style={{ paddingLeft: '30px', width: '100%' }}
-                                                                value={item.diametro_externo_encontrado || ''}
-                                                                onChange={e => {
-                                                                    const val = e.target.value;
-                                                                    const found = parseFloat(val || '0');
-                                                                    const spec = parseFloat(item.diametro_externo_especificado || '0');
-                                                                    const diff = (found - spec).toFixed(4);
-                                                                    updateItemDetails(item.id, 'diametro_externo_encontrado', val);
-                                                                    // Só atualiza o desvio se houver valores
-                                                                    if (val && item.diametro_externo_especificado) {
-                                                                        updateItemDetails(item.id, 'desvio_externo', diff);
-                                                                    } else {
-                                                                        updateItemDetails(item.id, 'desvio_externo', '');
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Diâmetro Externo Especificado</label>
-                                                        <div style={{ position: 'relative', width: '100%' }}>
-                                                            <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#4a5568', fontWeight: 'bold' }}>Ø</span>
-                                                            <input
-                                                                type="number"
-                                                                className="no-spinner"
-                                                                onKeyDown={(e) => {
-                                                                    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
-                                                                }}
-                                                                step="0.0001"
-                                                                placeholder="0.0000"
-                                                                style={{ paddingLeft: '30px', width: '100%' }}
-                                                                value={item.diametro_externo_especificado || ''}
-                                                                onChange={e => {
-                                                                    const val = e.target.value;
-                                                                    const found = parseFloat(item.diametro_externo_encontrado || '0');
-                                                                    const spec = parseFloat(val || '0');
-                                                                    const diff = (found - spec).toFixed(4);
-                                                                    updateItemDetails(item.id, 'diametro_externo_especificado', val);
-                                                                    if (val && item.diametro_externo_encontrado) {
-                                                                        updateItemDetails(item.id, 'desvio_externo', diff);
-                                                                    } else {
-                                                                        updateItemDetails(item.id, 'desvio_externo', '');
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Desvio</label>
-                                                        <div style={{
-                                                            height: '38px',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            background: '#e2e8f0',
-                                                            borderRadius: '4px',
-                                                            fontWeight: 'bold',
-                                                            fontSize: '13px',
-                                                            color: item.desvio_externo ? (parseFloat(item.desvio_externo) < 0 ? '#e53e3e' : '#2f855a') : '#a0aec0'
-                                                        }}>
-                                                            {item.desvio_externo ? `${parseFloat(item.desvio_externo) >= 0 ? '+' : ''}${item.desvio_externo.replace('.', ',')} mm` : '-'}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* 3. Comprimento */}
-                                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Comprimento Encontrado</label>
-                                                        <input
-                                                            type="number"
-                                                            className="no-spinner"
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
-                                                            }}
-                                                            step="0.0001"
-                                                            placeholder="0.0000"
-                                                            value={item.comprimento_encontrado || ''}
-                                                            onChange={e => {
-                                                                const val = e.target.value;
-                                                                const found = parseFloat(val || '0');
-                                                                const spec = parseFloat(item.comprimento_especificado || '0');
-                                                                const diff = (found - spec).toFixed(4);
-                                                                updateItemDetails(item.id, 'comprimento_encontrado', val);
-                                                                if (val && item.comprimento_especificado) {
-                                                                    updateItemDetails(item.id, 'desvio_comprimento', diff);
-                                                                } else {
-                                                                    updateItemDetails(item.id, 'desvio_comprimento', '');
-                                                                }
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Comprimento Especificado</label>
-                                                        <input
-                                                            type="number"
-                                                            className="no-spinner"
-                                                            onKeyDown={(e) => {
-                                                                if (e.key === 'ArrowUp' || e.key === 'ArrowDown') e.preventDefault();
-                                                            }}
-                                                            step="0.0001"
-                                                            placeholder="0.0000"
-                                                            value={item.comprimento_especificado || ''}
-                                                            onChange={e => {
-                                                                const val = e.target.value;
-                                                                const found = parseFloat(item.comprimento_encontrado || '0');
-                                                                const spec = parseFloat(val || '0');
-                                                                const diff = (found - spec).toFixed(4);
-                                                                updateItemDetails(item.id, 'comprimento_especificado', val);
-                                                                if (val && item.comprimento_encontrado) {
-                                                                    updateItemDetails(item.id, 'desvio_comprimento', diff);
-                                                                } else {
-                                                                    updateItemDetails(item.id, 'desvio_comprimento', '');
-                                                                }
-                                                            }}
-                                                        />
-                                                    </div>
-                                                    <div className="input-field">
-                                                        <label style={{ fontSize: '11px', fontWeight: 'bold' }}>Desvio</label>
-                                                        <div style={{
-                                                            height: '38px',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            background: '#e2e8f0',
-                                                            borderRadius: '4px',
-                                                            fontWeight: 'bold',
-                                                            fontSize: '13px',
-                                                            color: item.desvio_comprimento ? (parseFloat(item.desvio_comprimento) < 0 ? '#e53e3e' : '#2f855a') : '#a0aec0'
-                                                        }}>
-                                                            {item.desvio_comprimento ? `${parseFloat(item.desvio_comprimento) >= 0 ? '+' : ''}${item.desvio_comprimento.replace('.', ',')} mm` : '-'}
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
 
