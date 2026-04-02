@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Clock, History, User } from 'lucide-react';
+import { LayoutDashboard, Clock, History, User, Book } from 'lucide-react';
 
 const BottomNav: React.FC = () => {
   return (
@@ -34,6 +34,16 @@ const BottomNav: React.FC = () => {
         >
           <History className="w-5 h-5" />
           <span className="text-[10px] font-mono tracking-tighter uppercase">Logs</span>
+        </NavLink>
+
+        <NavLink 
+          to="/databook" 
+          className={({ isActive }) => 
+            `flex flex-col items-center gap-1 transition-all duration-300 ${isActive ? 'text-[#10b981]' : 'text-slate-500'}`
+          }
+        >
+          <Book className="w-5 h-5" />
+          <span className="text-[10px] font-mono tracking-tighter uppercase">Docs</span>
         </NavLink>
 
         <NavLink 

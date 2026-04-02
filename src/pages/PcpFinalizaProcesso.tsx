@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Loader2, CheckCircle2, X, Eye, ArrowLeft, CheckCircle, PlayCircle } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import { syncPhotosToGallery } from '../lib/photoSync';
 import './Peritagens.css';
 import './PcpCommon.css';
 
@@ -101,6 +102,22 @@ export const PcpFinalizaProcesso: React.FC = () => {
                 status_novo: 'PROCESSO FINALIZADO',
                 alterado_por: user.id
             }]);
+
+            // [NEW] Sincronizar automaticamente as fotos para o Databook (baseado em photo_folders)
+            if (selectedItem) {
+                const photosToSync: any[] = [];
+                if (selectedItem.foto_frontal) photosToSync.push({ data: selectedItem.foto_frontal, description: 'Peritagem - Foto Frontal' });
+                if (selectedItem.fotos_montagem) selectedItem.fotos_montagem.forEach((f: string, i: number) => photosToSync.push({ data: f, description: `Montagem - Foto ${i+1}` }));
+                if (selectedItem.fotos_videos_teste) selectedItem.fotos_videos_teste.forEach((f: string, i: number) => {
+                    const isVid = f.toLowerCase().endsWith('.mp4') || f.toLowerCase().startsWith('data:video');
+                    photosToSync.push({ data: f, description: `Testes - ${isVid ? 'Vídeo' : 'Foto'} ${i+1}`, type: isVid ? 'video' : 'image' });
+                });
+                if (selectedItem.foto_pintura_final) photosToSync.push({ data: selectedItem.foto_pintura_final, description: 'Pintura - Foto Final' });
+
+                if (photosToSync.length > 0) {
+                    await syncPhotosToGallery(selectedItem.os_interna || 'S/OS', selectedItem.cliente, photosToSync);
+                }
+            }
 
             setPeritagens(prev => prev.filter(p => p.id !== id));
             setSelectedItem(null);

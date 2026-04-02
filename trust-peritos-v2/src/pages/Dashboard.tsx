@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Wifi,
   Battery,
-  Signal
+  Signal,
+  Book,
 } from 'lucide-react';
 
 const Dashboard: React.FC = () => {
@@ -21,6 +22,7 @@ const Dashboard: React.FC = () => {
     { id: 'new', title: 'Nova Peritagem', subtitle: 'Iniciar nova vistoria', icon: FilePlus, color: 'text-prime-blue-light', path: '/nova-peritagem' },
     { id: 'pending', title: 'Aguardando', subtitle: '3 peritagens pendentes', icon: Clock, color: 'text-amber-500', path: '/aguardando' },
     { id: 'history', title: 'Histórico', subtitle: 'Vistorias finalizadas', icon: History, color: 'text-emerald-500', path: '/historico' },
+    { id: 'databook', title: 'Databook', subtitle: 'Documentos técnicos', icon: Book, color: 'text-prime-blue-light', path: '/databook' },
     { id: 'sync', title: 'Sincronizar', subtitle: 'Nuvem Trust Tecnologia', icon: RefreshCw, color: 'text-indigo-500', path: '/sincronizacao' },
     { id: 'profile', title: 'Meu Perfil', subtitle: 'Matheus Stanley', icon: User, color: 'text-slate-500', path: '/perfil' },
   ];

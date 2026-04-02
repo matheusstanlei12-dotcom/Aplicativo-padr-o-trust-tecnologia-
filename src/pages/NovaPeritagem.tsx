@@ -2105,8 +2105,8 @@ export const NovaPeritagem: React.FC = () => {
                                                     const anomaliesList = (detectedComponent && DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent]) ? DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent].anomalies : [];
                                                     const servicesList = (detectedComponent && DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent]) ? DIMENSIONAL_ANOMALIES_SERVICES[detectedComponent].services : [];
 
-                                                    const hasDropdowns = anomaliesList.length > 0;
-
+                                                    const isCilindroType = fixedData.tipo_modelo === 'Cilindros Hidráulicos' || fixedData.tipo_modelo === 'CILINDROS HIDRÁULICOS';
+                                                    const hasDropdowns = isCilindroType && anomaliesList.length > 0;
 
                                                     const activeAnomalies = item.anomaliasSet || [{ value: item.anomalia || '', isCustom: false }];
                                                     const activeSolucoes = item.solucoesSet || [{ value: item.solucao || '', isCustom: false }];

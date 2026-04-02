@@ -22,7 +22,8 @@ import {
     CheckCircle2,
     Timer,
     ArrowRight,
-    Clock
+    Clock,
+    Book
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -285,6 +286,15 @@ export const Dashboard: React.FC = () => {
             iconColor: '#6366f1',
             link: '#',
             show: true
+        },
+        {
+            label: 'Databooks',
+            value: 'Acessar',
+            icon: <Book size={24} />,
+            color: 'rgba(16, 185, 129, 0.15)',
+            iconColor: '#10b981',
+            link: '/databook',
+            show: ['gestor', 'pcp', 'perito'].includes(role || '')
         },
     ];
 

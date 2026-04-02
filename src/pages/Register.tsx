@@ -59,12 +59,31 @@ export const RegisterPage: React.FC = () => {
                 throw signUpError;
             }
 
-            if (data?.user && data?.session === null) {
-                // Email confirmation is likely enabled
-                setSuccess(true);
-            } else if (data?.user) {
-                setSuccess(true);
-                setTimeout(() => navigate('/login'), 3000);
+            if (data?.user) {
+                // [NEW] Criar explicitamente o perfil na tabela pública para aprovação
+                const { error: profileError } = await supabase
+                    .from('profiles')
+                    .insert([{
+                        id: data.user.id,
+                        email: cleanedEmail,
+                        full_name: fullName.trim(),
+                        role: role.toLowerCase(),
+                        status: 'PENDENTE',
+                        created_at: new Date().toISOString()
+                    }]);
+
+                if (profileError) {
+                    console.error('Erro ao criar perfil:', profileError);
+                    // Não lançamos erro aqui para não travar o cadastro (o trigger pode estar funcionando)
+                }
+
+                if (data?.session === null) {
+                    // Email confirmation is likely enabled
+                    setSuccess(true);
+                } else {
+                    setSuccess(true);
+                    setTimeout(() => navigate('/login'), 3000);
+                }
             }
         } catch (err: any) {
             setError(err.message || 'Erro ao solicitar acesso');

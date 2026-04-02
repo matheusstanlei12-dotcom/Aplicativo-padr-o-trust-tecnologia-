@@ -12,6 +12,7 @@ const HistoricoPeritagem = React.lazy(() => import('./pages/HistoricoPeritagem')
 const Perfil = React.lazy(() => import('./pages/Perfil'));
 const Sincronizacao = React.lazy(() => import('./pages/Sincronizacao'));
 const ChangePassword = React.lazy(() => import('./pages/ChangePassword'));
+const DataBook = React.lazy(() => import('./pages/DataBook'));
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { session, loading } = useAuth();
@@ -53,6 +54,7 @@ function App() {
             <Route path="/perfil" element={<PrivateRoute><Perfil /></PrivateRoute>} />
             <Route path="/sincronizacao" element={<PrivateRoute><Sincronizacao /></PrivateRoute>} />
             <Route path="/alterar-senha" element={<PrivateRoute><ChangePassword /></PrivateRoute>} />
+            <Route path="/databook" element={<PrivateRoute><DataBook /></PrivateRoute>} />
 
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

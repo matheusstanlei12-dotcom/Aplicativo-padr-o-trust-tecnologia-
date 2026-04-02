@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     LayoutDashboard,
     FileText,
@@ -14,6 +14,8 @@ import {
     Clock,
     RefreshCcw,
     Building2,
+    Book,
+    HelpCircle,
 } from 'lucide-react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -130,6 +132,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                             <RefreshCcw size={20} />
                             <span>Peritagens Recusadas</span>
                         </NavLink>
+                        <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                            <Book size={20} />
+                            <span>Databook</span>
+                        </NavLink>
                     </>
                 )}
 
@@ -178,6 +184,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                         <NavLink to="/qrcode" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <QrCode size={20} />
                             <span>Gerar QR code</span>
+                        </NavLink>
+                        <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                            <Book size={20} />
+                            <span>Databook</span>
                         </NavLink>
                     </>
                 )}
@@ -239,7 +249,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                             <FileSpreadsheet size={20} />
                             <span>Relatórios</span>
                         </NavLink>
-
+                        <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                            <Book size={20} />
+                            <span>Databook</span>
+                        </NavLink>
                     </>
                 )}
 
@@ -297,7 +310,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                             <Building2 size={20} />
                             <span>Gestão de Clientes</span>
                         </NavLink>
+                        <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                            <Book size={20} />
+                            <span>Databook</span>
+                        </NavLink>
                     </>
+                )}
+
+                {/* ACESSO COMUM: Fluxo de Processo (Tutorial) */}
+                {['gestor', 'pcp', 'perito', 'montagem', 'comercial', 'qualidade'].includes(role || '') && (
+                    <NavLink to="/fluxo-processo" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                        <HelpCircle size={20} />
+                        <span>Fluxo do Sistema</span>
+                    </NavLink>
                 )}
             </nav>
 

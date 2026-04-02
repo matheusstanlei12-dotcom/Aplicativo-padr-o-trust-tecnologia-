@@ -11,27 +11,27 @@ import {
     Upload,
     Video,
     X,
+    RefreshCw,
+    Loader2
 } from 'lucide-react';
 import { Document, Page, Text, View, pdf } from '@react-pdf/renderer';
 import { useAuth } from '../contexts/AuthContext';
 import { s, ImageCard } from '../components/DatabookPDFTemplate';
+import { syncPhotosToGallery } from '../lib/photoSync';
 import './DataBookPremium.css';
 
 interface DataBookFolder {
     id: string;
     name: string;
-    cliente?: string;
-    os_interna?: string;
+    cliente: string;
+    os_interna: string;
     os_externa?: string;
     data_entrega?: string;
     pedido_compra?: string;
     nota_fiscal?: string;
     responsavel?: string;
-    // criado_por removido
     empresa_id?: string;
     created_at: string;
-    is_peritagem?: boolean;
-    peritagem_id?: string;
 }
 
 interface DataBookItem {
@@ -128,6 +128,7 @@ export const DataBook: React.FC = () => {
     const [items, setItems] = useState<DataBookItem[]>([]);
     const [loading, setLoading] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
     const [selectedItem, setSelectedItem] = useState<DataBookItem | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [generatingPdf, setGeneratingPdf] = useState(false);
@@ -170,8 +171,6 @@ export const DataBook: React.FC = () => {
 
     const fetchEmpresas = async () => {
         try {
-            // Fetch official empresas directly from the database
-            // Only companies added in "Gestão de Clientes" will appear here
             const { data, error } = await supabase
                 .from('empresas')
                 .select('id, nome')
@@ -193,8 +192,8 @@ export const DataBook: React.FC = () => {
                 empresa_id = profile?.empresa_id || null;
             }
 
-            // Fetch actual databook folders
-            let foldersQuery = supabase.from('databook_folders').select('*').order('created_at', { ascending: false });
+            // Fetch from photo_folders instead of missing databook_folders
+            let foldersQuery = supabase.from('photo_folders').select('*').order('created_at', { ascending: false });
             if (empresa_id) {
                 foldersQuery = foldersQuery.eq('empresa_id', empresa_id);
             }
@@ -208,38 +207,78 @@ export const DataBook: React.FC = () => {
         }
     };
 
+    const handleSyncPeritagens = async () => {
+        setIsSyncing(true);
+        try {
+            const { data: peritagens, error } = await supabase
+                .from('peritagens')
+                .select('*')
+                .eq('status', 'PROCESSO FINALIZADO');
+
+            if (error) throw error;
+
+            const { data: existingFolders } = await supabase
+                .from('databook_folders')
+                .select('peritagem_id')
+                .not('peritagem_id', 'is', null);
+
+            const existingIds = (existingFolders || []).map(f => f.peritagem_id);
+            const toSync = peritagens?.filter(p => !existingIds.includes(p.id)) || [];
+
+            if (toSync.length === 0) {
+                alert('Tudo sincronizado! Nenhuma nova peritagem encontrada.');
+                return;
+            }
+
+            for (const p of toSync) {
+                const photosToSync: any[] = [];
+                
+                if (p.foto_frontal) photosToSync.push({ data: p.foto_frontal, description: 'Peritagem - Foto Frontal' });
+                if (p.fotos_montagem) p.fotos_montagem.forEach((f: string, i: number) => photosToSync.push({ data: f, description: `Montagem - Foto ${i+1}` }));
+                if (p.fotos_videos_teste) p.fotos_videos_teste.forEach((f: string, i: number) => {
+                    const isVid = f.toLowerCase().endsWith('.mp4') || f.toLowerCase().startsWith('data:video');
+                    photosToSync.push({ data: f, description: `Testes - ${isVid ? 'Vídeo' : 'Foto'} ${i+1}`, type: isVid ? 'video' : 'image' });
+                });
+                if (p.foto_pintura_final) photosToSync.push({ data: p.foto_pintura_final, description: 'Pintura - Foto Final' });
+
+                if (photosToSync.length > 0) {
+                    await syncPhotosToGallery(p.os_interna, p.cliente, photosToSync);
+                }
+            }
+
+            alert(`${toSync.length} peritagens sincronizadas com sucesso!`);
+            fetchFolders();
+        } catch (err) {
+            console.error('Erro ao sincronizar:', err);
+            alert('Erro ao sincronizar peritagens.');
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
     const fetchItems = async (folderId: string) => {
         setLoading(true);
         try {
-            if (currentFolder?.is_peritagem && currentFolder.peritagem_id) {
-                // Fetch from peritagens table
-                const { data, error } = await supabase
-                    .from('peritagens')
-                    .select('foto_frontal')
-                    .eq('id', currentFolder.peritagem_id)
-                    .single();
+            // Fetch from photo_items table (standard behavior for photo folders)
+            const { data, error } = await supabase
+                .from('photo_items')
+                .select('*')
+                .eq('folder_id', folderId)
+                .order('created_at', { ascending: false });
 
-                if (error) throw error;
+            if (error) throw error;
+            
+            // Map table column 'photo_data' and 'media_type' to DataBookItem interface fields
+            const mappedItems = (data || []).map(item => ({
+                id: item.id,
+                file_data: item.photo_data,
+                description: item.description,
+                file_type: item.media_type || 'image',
+                created_at: item.created_at,
+                processo: item.description?.split(' - ')[0] || 'Geral'
+            }));
 
-                const peritagemItems: DataBookItem[] = [];
-                if (data.foto_frontal) peritagemItems.push({ id: 'frontal', file_data: data.foto_frontal, description: 'Foto Frontal', file_type: 'image', created_at: '', processo: 'Peritagem' });
-                
-                // Nota: Fotos de montagem, teste e pintura devem ser buscadas na tabela photo_items
-                // via os_interna para este databook se is_peritagem for true.
-
-
-                setItems(peritagemItems);
-            } else {
-                // Fetch from databook_items table (standard behavior)
-                const { data, error } = await supabase
-                    .from('databook_items')
-                    .select('*')
-                    .eq('folder_id', folderId)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-                setItems(data || []);
-            }
+            setItems(mappedItems);
         } catch (error) {
             console.error('Error fetching items:', error);
         } finally {
@@ -248,12 +287,11 @@ export const DataBook: React.FC = () => {
     };
 
     const handlePendingFilesChange = (processo: string, files: FileList | null) => {
-        if (files && files.length > 0) {
-            setPendingFilesByProcess(prev => ({
-                ...prev,
-                [processo]: [...(prev[processo] || []), ...Array.from(files)]
-            }));
-        }
+        if (!files) return;
+        setPendingFilesByProcess(prev => ({
+            ...prev,
+            [processo]: [...(prev[processo] || []), ...Array.from(files)]
+        }));
     };
 
     const removePendingFile = (processo: string, index: number) => {
@@ -285,18 +323,14 @@ export const DataBook: React.FC = () => {
             setLoading(true);
             const folderName = `Data Book - ${formData.cliente} - ${formData.os_interna || 'S/OS'}`;
 
+            // [NEW] Use photo_folders table instead of missing databook_folders
             const { data: folderData, error } = await supabase
-                .from('databook_folders')
+                .from('photo_folders')
                 .insert([{
                     name: folderName,
                     cliente: formData.cliente,
                     os_interna: formData.os_interna,
-                    os_externa: formData.os_externa,
-                    data_entrega: formData.data_entrega || null,
-                    pedido_compra: formData.pedido_compra,
-                    nota_fiscal: formData.nota_fiscal,
-                    responsavel: formData.responsavel,
-                    empresa_id: formData.empresa_id || null,
+                    data_entrada: new Date().toISOString().split('T')[0]
                 }])
                 .select()
                 .single();
@@ -310,16 +344,15 @@ export const DataBook: React.FC = () => {
                     const stageFiles = pendingFilesByProcess[processo];
                     for (const file of stageFiles) {
                         const base64 = await fileToBase64(file);
-                        const fileType = file.type.includes('pdf') ? 'pdf' : (file.type.includes('image') ? 'image' : 'other');
-
+                        const isVideo = file.type.includes('video');
+                        
                         const { error: itemError } = await supabase
-                            .from('databook_items')
+                            .from('photo_items')
                             .insert([{
                                 folder_id: folderData.id,
-                                file_data: base64,
-                                description: file.name,
-                                file_type: fileType,
-                                processo: processo
+                                photo_data: base64,
+                                description: `${processo} - ${file.name}`,
+                                media_type: isVideo ? 'video' : 'image'
                             }]);
 
                         if (itemError) console.error(`Erro ao salvar item(${processo}): `, file.name, itemError);
@@ -358,17 +391,17 @@ export const DataBook: React.FC = () => {
 
     const handleDeleteFolder = async (folderId: string, e: React.MouseEvent) => {
         e.stopPropagation();
-        if (role !== 'gestor') return;
-        if (!confirm('Excluir este Data Book e todos os seus arquivos?')) return;
+        if (!window.confirm('Tem certeza que deseja excluir este Data Book? Todos os arquivos vinculados serão removidos.')) return;
 
         try {
             setLoading(true);
-            const { error } = await supabase.from('databook_folders').delete().eq('id', folderId);
+            const { error } = await supabase.from('photo_folders').delete().eq('id', folderId);
             if (error) throw error;
             setFolders(folders.filter(f => f.id !== folderId));
             if (currentFolder?.id === folderId) setCurrentFolder(null);
         } catch (error) {
-            console.error('Error deleting:', error);
+            console.error('Error deleting folder:', error);
+            alert('Erro ao excluir Data Book.');
         } finally {
             setLoading(false);
         }
@@ -406,13 +439,12 @@ export const DataBook: React.FC = () => {
                 const fileType = isVideo ? 'video' : (file.type.includes('image') ? 'image' : 'other');
 
                 const { error } = await supabase
-                    .from('databook_items')
+                    .from('photo_items')
                     .insert([{
                         folder_id: currentFolder.id,
-                        file_data: base64,
-                        description: file.name,
-                        file_type: fileType,
-                        processo: selectedProcess
+                        photo_data: base64,
+                        description: `${selectedProcess} - ${file.name}`,
+                        media_type: fileType
                     }]);
 
                 if (error) throw error;
@@ -434,12 +466,13 @@ export const DataBook: React.FC = () => {
 
         try {
             setLoading(true);
-            const { error } = await supabase.from('databook_items').delete().eq('id', itemId);
+            const { error } = await supabase.from('photo_items').delete().eq('id', itemId);
             if (error) throw error;
             setItems(items.filter(i => i.id !== itemId));
             setSelectedItem(null);
         } catch (error) {
             console.error('Error deleting item:', error);
+            alert('Erro ao excluir item.');
         } finally {
             setLoading(false);
         }
@@ -458,8 +491,22 @@ export const DataBook: React.FC = () => {
             {!currentFolder ? (
                 <>
                     <header className="page-hero">
-                        <h1>Databook do Cliente</h1>
-                        <p className="subtitle">Documentação técnica, fotos e vídeos que o cliente terá acesso.</p>
+                        <div className="hero-content">
+                            <h1>Databook do Cliente</h1>
+                            <p className="subtitle">Documentação técnica, fotos e vídeos que o cliente terá acesso.</p>
+                        </div>
+                        <div className="header-actions">
+                            {canManage && (
+                                <button className="btn-sync" onClick={handleSyncPeritagens} disabled={isSyncing}>
+                                    {isSyncing ? <Loader2 className="animate-spin" size={20} /> : <RefreshCw size={20} />}
+                                    {isSyncing ? 'Sincronizando...' : 'Sincronizar Pendentes'}
+                                </button>
+                            )}
+                            <button className="btn-add-databook" onClick={() => setIsCreateModalOpen(true)}>
+                                <Plus size={20} />
+                                <span>Novo</span>
+                            </button>
+                        </div>
                     </header>
 
                     <div className="reports-section-header">
@@ -475,12 +522,6 @@ export const DataBook: React.FC = () => {
                                     style={{ border: 'none', background: 'transparent' }}
                                 />
                             </div>
-                            {canManage && (
-                                <button className="btn-add-databook" onClick={() => setIsCreateModalOpen(true)}>
-                                    <Plus size={20} />
-                                    <span>Novo</span>
-                                </button>
-                            )}
                         </div>
                     </div>
 
