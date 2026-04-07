@@ -58,6 +58,7 @@ export const PublicReport: React.FC = () => {
 
     const fetchReportData = async (reportId: string) => {
         try {
+            console.log('🔍 Iniciando busca de relatório ID:', reportId);
             setLoading(true);
             const { data: pData, error: pError } = await supabase
                 .from('peritagens')
@@ -65,7 +66,15 @@ export const PublicReport: React.FC = () => {
                 .eq('id', reportId)
                 .maybeSingle();
 
-            if (pError || !pData) throw pError || new Error('Relatório não encontrado');
+            if (pError) {
+                console.error('❌ Erro Supabase ao buscar peritagem:', pError);
+                throw pError;
+            }
+
+            if (!pData) {
+                console.warn('⚠️ Nenhum registro encontrado para o ID:', reportId);
+                throw new Error('Relatório não encontrado');
+            }
 
             setPeritagem(pData as any);
 

@@ -173,9 +173,9 @@ const QrCodePDF = ({ peritagem, qrDataUrl }: { peritagem: PeritagemSummary, qrDa
     </Document>
 );
 
-// Função para obter a URL base correta (evita localhost no QR Code)
+// Função para obter a URL base correta (Identifica automaticamente em qual URL o app está hospedado)
 const getBaseUrl = () => {
-    return 'https://www.trusttecnologia.com.br';
+    return window.location.origin;
 };
 
 export const QrCodePage: React.FC = () => {
