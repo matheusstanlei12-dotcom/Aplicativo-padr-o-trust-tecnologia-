@@ -11,7 +11,6 @@ interface Avatar3DProps {
 }
 
 const REMOTE_URL = 'https://models.readyplayer.me/658da75c02796e6d7616640c.glb?useMesh=true&pose=A';
-const LOCAL_URL = '/avatar.glb';
 
 /**
  * Componente interno que tenta carregar o modelo GLTF.
