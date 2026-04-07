@@ -34,6 +34,8 @@ export const AdminUsers: React.FC = () => {
         return <Navigate to="/dashboard" replace />;
     }
 
+    const [debugInfo, setDebugInfo] = useState<{ count: number, error: string | null }>({ count: 0, error: null });
+
     useEffect(() => {
         fetchInitialData();
 
@@ -58,8 +60,9 @@ export const AdminUsers: React.FC = () => {
         setLoading(true);
         try {
             await Promise.all([fetchUsers(), fetchEmpresas()]);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Erro no carregamento inicial:', err);
+            setDebugInfo(prev => ({ ...prev, error: err.message }));
         } finally {
             setLoading(false);
         }
@@ -84,19 +87,25 @@ export const AdminUsers: React.FC = () => {
 
     const fetchUsers = async () => {
         try {
+            // Removido temporariamente o .order() para diagnosticar se a coluna created_at existe
             const { data, error } = await supabase
                 .from('profiles')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .select('*');
 
-            if (error) throw error;
+            if (error) {
+                setDebugInfo({ count: 0, error: error.message });
+                throw error;
+            }
+
+            console.log('📊 Dados brutos recebidos:', data?.length, data);
+            setDebugInfo({ count: data?.length || 0, error: null });
 
             // Filtra usuários ocultos
             const visibleUsers = (data || []).filter(u => !HIDDEN_EMAILS.includes(u.email));
             setUsers(visibleUsers);
         } catch (error: any) {
             console.error('Erro ao buscar usuários:', error);
-            alert(`Não foi possível carregar os usuários: ${error.message || 'Erro desconhecido'}`);
+            alert(`Erro: ${error.message || 'Não foi possível carregar os usuários.'}`);
         }
     };
 
@@ -202,6 +211,34 @@ export const AdminUsers: React.FC = () => {
                     <p className="page-subtitle">Gerencie permissões, aprove novos acessos e vincule clientes.</p>
                 </div>
             </header>
+
+            {/* Painel de Diagnóstico Temporário */}
+            <div style={{ 
+                background: debugInfo.error ? '#fee2e2' : '#f0f9ff', 
+                border: `1px solid ${debugInfo.error ? '#f87171' : '#bae6fd'}`,
+                padding: '12px 20px',
+                borderRadius: '12px',
+                marginBottom: '24px',
+                fontSize: '0.875rem',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+            }}>
+                <div>
+                    <strong style={{ color: debugInfo.error ? '#991b1b' : '#0369a1' }}>🔍 Diagnóstico de Dados:</strong>
+                    <span style={{ marginLeft: '8px', color: '#475569' }}>
+                        {debugInfo.error 
+                            ? `Erro do Banco: ${debugInfo.error}` 
+                            : `Total bruto no banco: ${debugInfo.count} perfis encontrados.`}
+                    </span>
+                </div>
+                <button 
+                    onClick={() => fetchUsers()} 
+                    style={{ background: 'white', border: '1px solid #e2e8f0', padding: '4px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.75rem' }}
+                >
+                    Atualizar Agora
+                </button>
+            </div>
 
             <div className="stats-grid">
                 <div className="stat-card">
