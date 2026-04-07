@@ -35,38 +35,59 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
     // Notificações de Aguardando Peritagem
     const [aguardandoIds, setAguardandoIds] = useState<string[]>([]);
     const [seenIds, setSeenIds] = useState<string[]>([]);
+    const [pendingUsersCount, setPendingUsersCount] = useState(0);
 
     useEffect(() => {
         if (!['pcp', 'gestor', 'perito'].includes(role || '')) return;
 
-        // Carregar do storage
-        const stored = localStorage.getItem('seenAguardandoIds');
-        if (stored) {
-            try { setSeenIds(JSON.parse(stored)); } catch (e) { }
-        }
-
+        // 1. Carregar peritagens aguardando
         const fetchAguardando = async () => {
             const { data } = await supabase.from('aguardando_peritagem').select('id').eq('status', 'AGUARDANDO');
             if (data) setAguardandoIds(data.map(d => d.id));
         };
 
+        const stored = localStorage.getItem('seenAguardandoIds');
+        if (stored) {
+            try { setSeenIds(JSON.parse(stored)); } catch (e) { }
+        }
+
         fetchAguardando();
 
-        // Inscrever-se para tempo real
-        const channel = supabase.channel('aguardando_sidebar_changes')
+        const peritagemChannel = supabase.channel('aguardando_sidebar_changes')
             .on('postgres_changes', { event: '*', schema: 'public', table: 'aguardando_peritagem' }, () => {
                 fetchAguardando();
             })
             .subscribe();
 
+        // 2. Notificações de Usuários Pendentes (Apenas Gestor)
+        let userChannel: any;
+        if (role === 'gestor') {
+            const fetchPendingUsers = async () => {
+                const { count } = await supabase
+                    .from('profiles')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'PENDENTE');
+                setPendingUsersCount(count || 0);
+            };
+
+            fetchPendingUsers();
+
+            userChannel = supabase.channel('pending_users_notifications')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+                    fetchPendingUsers();
+                })
+                .subscribe();
+        }
+
         return () => {
-            supabase.removeChannel(channel);
+            supabase.removeChannel(peritagemChannel);
+            if (userChannel) supabase.removeChannel(userChannel);
         };
     }, [role]);
 
     // Atualiza ids vistos quando entra na página
     useEffect(() => {
-        if (location.pathname === '/pcp/aguardando') {
+        if (location.pathname === '/pcp/aguardando' && aguardandoIds.length > 0) {
             setSeenIds(prev => {
                 const newSeen = Array.from(new Set([...prev, ...aguardandoIds]));
                 localStorage.setItem('seenAguardandoIds', JSON.stringify(newSeen));
@@ -305,6 +326,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                         <NavLink to="/admin/usuarios" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <Settings size={20} />
                             <span>Gestão de Usuários</span>
+                            {pendingUsersCount > 0 && <div className="notification-badge">{pendingUsersCount}</div>}
                         </NavLink>
                         <NavLink to="/admin/empresas" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <Building2 size={20} />

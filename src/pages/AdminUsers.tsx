@@ -36,12 +36,33 @@ export const AdminUsers: React.FC = () => {
 
     useEffect(() => {
         fetchInitialData();
+
+        // 🟢 Assinatura em Tempo Real para Novos Cadastros/Alterações
+        const channel = supabase.channel('profiles_admin_changes')
+            .on('postgres_changes', { 
+                event: '*', 
+                schema: 'public', 
+                table: 'profiles' 
+            }, () => {
+                console.log('🔄 Mudança detectada nos perfis, atualizando lista...');
+                fetchUsers();
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const fetchInitialData = async () => {
         setLoading(true);
-        await Promise.all([fetchUsers(), fetchEmpresas()]);
-        setLoading(false);
+        try {
+            await Promise.all([fetchUsers(), fetchEmpresas()]);
+        } catch (err) {
+            console.error('Erro no carregamento inicial:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const HIDDEN_EMAILS = ['matheus.stanley12@gmail.com'];

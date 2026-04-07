@@ -60,6 +60,7 @@ export const RegisterPage: React.FC = () => {
             }
 
             if (data?.user) {
+                console.log('✅ Auth sign-up successful:', data.user.id);
                 // [NEW] Criar explicitamente o perfil na tabela pública para aprovação
                 const { error: profileError } = await supabase
                     .from('profiles')
@@ -73,16 +74,26 @@ export const RegisterPage: React.FC = () => {
                     }]);
 
                 if (profileError) {
-                    console.error('Erro ao criar perfil:', profileError);
-                    // Não lançamos erro aqui para não travar o cadastro (o trigger pode estar funcionando)
+                    console.error('❌ Erro ao criar perfil no banco:', profileError);
+                    // Tentamos atualizar a mensagem de erro para o usuário
+                    if (profileError.code === '23505') {
+                        setError('Este e-mail já possui uma solicitação de acesso pendente.');
+                    } else {
+                        setError(`Solicitação registrada na Auth, mas houve um erro no perfil: ${profileError.message}. Por favor, avise o administrador.`);
+                    }
+                    setLoading(false);
+                    return; // Interrompe para que o usuário veja o erro
                 }
+
+                console.log('✅ Profile created successfully');
 
                 if (data?.session === null) {
                     // Email confirmation is likely enabled
                     setSuccess(true);
+                    console.log('📧 Aguardando confirmação de e-mail...');
                 } else {
                     setSuccess(true);
-                    setTimeout(() => navigate('/login'), 3000);
+                    setTimeout(() => navigate('/login'), 4000);
                 }
             }
         } catch (err: any) {
