@@ -75,12 +75,17 @@ export const RegisterPage: React.FC = () => {
 
                 if (profileError) {
                     console.error('❌ Erro ao criar perfil no banco:', profileError);
-                    // Tentamos atualizar a mensagem de erro para o usuário
+                    
+                    // Se o erro for de duplicidade (23505), significa que um Gatilho (Trigger) do banco já criou o perfil.
+                    // Nesse caso, o cadastro FOI um sucesso.
                     if (profileError.code === '23505') {
-                        setError('Este e-mail já possui uma solicitação de acesso pendente.');
-                    } else {
-                        setError(`Solicitação registrada na Auth, mas houve um erro no perfil: ${profileError.message}. Por favor, avise o administrador.`);
+                        console.log('💡 Perfil já criado por gatilho do banco. Prosseguindo como sucesso...');
+                        setSuccess(true);
+                        setTimeout(() => navigate('/login'), 5000);
+                        return;
                     }
+
+                    setError(`Solicitação registrada na Auth, mas houve um erro no perfil: ${profileError.message}. Por favor, avise o administrador.`);
                     setLoading(false);
                     return; // Interrompe para que o usuário veja o erro
                 }
@@ -93,7 +98,7 @@ export const RegisterPage: React.FC = () => {
                     console.log('📧 Aguardando confirmação de e-mail...');
                 } else {
                     setSuccess(true);
-                    setTimeout(() => navigate('/login'), 4000);
+                    setTimeout(() => navigate('/login'), 5000);
                 }
             }
         } catch (err: any) {

@@ -82,6 +82,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error('💥 Exception fetching role:', error);
         } finally {
             setLoading(false);
+            console.log('🔄 AuthContext: Loading state finished.');
         }
     };
 

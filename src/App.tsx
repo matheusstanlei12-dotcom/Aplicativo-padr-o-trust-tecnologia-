@@ -89,7 +89,7 @@ const PrivateRoute = ({ children, allowedRoles }: { children: React.ReactNode, a
 function AppRoutes() {
   const { session, loading, role, status } = useAuth();
 
-  if (loading) return null;
+  if (loading) return <LoadingSpinner />;
 
   const rolePaths: Record<string, string> = {
     gestor: "/dashboard",
