@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontFamily: FONT_FAMILY,
         color: '#333',
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        flexDirection: 'column'
     },
     // Estilos da Capa
     coverPage: {
@@ -151,8 +152,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
-        padding: 4,
-        alignItems: 'center'
+        padding: 6,
+        alignItems: 'flex-start'
     },
     colNo: { width: '5%', textAlign: 'center' },
     colDesc: { width: '42%' },
@@ -371,58 +372,66 @@ export const UsiminasReportTemplate: React.FC<{ data: ReportData }> = ({ data })
                         <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#fff' }}>IDENTIFICAÇÃO</Text>
                     </View>
 
-                    {/* Grid de 2 Colunas - Somente campos preenchidos */}
-                    <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                        {/* Coluna 1 */}
-                        <View style={{ width: '50%', paddingRight: 10 }}>
+                    {/* Grid de Dados - Layout Robusto com Linhas Explícitas */}
+                    <View style={{ marginTop: 5 }}>
+                        {/* Linha 1 */}
+                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
                             {hasValue(data.numero_os) && (
-                                <View style={{ marginBottom: 8 }}>
+                                <View style={{ width: '50%', paddingRight: 10 }}>
                                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>LAUDO / REPARO:</Text>
                                     <Text style={{ fontSize: 9 }}>{data.numero_os}</Text>
                                 </View>
                             )}
-                            {hasValue(data.tipo_modelo) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>TIPO:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.tipo_modelo}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.linha) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>LINHA:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.linha}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.local_equipamento) && (
-                                <View style={{ marginBottom: 8 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>LOCAL:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.local_equipamento}</Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {/* Coluna 2 */}
-                        <View style={{ width: '50%', paddingLeft: 10 }}>
                             {hasValue(data.area) && (
-                                <View style={{ marginBottom: 8 }}>
+                                <View style={{ width: '50%', paddingLeft: 10 }}>
                                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>ÁREA:</Text>
                                     <Text style={{ fontSize: 9 }}>{data.area}</Text>
                                 </View>
                             )}
+                        </View>
+
+                        {/* Linha 2 */}
+                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                            {hasValue(data.tipo_modelo) && (
+                                <View style={{ width: '50%', paddingRight: 10 }}>
+                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>TIPO:</Text>
+                                    <Text style={{ fontSize: 9 }}>{data.tipo_modelo}</Text>
+                                </View>
+                            )}
                             {hasValue(data.desenho_conjunto) && (
-                                <View style={{ marginBottom: 8 }}>
+                                <View style={{ width: '50%', paddingLeft: 10 }}>
                                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>DESENHO:</Text>
                                     <Text style={{ fontSize: 9 }}>{data.desenho_conjunto}</Text>
                                 </View>
                             )}
+                        </View>
+
+                        {/* Linha 3 */}
+                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                            {hasValue(data.linha) && (
+                                <View style={{ width: '50%', paddingRight: 10 }}>
+                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>LINHA:</Text>
+                                    <Text style={{ fontSize: 9 }}>{data.linha}</Text>
+                                </View>
+                            )}
                             {hasValue(data.tag) && (
-                                <View style={{ marginBottom: 8 }}>
+                                <View style={{ width: '50%', paddingLeft: 10 }}>
                                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>TAG:</Text>
                                     <Text style={{ fontSize: 9 }}>{data.tag}</Text>
                                 </View>
                             )}
+                        </View>
+
+                        {/* Linha 4 */}
+                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                            {hasValue(data.local_equipamento) && (
+                                <View style={{ width: '50%', paddingRight: 10 }}>
+                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>LOCAL:</Text>
+                                    <Text style={{ fontSize: 9 }}>{data.local_equipamento}</Text>
+                                </View>
+                            )}
                             {hasValue(data.ni) && (
-                                <View style={{ marginBottom: 8 }}>
+                                <View style={{ width: '50%', paddingLeft: 10 }}>
                                     <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>MATERIAL / NI:</Text>
                                     <Text style={{ fontSize: 9 }}>{data.ni}</Text>
                                 </View>
@@ -433,23 +442,26 @@ export const UsiminasReportTemplate: React.FC<{ data: ReportData }> = ({ data })
             </View>
 
             {/* Tabela de Dimensões sem bordas com cabeçalho azul */}
-            <View style={{ marginTop: 10 }} wrap={false}>
-                <View style={{ backgroundColor: '#005696', padding: 3, marginBottom: 0 }}>
+            <View style={{ marginTop: 20 }} wrap={false}>
+                <View style={{ backgroundColor: '#005696', padding: 5, marginBottom: 5 }}>
                     <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#fff' }}>DIMENSÕES TÉCNICAS (MM)</Text>
                 </View>
-                {/* Layout Stacked para evitar sobreposição */}
                 <View style={{ padding: 4 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'flex-start', marginBottom: 2 }}>
-                        <Text style={{ fontSize: 9, marginRight: 30 }}>
-                            <Text style={{ fontWeight: 'bold' }}>CAMISA: </Text>
-                            Ø INT. {formatDim(data.camisa_int)} x Ø EXT. {formatDim(data.camisa_ext)} x COMP. {formatDim(data.camisa_comp)}
-                        </Text>
-                        <Text style={{ fontSize: 9 }}>
-                            <Text style={{ fontWeight: 'bold' }}>HASTE: </Text>
-                            Ø {formatDim(data.haste_diam)} x COMP. {formatDim(data.haste_comp)}
-                        </Text>
+                    <View style={{ flexDirection: 'row', marginBottom: 4 }}>
+                        <View style={{ width: '60%' }}>
+                            <Text style={{ fontSize: 9 }}>
+                                <Text style={{ fontWeight: 'bold' }}>CAMISA: </Text>
+                                Ø INT. {formatDim(data.camisa_int)} x Ø EXT. {formatDim(data.camisa_ext)} x COMP. {formatDim(data.camisa_comp)}
+                            </Text>
+                        </View>
+                        <View style={{ width: '40%' }}>
+                            <Text style={{ fontSize: 9 }}>
+                                <Text style={{ fontWeight: 'bold' }}>HASTE: </Text>
+                                Ø {formatDim(data.haste_diam)} x COMP. {formatDim(data.haste_comp)}
+                            </Text>
+                        </View>
                     </View>
-                    <View style={{ marginTop: 0 }}>
+                    <View>
                         <Text style={{ fontSize: 9 }}>
                             <Text style={{ fontWeight: 'bold' }}>CURSO: </Text>
                             {formatDim(data.curso)}
@@ -462,7 +474,7 @@ export const UsiminasReportTemplate: React.FC<{ data: ReportData }> = ({ data })
 
             {/* Início da Tabela de Itens na mesma página */}
 
-            <View style={styles.table} wrap={false}>
+            <View style={[styles.table, { marginTop: 15 }]}>
                 <View style={styles.tableHeader}>
                     <Text style={styles.colNo}>N°</Text>
                     <Text style={{ width: '67%' }}>DESCRIÇÃO DE PEÇA/SERVIÇO</Text>
@@ -472,7 +484,7 @@ export const UsiminasReportTemplate: React.FC<{ data: ReportData }> = ({ data })
                 {data.items.map((item, index) => (
                     <View key={index} style={styles.tableRow} wrap={false}>
                         <Text style={styles.colNo}>{index + 1}</Text>
-                        <Text style={{ width: '67%' }} hyphenationCallback={(word) => [word]}>{item.descricao}</Text>
+                        <Text style={{ width: '67%', paddingRight: 5 }}>{item.descricao}</Text>
                         <Text style={[styles.colX, {
                             color: item.selecionado ? '#e67e22' : '#27ae60',
                             fontSize: item.selecionado ? 7 : 7,

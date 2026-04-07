@@ -28,6 +28,8 @@ const PublicReport = React.lazy(() => import('./pages/PublicReport').then(module
 const WorkflowPage = React.lazy(() => import('./pages/Workflow').then(module => ({ default: module.WorkflowPage })));
 const Monitoramento = React.lazy(() => import('./pages/Monitoramento').then(module => ({ default: module.Monitoramento })));
 const FluxoProcesso = React.lazy(() => import('./pages/FluxoProcesso').then(module => ({ default: module.FluxoProcesso })));
+const AssistantShowcase = React.lazy(() => import('./pages/AssistantShowcase').then(module => ({ default: module.AssistantShowcase })));
+
 
 const LoadingSpinner = () => (
   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -125,6 +127,8 @@ function AppRoutes() {
         <Route path="/nova-peritagem" element={<PrivateRoute allowedRoles={['gestor', 'pcp', 'perito', 'comercial']}><Layout><NovaPeritagem /></Layout></PrivateRoute>} />
         <Route path="/databook" element={<PrivateRoute allowedRoles={['gestor', 'pcp', 'perito', 'cliente', 'montagem', 'qualidade', 'comercial']}><Layout><DataBook /></Layout></PrivateRoute>} />
         <Route path="/fluxo-processo" element={<PrivateRoute allowedRoles={['gestor', 'pcp', 'perito', 'montagem', 'comercial', 'qualidade']}><Layout><FluxoProcesso /></Layout></PrivateRoute>} />
+        <Route path="/assistant-showcase" element={<Layout><AssistantShowcase /></Layout>} />
+
 
         {/* Rota Exclusiva Cliente */}
         <Route path="/meus-relatorios" element={<PrivateRoute allowedRoles={['cliente']}><Layout><ClientPeritagens /></Layout></PrivateRoute>} />

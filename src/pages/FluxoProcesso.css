@@ -64,14 +64,11 @@
 }
 
 .trusty-avatar {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
-    background: white;
-    padding: 15px;
-    box-shadow: 0 10px 30px rgba(0, 86, 255, 0.15);
+    width: 240px;
+    height: 420px;
+    background: transparent;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: center;
     position: relative;
     animation: floatAvatar 4s ease-in-out infinite;
@@ -82,28 +79,29 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    filter: drop-shadow(0 15px 25px rgba(0, 86, 255, 0.25));
 }
 
 .trusty-avatar.talking {
-    animation: bounceTalk 0.5s ease-in-out infinite alternate;
+    animation: bounceAndTilt 0.4s ease-in-out infinite alternate;
 }
 
 @keyframes floatAvatar {
     0% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-15px) rotate(2deg); }
+    50% { transform: translateY(-12px) rotate(1deg); }
     100% { transform: translateY(0px) rotate(0deg); }
 }
 
-@keyframes bounceTalk {
-    0% { transform: translateY(0px) scale(1); }
-    100% { transform: translateY(-5px) scale(1.02); }
+@keyframes bounceAndTilt {
+    0% { transform: translateY(0px) scale(1) rotate(0deg); }
+    100% { transform: translateY(-8px) scale(1.03) rotate(-3deg); }
 }
 
 /* PING/GLOW EFFECT BEHIND AVATAR */
 .avatar-glow {
     position: absolute;
-    width: 140px;
-    height: 140px;
+    width: 180px;
+    height: 180px;
     background: var(--accent);
     border-radius: 50%;
     opacity: 0.2;
@@ -112,10 +110,8 @@
 }
 
 @keyframes pingGlow {
-    75%, 100% {
-        transform: scale(1.5);
-        opacity: 0;
-    }
+    0% { transform: scale(1); opacity: 0.3; }
+    75%, 100% { transform: scale(1.6); opacity: 0; }
 }
 
 /* SPEECH BUBBLE */
@@ -167,21 +163,22 @@
     }
 }
 
+/* Typography matching */
 .speech-title {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    color: var(--primary);
+    color: #1e293b;
     margin-bottom: 1rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .speech-text {
     font-size: 1.1rem;
     color: var(--text-main);
     line-height: 1.6;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .speech-dependency {
@@ -195,16 +192,6 @@
     align-items: flex-start;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
-}
-
-/* NAVIGATION CONTROLS */
-.flow-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 1rem;
-    padding-top: 1.5rem;
-    border-top: 1px dashed #cbd5e1;
 }
 
 .btn-nav {
@@ -242,17 +229,31 @@
     box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
 }
 
-.btn-nav:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
+.speech-text {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+.speech-dependency {
+    background: #eef2ff;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--info);
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
 }
 
-/* PROGRESS BAR */
-.progress-container {
-    width: 100%;
-    margin-bottom: 2rem;
-    padding: 0 2rem;
+/* NAVIGATION CONTROLS */
+.flow-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
 }
 
 .progress-track {
