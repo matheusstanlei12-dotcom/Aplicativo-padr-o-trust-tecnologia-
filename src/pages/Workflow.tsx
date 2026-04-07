@@ -50,7 +50,7 @@ export const WorkflowPage: React.FC = () => {
         try {
             const { data, error } = await supabase
                 .from('peritagens')
-                .select('id, tag, cliente, os_interna, etapa_atual, databook_pronto')
+                .select('id, tag, cliente, os_interna, etapa_atual, databook_pronto, empresa_id')
                 .neq('etapa_atual', 'finalizado')
                 .order('created_at', { ascending: false });
 
@@ -109,7 +109,8 @@ export const WorkflowPage: React.FC = () => {
             await syncPhotosToGallery(
                 selectedPeritagem.os_interna,
                 selectedPeritagem.cliente,
-                syncItems
+                syncItems,
+                (selectedPeritagem as any).empresa_id
             );
 
             // Atualiza apenas etapa_atual se necessário, omitindo fotos das colunas da tabela peritagens

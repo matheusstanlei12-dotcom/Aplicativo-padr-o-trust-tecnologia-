@@ -756,7 +756,17 @@ export const NovaPeritagem: React.FC = () => {
 
             // 1. Salvar ou Atualizar Peritagem
             let peritagemId = editId;
-            const empresa_id = null;
+            let empresa_id = user.user_metadata?.empresa_id || null;
+
+            // Se for gestor/perito, tenta buscar o ID da empresa pelo nome do cliente selecionado
+            if (!empresa_id && fixedData.cliente) {
+                const { data: empData } = await supabase
+                    .from('empresas')
+                    .select('id')
+                    .eq('nome', fixedData.cliente)
+                    .maybeSingle();
+                if (empData) empresa_id = empData.id;
+            }
 
             if (editId) {
                 // UPDATE

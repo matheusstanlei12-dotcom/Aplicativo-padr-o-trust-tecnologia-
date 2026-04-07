@@ -212,7 +212,7 @@ export const DataBook: React.FC = () => {
         try {
             const { data: peritagens, error } = await supabase
                 .from('peritagens')
-                .select('*')
+                .select('*, empresa_id')
                 .eq('status', 'PROCESSO FINALIZADO');
 
             if (error) throw error;
@@ -242,7 +242,7 @@ export const DataBook: React.FC = () => {
                 if (p.foto_pintura_final) photosToSync.push({ data: p.foto_pintura_final, description: 'Pintura - Foto Final' });
 
                 if (photosToSync.length > 0) {
-                    await syncPhotosToGallery(p.os_interna, p.cliente, photosToSync);
+                    await syncPhotosToGallery(p.os_interna, p.cliente, photosToSync, (p as any).empresa_id);
                 }
             }
 
@@ -494,6 +494,19 @@ export const DataBook: React.FC = () => {
                         <div className="hero-content">
                             <h1>Databook do Cliente</h1>
                             <p className="subtitle">Documentação técnica, fotos e vídeos que o cliente terá acesso.</p>
+                            {role === 'gestor' && (
+                                <div style={{ 
+                                    marginTop: '8px', 
+                                    fontSize: '0.75rem', 
+                                    color: 'rgba(255,255,255,0.7)', 
+                                    background: 'rgba(0,0,0,0.2)', 
+                                    padding: '4px 12px', 
+                                    borderRadius: '6px', 
+                                    display: 'inline-block' 
+                                }}>
+                                    🔍 Diagnóstico Gestor: {folders.length} pastas encontradas no banco.
+                                </div>
+                            )}
                         </div>
                         <div className="header-actions">
                             {canManage && (

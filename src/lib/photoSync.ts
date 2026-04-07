@@ -13,11 +13,14 @@ export interface SyncPhoto {
 export const syncPhotosToGallery = async (
     os_interna: string,
     cliente: string,
-    photos: SyncPhoto[]
+    photos: SyncPhoto[],
+    empresa_id?: string | null
 ) => {
     if (!os_interna || photos.length === 0) return;
 
     try {
+        console.log(`📸 Syncing ${photos.length} photos for OS ${os_interna} (Empresa: ${empresa_id || 'N/A'})...`);
+        
         // 1. Get or Create Folder
         let { data: folder, error: folderError } = await supabase
             .from('photo_folders')
@@ -28,12 +31,14 @@ export const syncPhotosToGallery = async (
         if (folderError && folderError.code !== 'PGRST116') throw folderError;
 
         if (!folder) {
+            console.log(`📂 Creating new folder for OS ${os_interna}...`);
             const { data: newFolder, error: createError } = await supabase
                 .from('photo_folders')
                 .insert([{
                     name: `${cliente} - ${os_interna}`,
                     cliente: cliente || 'Sem Cliente',
                     os_interna: os_interna,
+                    empresa_id: empresa_id || null,
                     data_entrada: new Date().toISOString().split('T')[0]
                 }])
                 .select()
@@ -41,6 +46,7 @@ export const syncPhotosToGallery = async (
 
             if (createError) throw createError;
             folder = newFolder;
+            console.log(`✅ Folder created with ID: ${folder?.id}`);
         }
 
         if (!folder) return;
