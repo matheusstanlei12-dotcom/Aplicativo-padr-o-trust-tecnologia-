@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { useGraph, useFrame } from '@react-three/fiber';
-import { useGLTF, useAnimations, ContactShadows } from '@react-three/drei';
+import { useGLTF, useAnimations, ContactShadows, Image as DreiImage } from '@react-three/drei';
 import * as THREE from 'three';
 
 interface Avatar3DProps {
@@ -63,13 +63,13 @@ const AvatarModel: React.FC<Avatar3DProps & { url: string }> = ({ url, step, pos
 };
 
 /**
- * Placeholder Profissional (Humanóide Estilizado) 
- * Representa um assistente masculino de uniforme (Camisa Branca + Calça Escura)
+ * Placeholder Profissional usando imagem local caso o 3D falhe.
+ * Agora usa o asset de alta qualidade public/avatar.png em um billboard.
  */
 const AvatarPlaceholder: React.FC<Avatar3DProps> = ({ position, scale, rotation }) => {
   const group = useRef<THREE.Group>(null);
 
-  // Pequena animação de respiração/flutuação para o placeholder
+  // Mantém uma animação sutil de flutuação para o billboard
   useFrame((state) => {
     if (group.current) {
         group.current.position.y = position![1] + Math.sin(state.clock.elapsedTime) * 0.05;
@@ -77,46 +77,13 @@ const AvatarPlaceholder: React.FC<Avatar3DProps> = ({ position, scale, rotation 
   });
 
   return (
-    <group ref={group} {...{position, scale, rotation}}>
-      {/* Pernas (Calça Jeans Escura) */}
-      <mesh position={[-0.15, 0.4, 0]} castShadow>
-        <capsuleGeometry args={[0.12, 0.6, 4, 12]} />
-        <meshStandardMaterial color="#2c3e50" roughness={0.7} />
-      </mesh>
-      <mesh position={[0.15, 0.4, 0]} castShadow>
-        <capsuleGeometry args={[0.12, 0.6, 4, 12]} />
-        <meshStandardMaterial color="#2c3e50" roughness={0.7} />
-      </mesh>
-      
-      {/* Tronco (Camisa Polo Branca Profissional) */}
-      <mesh position={[0, 1.1, 0]} castShadow>
-        <capsuleGeometry args={[0.25, 0.7, 4, 12]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.4} />
-      </mesh>
-
-      {/* Gola da Camisa */}
-      <mesh position={[0, 1.45, 0]} rotation={[0.2, 0, 0]} castShadow>
-        <torusGeometry args={[0.15, 0.05, 8, 24]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      
-      {/* Cabeça */}
-      <mesh position={[0, 1.7, 0]} castShadow>
-        <sphereGeometry args={[0.22, 32, 32]} />
-        <meshStandardMaterial color="#f5cba7" roughness={0.4} /> 
-      </mesh>
-
-      {/* Cabelo (Corte Masculino Profissional) */}
-      <mesh position={[0, 1.8, 0.05]} castShadow>
-        <sphereGeometry args={[0.23, 16, 16, 0, Math.PI * 2, 0, Math.PI / 1.8]} />
-        <meshStandardMaterial color="#34495e" />
-      </mesh>
-
-      {/* Olhos/Viseira Tech (para dar um toque moderno) */}
-      <mesh position={[0, 1.7, 0.18]} castShadow>
-        <boxGeometry args={[0.25, 0.08, 0.08]} />
-        <meshStandardMaterial color="#1a1a1a" emissive="#3498db" emissiveIntensity={1} />
-      </mesh>
+    <group ref={group} {...{position, rotation}} scale={scale ? scale * 1.8 : 1.8}>
+      <DreiImage 
+        url="/avatar.png" 
+        transparent 
+        side={THREE.DoubleSide} 
+        position={[0, 1, 0]}
+      />
     </group>
   );
 };
