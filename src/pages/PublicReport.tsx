@@ -71,17 +71,40 @@ export const PublicReport: React.FC = () => {
                 throw pError;
             }
 
-            if (!pData) {
-                console.warn('⚠️ Nenhum registro encontrado para o ID:', reportId);
-                throw new Error('Relatório não encontrado');
+            // Se não encontrou por ID, tenta uma busca de contingência por parâmetros de busca (tag ou os)
+            let peritagemData = pData;
+            if (!peritagemData) {
+                const queryParams = new URLSearchParams(window.location.search);
+                const tag = queryParams.get('tag');
+                const os = queryParams.get('os');
+
+                if (tag || os) {
+                    console.log(`🔍 Tentando busca de contingência (Tag: ${tag}, OS: ${os})...`);
+                    const { data: fallbackData } = await supabase
+                        .from('peritagens')
+                        .select('*')
+                        .or(`tag.eq."${tag}",os_interna.eq."${os}"`)
+                        .maybeSingle();
+                    
+                    if (fallbackData) {
+                        console.log('✅ Relatório encontrado por busca de contingência!');
+                        peritagemData = fallbackData;
+                    }
+                }
             }
 
-            setPeritagem(pData as any);
+            if (!peritagemData) {
+                console.warn('⚠️ Relatório não encontrado ou acesso bloqueado por RLS.');
+                throw new Error('RELATORIO_NAO_ENCONTRADO');
+            }
+
+            setPeritagem(peritagemData as any);
+            const finalId = peritagemData.id; // Garante que itens usem o ID correto do registro encontrado
 
             const { data: aData, error: aError } = await supabase
                 .from('peritagem_analise_tecnica')
                 .select('*')
-                .eq('peritagem_id', reportId);
+                .eq('peritagem_id', finalId);
 
             if (aError) throw aError;
 
@@ -104,12 +127,18 @@ export const PublicReport: React.FC = () => {
         );
     }
 
-    if (!peritagem) {
+    if (!peritagem && !loading) {
         return (
             <div className="report-error">
                 <AlertCircle size={64} color="#ef4444" />
                 <h1>Relatório não encontrado</h1>
                 <p>O link acessado pode estar expirado ou o ID é inválido.</p>
+                <div style={{ marginTop: '20px', padding: '15px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', fontSize: '0.85rem', color: '#991b1b', maxWidth: '400px' }}>
+                    <strong>Nota para o Administrador:</strong> Verifique se a peritagem existe no banco e se a política de <strong>Acesso Público (RLS)</strong> foi ativada nas tabelas 'peritagens' e 'peritagem_analise_tecnica' no painel do Supabase.
+                </div>
+                <button onClick={() => window.location.reload()} style={{ marginTop: '20px', padding: '10px 20px', background: '#1a2e63', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+                    Tentar Novamente
+                </button>
             </div>
         );
     }

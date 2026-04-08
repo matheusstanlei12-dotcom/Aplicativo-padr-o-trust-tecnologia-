@@ -311,7 +311,7 @@ export const QrCodePage: React.FC = () => {
                                         <div className="card-top">
                                             <div className="card-qr-preview">
                                                 <QRCodeCanvas
-                                                    value={`${baseUrl}/view-report/${p.id}`}
+                                                    value={`${baseUrl}/view-report/${p.id}?tag=${encodeURIComponent(p.tag || '')}&os=${encodeURIComponent(p.os_interna || '')}`}
                                                     size={120}
                                                     level="H"
                                                     includeMargin={true}
@@ -372,7 +372,7 @@ export const QrCodePage: React.FC = () => {
                             {qrConfig && (
                                 <QRCodeCanvas
                                     id="qr-canvas-hidden"
-                                    value={`${baseUrl}/view-report/${qrConfig.id}`}
+                                    value={`${baseUrl}/view-report/${qrConfig.id}?tag=${encodeURIComponent(allPeritagens.find(p => p.id === qrConfig.id)?.tag || '')}&os=${encodeURIComponent(allPeritagens.find(p => p.id === qrConfig.id)?.os_interna || '')}`}
                                     size={1024}
                                     level="H"
                                     includeMargin={true}
