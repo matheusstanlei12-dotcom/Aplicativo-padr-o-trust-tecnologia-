@@ -87,18 +87,24 @@ export const AdminUsers: React.FC = () => {
 
     const fetchUsers = async () => {
         try {
-            // Removido temporariamente o .order() para diagnosticar se a coluna created_at existe
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*');
 
             if (error) {
+                console.error('❌ Erro Supabase ao buscar usuários:', error);
                 setDebugInfo({ count: 0, error: error.message });
                 throw error;
             }
 
             console.log('📊 Dados brutos recebidos:', data?.length, data);
-            setDebugInfo({ count: data?.length || 0, error: null });
+            
+            // Diagnóstico de RLS: Se o retorno for nulo e não for erro, provavelmente é RLS
+            if (!data || data.length === 0) {
+                setDebugInfo({ count: 0, error: 'LISTA_VAZIA_OU_RLS' });
+            } else {
+                setDebugInfo({ count: data.length, error: null });
+            }
 
             // Filtra usuários ocultos
             const visibleUsers = (data || []).filter(u => !HIDDEN_EMAILS.includes(u.email));
@@ -198,9 +204,9 @@ export const AdminUsers: React.FC = () => {
     };
 
     const stats = {
-        total: users.length,
-        pendentes: users.filter(u => u.status === 'PENDENTE' || !u.status).length,
-        clientes: users.filter(u => u.role === 'cliente').length
+        total: Array.isArray(users) ? users.length : 0,
+        pendentes: Array.isArray(users) ? users.filter(u => u && (u.status === 'PENDENTE' || !u.status)).length : 0,
+        clientes: Array.isArray(users) ? users.filter(u => u && u.role === 'cliente').length : 0
     };
 
     return (
@@ -265,7 +271,13 @@ export const AdminUsers: React.FC = () => {
                 <div className="users-list-card">
                     <div className="empty-state">
                         <h3>Nenhum usuário encontrado</h3>
-                        <p>Novas solicitações aparecerão aqui automaticamente.</p>
+                        {debugInfo.error === 'LISTA_VAZIA_OU_RLS' ? (
+                            <div style={{ marginTop: '16px', background: '#fffbeb', border: '1px solid #fef3c7', padding: '16px', borderRadius: '8px', color: '#92400e', fontSize: '0.85rem' }}>
+                                <p><strong>Nota:</strong> Se você sabe que existem usuários cadastrados, a lista pode estar oculta por falta de permissão no banco (RLS). Siga os passos SQL para liberar a visão do Gestor.</p>
+                            </div>
+                        ) : (
+                            <p>Novas solicitações aparecerão aqui automaticamente.</p>
+                        )}
                     </div>
                 </div>
             ) : (

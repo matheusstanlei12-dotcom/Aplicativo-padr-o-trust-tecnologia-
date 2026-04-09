@@ -76,18 +76,22 @@ export const RegisterPage: React.FC = () => {
                 if (profileError) {
                     console.error('❌ Erro ao criar perfil no banco:', profileError);
                     
-                    // Se o erro for de duplicidade (23505), significa que um Gatilho (Trigger) do banco já criou o perfil.
-                    // Nesse caso, o cadastro FOI um sucesso.
+                    // Erro 23505 = Registro Duplicado (Trigger do banco já criou o perfil)
                     if (profileError.code === '23505') {
-                        console.log('💡 Perfil já criado por gatilho do banco. Prosseguindo como sucesso...');
+                        console.log('💡 Perfil interceptado por trigger do Supabase. Prosseguindo...');
                         setSuccess(true);
                         setTimeout(() => navigate('/login'), 5000);
                         return;
                     }
 
-                    setError(`Solicitação registrada na Auth, mas houve um erro no perfil: ${profileError.message}. Por favor, avise o administrador.`);
+                    // Se for erro de permissão (RLS)
+                    if (profileError.code === '42501') {
+                        console.error('⛔ Permissão negada para inserir na tabela profiles. Verifique as políticas RLS.');
+                    }
+
+                    setError(`Cadastro na Auth OK, mas erro no Perfil [${profileError.code}]: ${profileError.message}`);
                     setLoading(false);
-                    return; // Interrompe para que o usuário veja o erro
+                    return;
                 }
 
                 console.log('✅ Profile created successfully');

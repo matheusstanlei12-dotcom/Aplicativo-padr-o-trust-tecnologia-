@@ -71,15 +71,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             if (data) {
                 console.log('✅ Role loaded:', data.role, 'Status:', data.status);
-                setRole(data.role as UserRole);
-
+                setRole((data.role || 'perito') as UserRole);
+                
                 const isSuperAdmin = userEmail === 'matheus.stanley12@gmail.com';
                 setStatus(isSuperAdmin ? 'APROVADO' : (data.status || 'PENDENTE'));
             } else {
-                console.warn('⚠️ No role data found for user');
+                console.warn('⚠️ No role data found for user, setting defaults');
+                setRole('perito');
+                setStatus('PENDENTE');
             }
         } catch (error) {
             console.error('💥 Exception fetching role:', error);
+            setRole('perito');
+            setStatus('PENDENTE');
         } finally {
             setLoading(false);
             console.log('🔄 AuthContext: Loading state finished.');
