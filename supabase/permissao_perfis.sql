@@ -1,43 +1,55 @@
 -- ==========================================================
--- TRUST TECNOLOGIA - PERMISSÃO DE GESTÃO DE USUÁRIOS (RLS)
+-- TRUST TECNOLOGIA - PERMISSÃO TOTAL PARA ADMINISTRADOR (FINAL)
 -- ==========================================================
--- Instruções: Copie este código e cole no SQL EDITOR do seu painel do Supabase.
--- Isso permitirá que usuários GESTORES selecionem e gerenciem perfis de outros usuários.
+-- Este script garante que o seu usuário tenha acesso total NO BANCO DE DADOS,
+-- permitindo ver todos os usuários e receber notificações de cadastro.
 
--- 1. Permitir que GESTORES vejam todos os perfis
+-- 1. Garantir que o seu usuário seja GESTOR no banco de dados
+UPDATE profiles 
+SET role = 'gestor', status = 'APROVADO' 
+WHERE email = 'matheus.stanley12@gmail.com';
+
+-- 2. Recriar a função de verificação (caso não tenha rodado antes)
+CREATE OR REPLACE FUNCTION check_is_gestor(user_id uuid)
+RETURNS boolean AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM profiles 
+    WHERE id = user_id 
+    AND role = 'gestor'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 3. Limpar políticas obsoletas
 DROP POLICY IF EXISTS "Gestores podem ver todos os perfis" ON profiles;
-CREATE POLICY "Gestores podem ver todos os perfis" ON profiles 
-FOR SELECT USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE profiles.id = auth.uid() 
-    AND profiles.role = 'gestor'
-  )
-);
-
--- 2. Permitir que GESTORES atualizem perfis (para aprovação e troca de cargo)
 DROP POLICY IF EXISTS "Gestores podem atualizar perfis" ON profiles;
-CREATE POLICY "Gestores podem atualizar perfis" ON profiles 
-FOR UPDATE USING (
-  EXISTS (
-    SELECT 1 FROM profiles 
-    WHERE profiles.id = auth.uid() 
-    AND profiles.role = 'gestor'
-  )
+DROP POLICY IF EXISTS "Usuarios podem ver o proprio perfil" ON profiles;
+
+-- 4. Criar Política Master de Visualização
+-- Permite ver se:
+--   a) For Gestor (via função)
+--   b) For o seu e-mail de administrador (via token JWT)
+--   c) For o próprio usuário
+CREATE POLICY "Gestão total de perfis" ON profiles 
+FOR SELECT USING (
+  check_is_gestor(auth.uid()) 
+  OR (auth.jwt() ->> 'email') = 'matheus.stanley12@gmail.com'
+  OR auth.uid() = id
 );
 
--- 3. Permitir que novos usuários (anon) criem seus próprios perfis durante o Register
+-- 5. Criar Política Master de Atualização
+CREATE POLICY "Gestão total de atualização" ON profiles 
+FOR UPDATE USING (
+  check_is_gestor(auth.uid()) 
+  OR (auth.jwt() ->> 'email') = 'matheus.stanley12@gmail.com'
+  OR auth.uid() = id
+);
+
+-- 6. Garantir permissão de cadastro para novos usuários
 DROP POLICY IF EXISTS "Qualquer um pode criar o próprio perfil" ON profiles;
 CREATE POLICY "Qualquer um pode criar o próprio perfil" ON profiles 
 FOR INSERT WITH CHECK (true);
 
--- 4. Permitir que o próprio usuário veja e edite seu perfil
-DROP POLICY IF EXISTS "Usuarios podem ver o proprio perfil" ON profiles;
-CREATE POLICY "Usuarios podem ver o proprio perfil" ON profiles 
-FOR SELECT USING (auth.uid() = id);
-
-DROP POLICY IF EXISTS "Usuarios podem atualizar o proprio perfil" ON profiles;
-CREATE POLICY "Usuarios podem atualizar o proprio perfil" ON profiles 
-FOR UPDATE USING (auth.uid() = id);
-
--- NOTA: Após rodar este comando, os usuários cadastrados aparecerão imediatamente no seu painel.
+-- NOTA: Rode este script no SQL Editor do Supabase e atualize a página Gestão de Usuários.
+-- Agora todos os usuários pendentes deverão aparecer para você.

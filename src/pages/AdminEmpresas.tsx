@@ -17,7 +17,7 @@ interface Empresa {
 }
 
 export const AdminEmpresas: React.FC = () => {
-    const { role, loading: authLoading } = useAuth();
+    const { isProgrammer, loading: authLoading } = useAuth();
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
@@ -31,15 +31,16 @@ export const AdminEmpresas: React.FC = () => {
         ativo: true
     });
 
+    useEffect(() => {
+        if (authLoading) return;
+        fetchEmpresas();
+    }, [authLoading]);
+
     if (authLoading) return <div>Carregando permissões...</div>;
 
-    if (role !== 'gestor') {
+    if (!isProgrammer) {
         return <Navigate to="/dashboard" replace />;
     }
-
-    useEffect(() => {
-        fetchEmpresas();
-    }, []);
 
     const fetchEmpresas = async () => {
         try {

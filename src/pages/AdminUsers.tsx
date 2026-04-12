@@ -22,21 +22,15 @@ interface Empresa {
 }
 
 export const AdminUsers: React.FC = () => {
-    const { role, loading: authLoading } = useAuth();
+    const { role, isProgrammer, loading: authLoading } = useAuth();
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
     const [loading, setLoading] = useState(true);
-
-    if (authLoading) return <div className="loading-spinner-container">Carregando permissões...</div>;
-
-    // Trava de segurança extra: Apenas Gestor pode acessar
-    if (role !== 'gestor') {
-        return <Navigate to="/dashboard" replace />;
-    }
-
     const [debugInfo, setDebugInfo] = useState<{ count: number, error: string | null }>({ count: 0, error: null });
 
     useEffect(() => {
+        if (authLoading) return;
+        
         fetchInitialData();
 
         // 🟢 Assinatura em Tempo Real para Novos Cadastros/Alterações
@@ -54,7 +48,14 @@ export const AdminUsers: React.FC = () => {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [authLoading]);
+
+    if (authLoading) return <div className="loading-spinner-container">Carregando permissões...</div>;
+
+    // Trava de segurança extra: Apenas Gestor ou Programador pode acessar
+    if (role !== 'gestor' && role !== 'programador') {
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const fetchInitialData = async () => {
         setLoading(true);
@@ -147,7 +148,7 @@ export const AdminUsers: React.FC = () => {
             }
         } catch (error: any) {
             console.error('Erro ao atualizar status:', error);
-            alert(`Erro ao atualizar status: ${error.message || 'Verifique as permissões de administrador (RLS).'}`);
+            alert(`Erro ao atualizar status: ${error.message || 'Esta ação é exclusiva do Programador.'}`);
         }
     };
 
@@ -204,9 +205,9 @@ export const AdminUsers: React.FC = () => {
     };
 
     const stats = {
-        total: Array.isArray(users) ? users.length : 0,
-        pendentes: Array.isArray(users) ? users.filter(u => u && (u.status === 'PENDENTE' || !u.status)).length : 0,
-        clientes: Array.isArray(users) ? users.filter(u => u && u.role === 'cliente').length : 0
+        total: users.length,
+        pendentes: users.filter(u => u.status === 'PENDENTE' || !u.status).length,
+        clientes: users.filter(u => u.role === 'cliente').length
     };
 
     return (
@@ -313,6 +314,7 @@ export const AdminUsers: React.FC = () => {
                                                 value={user.role || 'perito'}
                                                 onChange={(e) => handleUpdateRole(user.id, e.target.value)}
                                                 className="role-select"
+                                                disabled={!isProgrammer}
                                             >
                                                 <option value="perito">Perito</option>
                                                 <option value="pcp">PCP</option>
@@ -330,6 +332,7 @@ export const AdminUsers: React.FC = () => {
                                                     onChange={(e) => handleUpdateEmpresa(user.id, e.target.value || null)}
                                                     className="role-select"
                                                     style={{ width: '100%', maxWidth: '200px' }}
+                                                    disabled={!isProgrammer}
                                                 >
                                                     <option value="">Selecione...</option>
                                                     {empresas.map(e => (
@@ -351,17 +354,19 @@ export const AdminUsers: React.FC = () => {
                                             <div className="action-buttons">
                                                 {user.status !== 'APROVADO' && (
                                                     <button 
-                                                        className="btn-action btn-approve" 
-                                                        onClick={() => handleUpdateStatus(user.id, 'APROVADO')} 
-                                                        title="Aprovar Usuário"
+                                                        className={`btn-action btn-approve ${!isProgrammer ? 'disabled' : ''}`} 
+                                                        onClick={() => isProgrammer && handleUpdateStatus(user.id, 'APROVADO')} 
+                                                        title={isProgrammer ? "Aprovar Usuário" : "Apenas o programador pode aprovar"}
+                                                        disabled={!isProgrammer}
                                                     >
                                                         <Check size={18} />
                                                     </button>
                                                 )}
                                                 <button
-                                                    className="btn-action btn-delete"
-                                                    onClick={() => handleDeleteUser(user.id, user.full_name)}
-                                                    title="Remover Usuário"
+                                                    className={`btn-action btn-delete ${!isProgrammer ? 'disabled' : ''}`}
+                                                    onClick={() => isProgrammer && handleDeleteUser(user.id, user.full_name)}
+                                                    title={isProgrammer ? "Remover Usuário" : "Apenas o programador pode remover"}
+                                                    disabled={!isProgrammer}
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>

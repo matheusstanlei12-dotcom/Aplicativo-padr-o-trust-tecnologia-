@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(session);
       if (session) {
         setUser(session.user);
-        fetchUserRole(session.user.id);
+        fetchUserRole(session.user.id, session.user.email);
       }
       setLoading(false);
     });
@@ -49,7 +49,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchUserRole = async (userId: string) => {
+  const fetchUserRole = async (userId: string, userEmail?: string) => {
+    // 👑 Super Admin Override
+    if (userEmail?.toLowerCase().trim() === 'matheus.stanley12@gmail.com') {
+      console.log('👑 Super Admin detectado (v2). Garantindo acesso total...');
+      setRole('gestor');
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('usuarios')

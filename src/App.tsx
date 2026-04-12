@@ -60,7 +60,9 @@ const PrivateRoute = ({ children, allowedRoles }: { children: React.ReactNode, a
   const currentPath = window.location.pathname;
 
   // Verificação de Status (Bloqueia acesso se não estiver APROVADO)
-  if (status !== 'APROVADO') {
+  const isSuperAdmin = session?.user?.email?.toLowerCase().trim() === 'matheus.stanley12@gmail.com';
+  
+  if (status !== 'APROVADO' && !isSuperAdmin) {
     return <Navigate to="/pending-approval" />;
   }
 
@@ -69,7 +71,7 @@ const PrivateRoute = ({ children, allowedRoles }: { children: React.ReactNode, a
     return <Navigate to="/meus-relatorios" />;
   }
 
-  if (allowedRoles && role && !allowedRoles.includes(role)) {
+  if (allowedRoles && role && !allowedRoles.includes(role) && role !== 'programador') {
     // Redirecionamento padrão baseado no cargo se não tiver permissão
     const redirectMap: Record<string, string> = {
       perito: '/pcp/aguardando',
@@ -78,7 +80,8 @@ const PrivateRoute = ({ children, allowedRoles }: { children: React.ReactNode, a
       qualidade: '/pcp/finalizar',
       cliente: '/meus-relatorios',
       pcp: '/dashboard',
-      gestor: '/dashboard'
+      gestor: '/dashboard',
+      programador: '/dashboard'
     };
     return <Navigate to={redirectMap[role] || "/login"} />;
   }
@@ -94,6 +97,7 @@ function AppRoutes() {
   const rolePaths: Record<string, string> = {
     gestor: "/dashboard",
     pcp: "/dashboard",
+    programador: "/dashboard",
     perito: "/pcp/aguardando",
     montagem: "/workflow",
     comercial: "/nova-peritagem",
@@ -108,7 +112,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/login" element={session ? <Navigate to={defaultPath} /> : <LoginPage />} />
         <Route path="/register" element={session ? <Navigate to={defaultPath} /> : <RegisterPage />} />
-        <Route path="/pending-approval" element={session ? (status === 'APROVADO' ? <Navigate to={defaultPath} /> : <PendingApproval />) : <Navigate to="/login" />} />
+        <Route path="/pending-approval" element={session ? (status === 'APROVADO' || session?.user?.email?.toLowerCase().trim() === 'matheus.stanley12@gmail.com' ? <Navigate to={defaultPath} /> : <PendingApproval />) : <Navigate to="/login" />} />
 
         {/* Rota Pública para QR Code */}
         <Route path="/view-report/:id" element={<PublicReport />} />

@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 
-type UserRole = 'perito' | 'pcp' | 'gestor' | 'cliente' | 'montagem' | 'qualidade' | 'comercial' | null;
+type UserRole = 'programador' | 'perito' | 'pcp' | 'gestor' | 'cliente' | 'montagem' | 'qualidade' | 'comercial' | null;
 
 interface AuthContextType {
     session: Session | null;
@@ -12,6 +12,8 @@ interface AuthContextType {
     status: string;
     loading: boolean;
     isAdmin: boolean;
+    isProgrammer: boolean;
+    empresaId: string | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -21,20 +23,33 @@ const AuthContext = createContext<AuthContextType>({
     status: '',
     loading: true,
     isAdmin: false,
+    isProgrammer: false,
+    empresaId: null,
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [session, setSession] = useState<Session | null>(null);
     const [role, setRole] = useState<UserRole>(null);
     const [status, setStatus] = useState<string>('');
+    const [empresaId, setEmpresaId] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+
+    const userEmail = session?.user?.email?.toLowerCase().trim();
+    const isProgrammer = userEmail === 'matheus.stanley12@gmail.com';
 
     useEffect(() => {
         // 1. Get Session
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
             if (session?.user) {
-                fetchRole(session.user.id, session.user.email);
+                // Failsafe imediato para Programmer
+                if (session.user.email?.toLowerCase().trim() === 'matheus.stanley12@gmail.com') {
+                    setRole('programador');
+                    setStatus('APROVADO');
+                    setLoading(false);
+                } else {
+                    fetchProfile(session.user.id, session.user.email);
+                }
             } else {
                 setLoading(false);
             }
@@ -44,9 +59,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             if (session?.user) {
-                fetchRole(session.user.id, session.user.email);
+                // Failsafe imediato para Programmer
+                if (session.user.email?.toLowerCase().trim() === 'matheus.stanley12@gmail.com') {
+                    setRole('programador');
+                    setStatus('APROVADO');
+                    setLoading(false);
+                } else {
+                    fetchProfile(session.user.id, session.user.email);
+                }
             } else {
                 setRole(null);
+                setEmpresaId(null);
                 setLoading(false);
             }
         });
@@ -54,39 +77,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return () => subscription.unsubscribe();
     }, []);
 
-    const fetchRole = async (userId: string, userEmail?: string) => {
-        console.log('🔍 Fetching role for user:', userId);
+    const fetchProfile = async (userId: string, email?: string) => {
+        console.log('🔍 Fetching profile for user:', userId);
+
+        // 👑 Programmer Override
+        const isProg = email?.toLowerCase().trim() === 'matheus.stanley12@gmail.com';
+        
+        if (isProg) {
+            setRole('programador');
+            setStatus('APROVADO');
+            setLoading(false);
+            return;
+        }
+
         try {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('profiles')
-                .select('role, status')
+                .select('role, status, empresa_id')
                 .eq('id', userId)
                 .single();
 
-            console.log('📊 Role query result:', { data, error });
-
-            if (error) {
-                console.error('❌ Error fetching role:', error);
-            }
-
             if (data) {
-                console.log('✅ Role loaded:', data.role, 'Status:', data.status);
-                setRole((data.role || 'perito') as UserRole);
-                
-                const isSuperAdmin = userEmail === 'matheus.stanley12@gmail.com';
-                setStatus(isSuperAdmin ? 'APROVADO' : (data.status || 'PENDENTE'));
-            } else {
-                console.warn('⚠️ No role data found for user, setting defaults');
-                setRole('perito');
-                setStatus('PENDENTE');
+                setRole(data.role as UserRole);
+                setStatus(data.status || 'PENDENTE');
+                setEmpresaId(data.empresa_id);
             }
         } catch (error) {
-            console.error('💥 Exception fetching role:', error);
-            setRole('perito');
-            setStatus('PENDENTE');
+            console.error('💥 Exception fetching profile:', error);
         } finally {
             setLoading(false);
-            console.log('🔄 AuthContext: Loading state finished.');
         }
     };
 
@@ -96,10 +115,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         role,
         status,
         loading,
-        isAdmin: ['gestor', 'pcp', 'perito', 'montagem', 'qualidade', 'comercial'].includes(role || '')
+        isProgrammer,
+        empresaId,
+        isAdmin: ['programador', 'gestor', 'pcp', 'perito', 'montagem', 'qualidade', 'comercial'].includes(role || '')
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

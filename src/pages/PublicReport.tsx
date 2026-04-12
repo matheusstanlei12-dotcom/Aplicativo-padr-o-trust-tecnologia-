@@ -80,13 +80,10 @@ export const PublicReport: React.FC = () => {
 
                 if (tag || os) {
                     console.log(`🔍 Tentando busca de contingência (Tag: ${tag}, OS: ${os})...`);
-                    const cleanTag = (tag || '').replace(/["']/g, '');
-                    const cleanOs = (os || '').replace(/["']/g, '');
-                    
                     const { data: fallbackData } = await supabase
                         .from('peritagens')
                         .select('*')
-                        .or(`tag.eq.${cleanTag},os_interna.eq.${cleanOs}`)
+                        .or(`tag.eq."${tag}",os_interna.eq."${os}"`)
                         .maybeSingle();
                     
                     if (fallbackData) {

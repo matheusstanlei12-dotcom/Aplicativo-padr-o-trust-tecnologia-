@@ -255,6 +255,101 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 8,
         color: '#999'
+    },
+    // Estilos Ficha Mourão e Filhos (Diesel)
+    dieselHeaderContainer: {
+        borderWidth: 1,
+        borderColor: '#333',
+        padding: 0,
+        marginBottom: 10,
+    },
+    dieselTopRow: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+    },
+    dieselLogoBox: {
+        width: '25%',
+        padding: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRightWidth: 1,
+        borderRightColor: '#333',
+    },
+    dieselInfoBox: {
+        width: '45%',
+        padding: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRightWidth: 1,
+        borderRightColor: '#333',
+    },
+    dieselAdminBox: {
+        width: '30%',
+        padding: 5,
+    },
+    dieselTitle: {
+        fontSize: 10,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 2,
+    },
+    dieselSubtitle: {
+        fontSize: 6,
+        textAlign: 'center',
+        color: '#555',
+    },
+    dieselBigField: {
+        borderWidth: 1,
+        borderColor: '#333',
+        borderRadius: 5,
+        padding: 2,
+        marginBottom: 3,
+    },
+    dieselLabel: {
+        fontSize: 6,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+    },
+    dieselValueSmall: {
+        fontSize: 8,
+        fontWeight: 'bold',
+    },
+    dieselGridRow: {
+        flexDirection: 'row',
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+    },
+    dieselBox: {
+        padding: 4,
+        borderRightWidth: 1,
+        borderRightColor: '#333',
+    },
+    dieselSectionHeader: {
+        backgroundColor: '#ccc',
+        textAlign: 'center',
+        fontSize: 8,
+        fontWeight: 'bold',
+        padding: 2,
+        borderBottomWidth: 1,
+        borderBottomColor: '#333',
+    },
+    dieselInputRow: {
+        flexDirection: 'row',
+        padding: 3,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    dieselInputField: {
+        fontSize: 7,
+        marginRight: 10,
+    },
+    dieselCheckbox: {
+        width: 8,
+        height: 8,
+        borderWidth: 1,
+        borderColor: '#333',
+        marginRight: 3,
     }
 });
 
@@ -324,363 +419,443 @@ interface ReportData {
     area?: string;
     linha?: string;
     tipo_cilindro?: string;
+    ordem?: string;
 }
 
-export const ReportTemplate: React.FC<{ data: ReportData }> = ({ data }) => (
-    <Document>
-        {/* PÁGINA 0: CAPA */}
-        <Page size="A4" style={styles.coverPage}>
-            <Image src="/logo.png" style={styles.coverLogo} />
-            <Text style={styles.coverTitle}>RELATÓRIO TÉCNICO DE PERITAGEM</Text>
+export const ReportTemplate: React.FC<{ data: ReportData }> = ({ data }) => {
+
+    return (
+        <Document>
+            {/* PÁGINA 0: CAPA */}
+            <Page size="A4" style={styles.coverPage}>
+                <Image src="/logo.png" style={styles.coverLogo} />
+                <Text style={styles.coverTitle}>RELATÓRIO TÉCNICO DE PERITAGEM</Text>
 
 
-            <View style={styles.coverDivider} />
+                <View style={styles.coverDivider} />
 
-            <View style={styles.coverDetails}>
-                <View style={styles.coverDetailItem}>
-                    <Text style={styles.coverDetailLabel}>CLIENTE</Text>
-                    <Text style={styles.coverDetailValue}>{data.cliente}</Text>
-                </View>
-                <View style={styles.coverDetailItem}>
-                    <Text style={styles.coverDetailLabel}>ORDEM DE SERVIÇO</Text>
-                    <Text style={styles.coverDetailValue}>{data.numero_os}</Text>
-                </View>
-                <View style={styles.coverDetailItem}>
-                    <Text style={styles.coverDetailLabel}>DATA DE EMISSÃO</Text>
-                    <Text style={styles.coverDetailValue}>{data.data}</Text>
-                </View>
-            </View>
-        </Page>
-
-        {/* PÁGINA 1: Identificação e Lista de Peças */}
-        <Page size="A4" style={styles.page}>
-            {/* Foto Frontal no topo da página 2 */}
-            {data.foto_frontal && (
-                <View style={{ marginBottom: 20, alignItems: 'center' }}>
-                    <Image src={data.foto_frontal} style={{ width: '100%', height: 280, objectFit: 'contain', objectPosition: 'center' }} />
-                </View>
-            )}
-
-            <View style={{ marginBottom: 20 }}>
-                {/* Título Central */}
-
-
-                {/* Tabela de Cabeçalho */}
-                {/* Tabela de Cabeçalho - Layout 2 Colunas */}
-                <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#eee', paddingBottom: 10 }}>
-                    {/* Título com faixa azul */}
-                    <View style={{ padding: 5, alignItems: 'center', justifyContent: 'center', backgroundColor: '#005696', marginBottom: 10 }}>
-                        <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#fff' }}>IDENTIFICAÇÃO</Text>
+                <View style={styles.coverDetails}>
+                    <View style={styles.coverDetailItem}>
+                        <Text style={styles.coverDetailLabel}>CLIENTE</Text>
+                        <Text style={styles.coverDetailValue}>{data.cliente}</Text>
                     </View>
-
-                    {/* Grid de Dados - Layout Robusto com Linhas Explícitas */}
-                    <View style={{ marginTop: 5 }}>
-                        {/* Linha 1 */}
-                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                            {hasValue(data.numero_os) && (
-                                <View style={{ width: '50%', paddingRight: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'ORDEM DE SERVIÇO:' : 'ORDEM DE SERVIÇO:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.numero_os}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.nota_fiscal) && (
-                                <View style={{ width: '50%', paddingLeft: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>NF:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.nota_fiscal}</Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {/* Linha 2 */}
-                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                            {hasValue(data.ni) && (
-                                <View style={{ width: '50%', paddingRight: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'NÚMERO DE SÉRIE:' : 'NI:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.ni}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.desenho_conjunto) && (
-                                <View style={{ width: '50%', paddingLeft: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'APLICAÇÃO:' : 'DESENHO:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.desenho_conjunto}</Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {/* Linha 3 */}
-                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                            {hasValue(data.tipo_modelo) && (
-                                <View style={{ width: '50%', paddingRight: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'MODELO DO MOTOR:' : 'TIPO/ MODELO:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.tipo_modelo}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.fabricante) && (
-                                <View style={{ width: '50%', paddingLeft: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'MARCA / FABRICANTE:' : 'FABRICANTE:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.fabricante}</Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {/* Linha 4 (Específicos Motores) */}
-                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                            {hasValue(data.lubrificante) && (
-                                <View style={{ width: '50%', paddingRight: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'HORÍMETRO:' : 'LUBRIFICANTE:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.lubrificante}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.volume) && (
-                                <View style={{ width: '50%', paddingLeft: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'POTÊNCIA / RPM:' : 'VOLUME:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.volume}</Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {/* Linha 5 (Específicos Motores) */}
-                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                            {hasValue(data.acoplamento_polia) && (
-                                <View style={{ width: '50%', paddingRight: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'SISTEMA DE ARREFECIMENTO:' : 'ACOPLAMENTO / POLIA:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.acoplamento_polia}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.sistema_lubrificacao) && (
-                                <View style={{ width: '50%', paddingLeft: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'SISTEMA DE INJEÇÃO:' : 'SISTEMA DE LUBRIFICAÇÃO:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.sistema_lubrificacao}</Text>
-                                </View>
-                            )}
-                        </View>
-
-                        {/* Linha 6 (Outros e Obs) */}
-                        <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-                            {hasValue(data.outros_especificar) && (
-                                <View style={{ width: '50%', paddingRight: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>{data.tipo_cilindro === 'Motores' ? 'ASPIRAÇÃO:' : 'OUTROS:'}</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.outros_especificar}</Text>
-                                </View>
-                            )}
-                            {hasValue(data.observacoes_gerais) && (
-                                <View style={{ width: '50%', paddingLeft: 10 }}>
-                                    <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>OBSERVAÇÕES:</Text>
-                                    <Text style={{ fontSize: 9 }}>{data.observacoes_gerais}</Text>
-                                </View>
-                            )}
-                        </View>
+                    <View style={styles.coverDetailItem}>
+                        <Text style={styles.coverDetailLabel}>ORDEM DE SERVIÇO</Text>
+                        <Text style={styles.coverDetailValue}>{data.numero_os}</Text>
+                    </View>
+                    <View style={styles.coverDetailItem}>
+                        <Text style={styles.coverDetailLabel}>DATA DE EMISSÃO</Text>
+                        <Text style={styles.coverDetailValue}>{data.data}</Text>
                     </View>
                 </View>
-            </View>
+            </Page>
 
+            {/* PÁGINA 1: Identificação e Lista de Peças */}
+            <Page size="A4" style={styles.page}>
+                <View style={{ marginBottom: 20 }}>
+                    {data.tipo_cilindro === 'Motores' ? (
+                        <>
+                            <View style={[styles.dieselHeaderContainer, { backgroundColor: '#f8fafc' }]}>
+                                <View style={styles.dieselTopRow}>
+                                    <View style={styles.dieselLogoBox}>
+                                        <Image src="/logo.png" style={{ width: 40, height: 40, objectFit: 'contain' }} />
+                                        <Text style={{ fontSize: 8, fontWeight: 'bold', marginTop: 4 }}>MOURÃO</Text>
+                                        <Text style={{ fontSize: 8, fontWeight: 'bold' }}>E FILHOS</Text>
+                                        <Text style={{ fontSize: 6, letterSpacing: 2 }}>RETÍFICA</Text>
+                                    </View>
+                                    <View style={styles.dieselInfoBox}>
+                                        <Text style={styles.dieselTitle}>MOURÃO E FILHOS RETÍFICA DIESEL LTDA</Text>
+                                        <Text style={{ fontSize: 8, fontWeight: 'bold' }}>AUTORIZAÇÃO DE CARREGAMENTO</Text>
+                                        <Text style={{ fontSize: 8, fontWeight: 'bold' }}>E TRANSPORTE</Text>
+                                        <Text style={styles.dieselSubtitle}>RUA PINTO MARTINS, 212 - VILA OCRTE, CEP 35.350-040 !VLEEITE-MG</Text>
+                                        <Text style={styles.dieselSubtitle}>TEL: (31) 3769-1969 | FAX: (31) 3769-0044 | CEL: (31) 3769-0044 : VLE330-0044</Text>
+                                    </View>
+                                    <View style={styles.dieselAdminBox}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 5 }}>
+                                            <Text style={{ fontSize: 8, marginRight: 5 }}>AUTORAÇÃO.</Text>
+                                            <View style={{ borderWidth: 1, borderColor: '#333', borderRadius: 4, padding: 2, flex: 1, alignItems: 'flex-end', backgroundColor: '#f1f5f9' }}>
+                                                <Text style={{ fontSize: 10 }}>Nº {data.ni || '0000000'}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={{ fontSize: 7 }}>
+                                            <Text style={{ marginBottom: 2 }}>OPERAÇÃO: REMESSA P/ CONSERTO</Text>
+                                            <Text style={{ marginBottom: 5 }}>VIA DE TRANSPORTE RODOVIÁRIO</Text>
+                                            <Text>DATA DE EMISSÃO: {data.data || '___/___/___'}</Text>
+                                        </View>
+                                    </View>
+                                </View>
 
-            {/* Tabela de Dimensões sem bordas com cabeçalho azul */}
-            <View style={{ marginTop: 20 }} wrap={false}>
-                <View style={{ backgroundColor: '#005696', padding: 5, marginBottom: 5 }}>
-                    <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#fff' }}>DIMENSÕES TÉCNICAS (MM)</Text>
+                                {/* Linha O.S. e Datas */}
+                                <View style={[styles.dieselGridRow, { padding: 4, alignItems: 'center' }]}>
+                                    <View style={{ flexDirection: 'row', width: '30%', alignItems: 'center' }}>
+                                        <Text style={{ fontSize: 14, marginRight: 5 }}>O.S.</Text>
+                                        <View style={{ borderWidth: 1, borderColor: '#333', borderRadius: 4, padding: 4, paddingHorizontal: 12, backgroundColor: '#cbd5e1' }}>
+                                            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{data.numero_os || '       '}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ width: '35%', paddingHorizontal: 10 }}>
+                                        <View style={{ borderWidth: 1, borderColor: '#333', borderRadius: 4, padding: 4, backgroundColor: '#fff' }}>
+                                            <Text style={{ fontSize: 10 }}>Data de Entrada: {data.data || '___/___/___'}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ width: '35%', paddingLeft: 10 }}>
+                                        <View style={{ borderWidth: 1, borderColor: '#333', borderRadius: 4, padding: 4, backgroundColor: '#fff' }}>
+                                            <Text style={{ fontSize: 10 }}>Data de Saída: ___/___/___</Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Linha Checkboxes e Vistos */}
+                                <View style={[styles.dieselGridRow, { padding: 4 }]}>
+                                    <View style={{ width: '30%' }}>
+                                        <View style={{ flexDirection: 'row', marginBottom: 4 }}>
+                                            <View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 7, marginRight: 10 }}>MAPA</Text>
+                                            <View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 7 }}>COMPUTADOR</Text>
+                                        </View>
+                                        <View style={{ flexDirection: 'row' }}>
+                                            <View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 7 }}>CERTITUS</Text>
+                                        </View>
+                                    </View>
+                                    <View style={{ width: '35%', borderBottomWidth: 1, borderBottomColor: '#333', marginHorizontal: 10, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 2 }}>
+                                        <Text style={{ fontSize: 9 }}>Visto Recepção</Text>
+                                    </View>
+                                    <View style={{ width: '35%', borderBottomWidth: 1, borderBottomColor: '#333', marginLeft: 10, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 2 }}>
+                                        <Text style={{ fontSize: 9 }}>Visto Expedição</Text>
+                                    </View>
+                                </View>
+
+                                {/* REMETENTE */}
+                                <Text style={styles.dieselSectionHeader}>REMETENTE</Text>
+                                <View style={{ padding: 4 }}>
+                                    <View style={styles.dieselInputRow}>
+                                        <Text style={[styles.dieselInputField, { width: '60%' }]}>Razão Social: {data.cliente || '_________________________________'}</Text>
+                                        <Text style={[styles.dieselInputField, { width: '20%' }]}>Tel.: ____________</Text>
+                                        <Text style={[styles.dieselInputField, { width: '20%' }]}>Cel.: ____________</Text>
+                                    </View>
+                                    <View style={styles.dieselInputRow}>
+                                        <Text style={[styles.dieselInputField, { width: '50%' }]}>End.: {data.local_equipamento || '________________________________'}</Text>
+                                        <Text style={[styles.dieselInputField, { width: '20%' }]}>Bairro: ____________</Text>
+                                        <Text style={[styles.dieselInputField, { width: '20%' }]}>Cidade: ____________</Text>
+                                        <Text style={[styles.dieselInputField, { width: '10%' }]}>UF: __</Text>
+                                    </View>
+                                    <View style={styles.dieselInputRow}>
+                                        <Text style={[styles.dieselInputField, { width: '50%' }]}>CNPJ: ________________________________</Text>
+                                        <Text style={[styles.dieselInputField, { width: '50%' }]}>INSC. ESTADUAL: ________________________________</Text>
+                                    </View>
+                                    <View style={[styles.dieselInputRow, { borderBottomWidth: 0 }]}>
+                                        <Text style={[styles.dieselInputField, { width: '50%' }]}>OFIC. MEC.: ________________________________</Text>
+                                        <Text style={[styles.dieselInputField, { width: '25%' }]}>Tel.: _______________</Text>
+                                        <Text style={[styles.dieselInputField, { width: '25%' }]}>Contato: {data.responsavel_tecnico || '____________'}</Text>
+                                    </View>
+                                </View>
+
+                                {/* MERCADORIA TRANSPORTADA */}
+                                <Text style={styles.dieselSectionHeader}>MERCADORIA TRANSPORTADA</Text>
+                                <View style={{ padding: 4 }}>
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 7 }}>PEÇAS AVULSAS</Text></View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 7 }}>MOTOR PARCIAL: DESM./MONTADO</Text></View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 7 }}>MOTOR COMPLETO: DESM./MONTADO</Text></View>
+                                    </View>
+                                    <View style={styles.dieselInputRow}>
+                                        <Text style={[styles.dieselInputField, { width: '33%' }]}>MARCA: {data.fabricante || '____________________'}</Text>
+                                        <Text style={[styles.dieselInputField, { width: '33%' }]}>APLICAÇÃO: {data.desenho_conjunto || '____________________'}</Text>
+                                        <Text style={[styles.dieselInputField, { width: '33%' }]}>SÉRIE/ANO: {data.ni || '____________________'}</Text>
+                                    </View>
+                                    <View style={[styles.dieselGridRow, { borderBottomWidth: 0, marginTop: 6, justifyContent: 'space-between' }]}>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 5.5 }}>A EXECUTAR</Text></View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 5.5 }}>ORÇAMENTO</Text></View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 5.5 }}>GARANTIA</Text></View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 5.5 }}>BASE TROCA</Text></View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 5.5 }}>ORÇAMENTO PARALELO</Text></View>
+                                        <View style={{ flexDirection: 'row', alignItems: 'center' }}><View style={styles.dieselCheckbox}></View><Text style={{ fontSize: 5.5 }}>OBRIGATÓRIO ANEXAR CÓPIA...</Text></View>
+                                    </View>
+                                </View>
+
+                                {/* DESCRIÇÃO DAS PEÇAS */}
+                                <Text style={styles.dieselSectionHeader}>DESCRIÇÃO DAS PEÇAS</Text>
+                            </View>
+
+                            {/* Foto Frontal abaixo do cabeçalho Mourão */}
+                            {data.foto_frontal && (
+                                <View style={{ marginBottom: 20, alignItems: 'center' }}>
+                                    <Image src={data.foto_frontal} style={{ width: '100%', height: 260, objectFit: 'contain' }} />
+                                </View>
+                            )}
+                        </>
+                    ) : (
+                        <>
+                            {/* Layout Padrão: Foto primeiro, depois Identificação */}
+                            {data.foto_frontal && (
+                                <View style={{ marginBottom: 20, alignItems: 'center' }}>
+                                    <Image src={data.foto_frontal} style={{ width: '100%', height: 280, objectFit: 'contain' }} />
+                                </View>
+                            )}
+                            
+                            <View style={{ marginTop: 10, borderBottomWidth: 1, borderBottomColor: '#eee', paddingBottom: 10 }}>
+                                <View style={{ padding: 5, alignItems: 'center', justifyContent: 'center', backgroundColor: '#005696', marginBottom: 10 }}>
+                                    <Text style={{ fontSize: 12, fontWeight: 'bold', color: '#fff' }}>IDENTIFICAÇÃO</Text>
+                                </View>
+
+                                <View style={{ marginTop: 5 }}>
+                                    <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                                        {hasValue(data.numero_os) && (
+                                            <View style={{ width: '50%', paddingRight: 10 }}>
+                                                <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>ORDEM DE SERVIÇO:</Text>
+                                                <Text style={{ fontSize: 9 }}>{data.numero_os}</Text>
+                                            </View>
+                                        )}
+                                        {hasValue(data.nota_fiscal) && (
+                                            <View style={{ width: '50%', paddingLeft: 10 }}>
+                                                <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>NF:</Text>
+                                                <Text style={{ fontSize: 9 }}>{data.nota_fiscal}</Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                    <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                                        {hasValue(data.ni) && (
+                                            <View style={{ width: '50%', paddingRight: 10 }}>
+                                                <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>NI:</Text>
+                                                <Text style={{ fontSize: 9 }}>{data.ni}</Text>
+                                            </View>
+                                        )}
+                                        {hasValue(data.desenho_conjunto) && (
+                                            <View style={{ width: '50%', paddingLeft: 10 }}>
+                                                <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>DESENHO:</Text>
+                                                <Text style={{ fontSize: 9 }}>{data.desenho_conjunto}</Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                    <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                                        {hasValue(data.tipo_modelo) && (
+                                            <View style={{ width: '50%', paddingRight: 10 }}>
+                                                <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>TIPO/ MODELO:</Text>
+                                                <Text style={{ fontSize: 9 }}>{data.tipo_modelo}</Text>
+                                            </View>
+                                        )}
+                                        {hasValue(data.fabricante) && (
+                                            <View style={{ width: '50%', paddingLeft: 10 }}>
+                                                <Text style={{ fontSize: 8, fontWeight: 'bold', color: '#555', marginBottom: 2 }}>FABRICANTE:</Text>
+                                                <Text style={{ fontSize: 9 }}>{data.fabricante}</Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                </View>
+                            </View>
+                        </>
+                    )}
                 </View>
-                <View style={{ padding: 4 }}>
-                    <View style={{ flexDirection: 'row', marginBottom: 4 }}>
-                        <View style={{ width: '60%' }}>
-                            <Text style={{ fontSize: 9 }}>
-                                <Text style={{ fontWeight: 'bold' }}>CAMISA: </Text>
-                                Ø INT. {formatDim(data.camisa_int)} x Ø EXT. {formatDim(data.camisa_ext)} x COMP. {formatDim(data.camisa_comp)}
-                            </Text>
-                        </View>
-                        <View style={{ width: '40%' }}>
-                            <Text style={{ fontSize: 9 }}>
-                                <Text style={{ fontWeight: 'bold' }}>HASTE: </Text>
-                                Ø {formatDim(data.haste_diam)} x COMP. {formatDim(data.haste_comp)}
-                            </Text>
-                        </View>
+
+
+                {/* Tabela de Dimensões sem bordas com cabeçalho azul */}
+                {data.tipo_cilindro !== 'Motores' && (
+                <View style={{ marginTop: 20 }} wrap={false}>
+                    <View style={{ backgroundColor: '#005696', padding: 5, marginBottom: 5 }}>
+                        <Text style={{ fontSize: 10, fontWeight: 'bold', color: '#fff' }}>DIMENSÕES TÉCNICAS (MM)</Text>
                     </View>
-                    <View>
-                        <Text style={{ fontSize: 9 }}>
-                            <Text style={{ fontWeight: 'bold' }}>CURSO: </Text>
-                            {formatDim(data.curso)}
-                        </Text>
-                    </View>
-                </View>
-            </View>
-
-
-
-            {/* Início da Tabela de Itens na mesma página */}
-
-            <View style={[styles.table, { marginTop: 15 }]}>
-                <View style={styles.tableHeader}>
-                    <Text style={styles.colNo}>N°</Text>
-                    <Text style={{ width: '67%' }}>DESCRIÇÃO DE PEÇA/SERVIÇO</Text>
-                    <Text style={styles.colX}>X</Text>
-                    <Text style={styles.colQtd}>QTD</Text>
-                </View>
-                {data.items.map((item, index) => (
-                    <View key={index} style={styles.tableRow} wrap={false}>
-                        <Text style={styles.colNo}>{index + 1}</Text>
-                        <Text style={{ width: '67%', paddingRight: 5 }}>{item.descricao}</Text>
-                        <Text style={[styles.colX, {
-                            color: item.selecionado ? '#e67e22' : '#27ae60',
-                            fontSize: item.selecionado ? 7 : 7,
-                            fontWeight: 'bold'
-                        }]}>
-                            {item.selecionado ? 'NÃO CONFORME' : 'CONFORME'}
-                        </Text>
-                        <Text style={styles.colQtd}>{item.qtd || '-'}</Text>
-                    </View>
-                ))}
-            </View>
-
-
-
-            {/* Vedações - Logo após a tabela de itens */}
-            {data.vedacoes && data.vedacoes.length > 0 && (
-                <View break={false}>
-                    <View style={[styles.sectionTitle, { marginTop: 15 }]}>
-                        <Text>EMPENHO DE MATERIAIS</Text>
-                    </View>
-                    <View style={styles.table}>
-                        <View style={styles.tableHeader}>
-                            <Text style={styles.colNo}>N°</Text>
-                            <Text style={styles.colDesc}>DESCRIÇÃO</Text>
-                            <Text style={styles.colX}>CONFORMIDADE</Text>
-                            <Text style={styles.colQtd}>QTD</Text>
-                            <Text style={styles.colDim}>OBSERVAÇÃO</Text>
-                        </View>
-                        {data.vedacoes.map((v, index) => (
-                            <View key={index} style={styles.tableRow} wrap={false}>
-                                <Text style={styles.colNo}>{index + 1}</Text>
-                                <Text style={styles.colDesc} hyphenationCallback={(word) => [word]}>{v.descricao}</Text>
-                                <Text style={[styles.colX, {
-                                    color: v.selecionado ? '#e67e22' : '#27ae60',
-                                    fontSize: 7,
-                                    fontWeight: 'bold'
-                                }]}>
-                                    {v.selecionado ? 'NÃO CONFORME' : 'CONFORME'}
+                    <View style={{ padding: 4 }}>
+                        <View style={{ flexDirection: 'row', marginBottom: 4 }}>
+                            <View style={{ width: '60%' }}>
+                                <Text style={{ fontSize: 9 }}>
+                                    <Text style={{ fontWeight: 'bold' }}>CAMISA: </Text>
+                                    Ø INT. {formatDim(data.camisa_int)} x Ø EXT. {formatDim(data.camisa_ext)} x COMP. {formatDim(data.camisa_comp)}
                                 </Text>
-                                <Text style={styles.colQtd}>{v.qtd}</Text>
-                                <Text style={styles.colDim}>{v.selecionado ? '-' : (v.observacao || '-')}</Text>
                             </View>
-                        ))}
+                            <View style={{ width: '40%' }}>
+                                <Text style={{ fontSize: 9 }}>
+                                    <Text style={{ fontWeight: 'bold' }}>HASTE: </Text>
+                                    Ø {formatDim(data.haste_diam)} x COMP. {formatDim(data.haste_comp)}
+                                </Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Text style={{ fontSize: 9 }}>
+                                <Text style={{ fontWeight: 'bold' }}>CURSO: </Text>
+                                {formatDim(data.curso)}
+                            </Text>
+                        </View>
                     </View>
                 </View>
-            )}
+                )}
 
-            {/* Análise Detalhada - Fluxo contínuo */}
-            {data.items.some(i => i.selecionado) && (
-                <View>
-                    {data.items.filter(i => i.selecionado).map((item, index) => (
-                        <View key={index} wrap={false}>
-                            {index === 0 && (
-                                <View style={[styles.sectionTitle, { marginTop: 20 }]}>
-                                    <Text>ANÁLISE DETALHADA DE NÃO CONFORMIDADES</Text>
-                                </View>
-                            )}
-                            <View style={styles.analysisBlock} wrap={false}>
-                                <View style={styles.analysisHeader}>
-                                    <Text>ITEM {item.id || (index + 1)}: {item.descricao}</Text>
-                                </View>
-                                <View style={styles.analysisRow}>
-                                    <View style={{ width: '100%' }}>
-                                        <Text style={styles.analysisLabel}>Qtd</Text>
-                                        <Text style={styles.analysisValue}>{item.qtd}</Text>
-                                    </View>
-                                </View>
-                                {/* Diâmetro Interno */}
-                                {(item.diametro_interno_encontrado || item.diametro_interno_especificado) && (
-                                    <View style={styles.analysisRow}>
-                                        <View style={styles.analysisField}>
-                                            <Text style={styles.analysisLabel}>Ø Int. Enc. (mm)</Text>
-                                            <Text style={styles.analysisValue}>{item.diametro_interno_encontrado || '-'}</Text>
-                                        </View>
-                                        <View style={styles.analysisField}>
-                                            <Text style={styles.analysisLabel}>Ø Int. Espec. (mm)</Text>
-                                            <Text style={styles.analysisValue}>{item.diametro_interno_especificado || '-'}</Text>
-                                        </View>
-                                        <View style={styles.analysisField}>
-                                            <Text style={[styles.analysisLabel, { color: '#27ae60' }]}>Desvio</Text>
-                                            <View style={styles.materialFaltanteBox}>
-                                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: parseFloat(item.desvio_interno || '0') < 0 ? '#e74c3c' : '#27ae60' }}>
-                                                    {item.desvio_interno ? `${parseFloat(item.desvio_interno) >= 0 ? '+' : ''}${item.desvio_interno.replace('.', ',')} mm` : '-'}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                )}
 
-                                {/* Diâmetro Externo */}
-                                {(item.diametro_externo_encontrado || item.diametro_externo_especificado) && (
-                                    <View style={styles.analysisRow}>
-                                        <View style={styles.analysisField}>
-                                            <Text style={styles.analysisLabel}>Ø Ext. Enc. (mm)</Text>
-                                            <Text style={styles.analysisValue}>{item.diametro_externo_encontrado || '-'}</Text>
-                                        </View>
-                                        <View style={styles.analysisField}>
-                                            <Text style={styles.analysisLabel}>Ø Ext. Espec. (mm)</Text>
-                                            <Text style={styles.analysisValue}>{item.diametro_externo_especificado || '-'}</Text>
-                                        </View>
-                                        <View style={styles.analysisField}>
-                                            <Text style={[styles.analysisLabel, { color: '#27ae60' }]}>Desvio</Text>
-                                            <View style={styles.materialFaltanteBox}>
-                                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: parseFloat(item.desvio_externo || '0') < 0 ? '#e74c3c' : '#27ae60' }}>
-                                                    {item.desvio_externo ? `${parseFloat(item.desvio_externo) >= 0 ? '+' : ''}${item.desvio_externo.replace('.', ',')} mm` : '-'}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                )}
 
-                                {/* Comprimento */}
-                                {(item.comprimento_encontrado || item.comprimento_especificado) && (
-                                    <View style={styles.analysisRow}>
-                                        <View style={styles.analysisField}>
-                                            <Text style={styles.analysisLabel}>Comp. Enc. (mm)</Text>
-                                            <Text style={styles.analysisValue}>{item.comprimento_encontrado || '-'}</Text>
-                                        </View>
-                                        <View style={styles.analysisField}>
-                                            <Text style={styles.analysisLabel}>Comp. Espec. (mm)</Text>
-                                            <Text style={styles.analysisValue}>{item.comprimento_especificado || '-'}</Text>
-                                        </View>
-                                        <View style={styles.analysisField}>
-                                            <Text style={[styles.analysisLabel, { color: '#27ae60' }]}>Desvio</Text>
-                                            <View style={styles.materialFaltanteBox}>
-                                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: parseFloat(item.desvio_comprimento || '0') < 0 ? '#e74c3c' : '#27ae60' }}>
-                                                    {item.desvio_comprimento ? `${parseFloat(item.desvio_comprimento) >= 0 ? '+' : ''}${item.desvio_comprimento.replace('.', ',')} mm` : '-'}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </View>
-                                )}
-                                <View style={styles.analysisRow}>
-                                    <View style={styles.analysisField}>
-                                        <Text style={styles.analysisLabel}>Anomalia Encontrada</Text>
-                                        <Text style={[styles.analysisValue, { minHeight: 30 }]}>{item.anomalias || '-'}</Text>
-                                    </View>
-                                    <View style={styles.analysisField}>
-                                        <Text style={styles.analysisLabel}>Solução Recomendada</Text>
-                                        <Text style={[styles.analysisValue, { minHeight: 30 }]}>{item.solucao || '-'}</Text>
-                                    </View>
-                                </View>
+                {/* Início da Tabela de Itens na mesma página */}
 
-                                {/* Fotos do Item */}
-                                {item.fotos && item.fotos.length > 0 && (
-                                    <View style={styles.photoGrid}>
-                                        {item.fotos.map((foto, fIdx) => (
-                                            <View key={fIdx} style={styles.photoContainer} wrap={false}>
-                                                <Image src={foto} style={styles.itemPhoto} />
-                                            </View>
-                                        ))}
-                                    </View>
-                                )}
-                            </View>
+                <View style={[styles.table, { marginTop: 15 }]}>
+                    <View style={styles.tableHeader}>
+                        <Text style={styles.colNo}>N°</Text>
+                        <Text style={{ width: '67%' }}>DESCRIÇÃO DE PEÇA/SERVIÇO</Text>
+                        <Text style={styles.colX}>X</Text>
+                        <Text style={styles.colQtd}>QTD</Text>
+                    </View>
+                    {data.items.map((item, index) => (
+                        <View key={index} style={styles.tableRow} wrap={false}>
+                            <Text style={styles.colNo}>{index + 1}</Text>
+                            <Text style={{ width: '67%', paddingRight: 5 }}>{item.descricao}</Text>
+                            <Text style={[styles.colX, {
+                                color: item.selecionado ? '#e67e22' : '#27ae60',
+                                fontSize: item.selecionado ? 7 : 7,
+                                fontWeight: 'bold'
+                            }]}>
+                                {item.selecionado ? 'NÃO CONFORME' : 'CONFORME'}
+                            </Text>
+                            <Text style={styles.colQtd}>{item.qtd || '-'}</Text>
                         </View>
                     ))}
                 </View>
-            )}
 
-            <View style={styles.footer} fixed>
-                <Text>Documento gerado automaticamente pela www.trusttecnologia.com.br</Text>
-            </View>
-        </Page>
-    </Document >
-);
+
+
+                {/* Vedações - Logo após a tabela de itens */}
+                {data.vedacoes && data.vedacoes.length > 0 && (
+                    <View break={false}>
+                        <View style={[styles.sectionTitle, { marginTop: 15 }]}>
+                            <Text>EMPENHO DE MATERIAIS</Text>
+                        </View>
+                        <View style={styles.table}>
+                            <View style={styles.tableHeader}>
+                                <Text style={styles.colNo}>N°</Text>
+                                <Text style={styles.colDesc}>DESCRIÇÃO</Text>
+                                <Text style={styles.colX}>CONFORMIDADE</Text>
+                                <Text style={styles.colQtd}>QTD</Text>
+                                <Text style={styles.colDim}>OBSERVAÇÃO</Text>
+                            </View>
+                            {data.vedacoes.map((v, index) => (
+                                <View key={index} style={styles.tableRow} wrap={false}>
+                                    <Text style={styles.colNo}>{index + 1}</Text>
+                                    <Text style={styles.colDesc} hyphenationCallback={(word) => [word]}>{v.descricao}</Text>
+                                    <Text style={[styles.colX, {
+                                        color: v.selecionado ? '#e67e22' : '#27ae60',
+                                        fontSize: 7,
+                                        fontWeight: 'bold'
+                                    }]}>
+                                        {v.selecionado ? 'NÃO CONFORME' : 'CONFORME'}
+                                    </Text>
+                                    <Text style={styles.colQtd}>{v.qtd}</Text>
+                                    <Text style={styles.colDim}>{v.selecionado ? '-' : (v.observacao || '-')}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                )}
+
+                {/* Análise Detalhada - Fluxo contínuo */}
+                {data.items.some(i => i.selecionado) && (
+                    <View>
+                        {data.items.filter(i => i.selecionado).map((item, index) => (
+                            <View key={index} wrap={false}>
+                                {index === 0 && (
+                                    <View style={[styles.sectionTitle, { marginTop: 20 }]}>
+                                        <Text>ANÁLISE DETALHADA DE NÃO CONFORMIDADES</Text>
+                                    </View>
+                                )}
+                                <View style={styles.analysisBlock} wrap={false}>
+                                    <View style={styles.analysisHeader}>
+                                        <Text>ITEM {item.id || (index + 1)}: {item.descricao}</Text>
+                                    </View>
+                                    <View style={styles.analysisRow}>
+                                        <View style={{ width: '100%' }}>
+                                            <Text style={styles.analysisLabel}>Qtd</Text>
+                                            <Text style={styles.analysisValue}>{item.qtd}</Text>
+                                        </View>
+                                    </View>
+                                    {/* Diâmetro Interno */}
+                                    {(item.diametro_interno_encontrado || item.diametro_interno_especificado) && (
+                                        <View style={styles.analysisRow}>
+                                            <View style={styles.analysisField}>
+                                                <Text style={styles.analysisLabel}>Ø Int. Enc. (mm)</Text>
+                                                <Text style={styles.analysisValue}>{item.diametro_interno_encontrado || '-'}</Text>
+                                            </View>
+                                            <View style={styles.analysisField}>
+                                                <Text style={styles.analysisLabel}>Ø Int. Espec. (mm)</Text>
+                                                <Text style={styles.analysisValue}>{item.diametro_interno_especificado || '-'}</Text>
+                                            </View>
+                                            <View style={styles.analysisField}>
+                                                <Text style={[styles.analysisLabel, { color: '#27ae60' }]}>Desvio</Text>
+                                                <View style={styles.materialFaltanteBox}>
+                                                    <Text style={{ fontSize: 9, fontWeight: 'bold', color: parseFloat(item.desvio_interno || '0') < 0 ? '#e74c3c' : '#27ae60' }}>
+                                                        {item.desvio_interno ? `${parseFloat(item.desvio_interno) >= 0 ? '+' : ''}${item.desvio_interno.replace('.', ',')} mm` : '-'}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    )}
+
+                                    {/* Diâmetro Externo */}
+                                    {(item.diametro_externo_encontrado || item.diametro_externo_especificado) && (
+                                        <View style={styles.analysisRow}>
+                                            <View style={styles.analysisField}>
+                                                <Text style={styles.analysisLabel}>Ø Ext. Enc. (mm)</Text>
+                                                <Text style={styles.analysisValue}>{item.diametro_externo_encontrado || '-'}</Text>
+                                            </View>
+                                            <View style={styles.analysisField}>
+                                                <Text style={styles.analysisLabel}>Ø Ext. Espec. (mm)</Text>
+                                                <Text style={styles.analysisValue}>{item.diametro_externo_especificado || '-'}</Text>
+                                            </View>
+                                            <View style={styles.analysisField}>
+                                                <Text style={[styles.analysisLabel, { color: '#27ae60' }]}>Desvio</Text>
+                                                <View style={styles.materialFaltanteBox}>
+                                                    <Text style={{ fontSize: 9, fontWeight: 'bold', color: parseFloat(item.desvio_externo || '0') < 0 ? '#e74c3c' : '#27ae60' }}>
+                                                        {item.desvio_externo ? `${parseFloat(item.desvio_externo) >= 0 ? '+' : ''}${item.desvio_externo.replace('.', ',')} mm` : '-'}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    )}
+
+                                    {/* Comprimento */}
+                                    {(item.comprimento_encontrado || item.comprimento_especificado) && (
+                                        <View style={styles.analysisRow}>
+                                            <View style={styles.analysisField}>
+                                                <Text style={styles.analysisLabel}>Comp. Enc. (mm)</Text>
+                                                <Text style={styles.analysisValue}>{item.comprimento_encontrado || '-'}</Text>
+                                            </View>
+                                            <View style={styles.analysisField}>
+                                                <Text style={styles.analysisLabel}>Comp. Espec. (mm)</Text>
+                                                <Text style={styles.analysisValue}>{item.comprimento_especificado || '-'}</Text>
+                                            </View>
+                                            <View style={styles.analysisField}>
+                                                <Text style={[styles.analysisLabel, { color: '#27ae60' }]}>Desvio</Text>
+                                                <View style={styles.materialFaltanteBox}>
+                                                    <Text style={{ fontSize: 9, fontWeight: 'bold', color: parseFloat(item.desvio_comprimento || '0') < 0 ? '#e74c3c' : '#27ae60' }}>
+                                                        {item.desvio_comprimento ? `${parseFloat(item.desvio_comprimento) >= 0 ? '+' : ''}${item.desvio_comprimento.replace('.', ',')} mm` : '-'}
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    )}
+                                    <View style={styles.analysisRow}>
+                                        <View style={styles.analysisField}>
+                                            <Text style={styles.analysisLabel}>Anomalia Encontrada</Text>
+                                            <Text style={[styles.analysisValue, { minHeight: 30 }]}>{item.anomalias || '-'}</Text>
+                                        </View>
+                                        <View style={styles.analysisField}>
+                                            <Text style={styles.analysisLabel}>Solução Recomendada</Text>
+                                            <Text style={[styles.analysisValue, { minHeight: 30 }]}>{item.solucao || '-'}</Text>
+                                        </View>
+                                    </View>
+
+                                    {/* Fotos do Item */}
+                                    {item.fotos && item.fotos.length > 0 && (
+                                        <View style={styles.photoGrid}>
+                                            {item.fotos.map((foto, fIdx) => (
+                                                <View key={fIdx} style={styles.photoContainer} wrap={false}>
+                                                    <Image src={foto} style={styles.itemPhoto} />
+                                                </View>
+                                            ))}
+                                        </View>
+                                    )}
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+                )}
+
+                <View style={styles.footer} fixed>
+                    <Text>Documento gerado automaticamente pela www.trusttecnologia.com.br</Text>
+                </View>
+            </Page>
+        </Document >
+    );
+};

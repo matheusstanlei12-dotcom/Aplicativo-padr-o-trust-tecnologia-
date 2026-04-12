@@ -2,9 +2,11 @@ import React from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { LogOut, Clock, ShieldAlert } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 export const PendingApproval: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -113,7 +115,11 @@ export const PendingApproval: React.FC = () => {
                 </button>
             </div>
 
-            <p style={{ marginTop: '24px', color: '#94a3b8', fontSize: '0.9rem' }}>
+            <p style={{ marginTop: '24px', color: '#94a3b8', fontSize: '0.8rem' }}>
+                Usuário logado: <span style={{ fontWeight: 600 }}>{user?.email || 'Nenhum'}</span>
+            </p>
+
+            <p style={{ marginTop: '8px', color: '#94a3b8', fontSize: '0.9rem' }}>
                 &copy; {new Date().getFullYear()} Trust Tecnologia. Todos os direitos reservados.
             </p>
         </div>

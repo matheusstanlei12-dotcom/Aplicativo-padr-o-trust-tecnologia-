@@ -30,7 +30,7 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { role, user } = useAuth();
+    const { role, user, isProgrammer } = useAuth();
 
     // Notificações de Aguardando Peritagem
     const [aguardandoIds, setAguardandoIds] = useState<string[]>([]);
@@ -38,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
     const [pendingUsersCount, setPendingUsersCount] = useState(0);
 
     useEffect(() => {
-        if (!['pcp', 'gestor', 'perito'].includes(role || '')) return;
+        if (!['pcp', 'gestor', 'perito', 'programador'].includes(role || '')) return;
 
         // 1. Carregar peritagens aguardando
         const fetchAguardando = async () => {
@@ -48,7 +48,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
 
         const stored = localStorage.getItem('seenAguardandoIds');
         if (stored) {
-            try { setSeenIds(JSON.parse(stored)); } catch (e) { }
+            try { 
+                const parsed = JSON.parse(stored);
+                setSeenIds(parsed);
+            } catch (e) { 
+                console.error('Erro ao ler seenAguardandoIds:', e);
+            }
         }
 
         fetchAguardando();
@@ -59,9 +64,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
             })
             .subscribe();
 
-        // 2. Notificações de Usuários Pendentes (Apenas Gestor)
+        // 2. Notificações de Usuários Pendentes (Apenas Programador)
         let userChannel: any;
-        if (role === 'gestor') {
+        if (isProgrammer) {
             const fetchPendingUsers = async () => {
                 const { count } = await supabase
                     .from('profiles')
@@ -83,16 +88,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
             supabase.removeChannel(peritagemChannel);
             if (userChannel) supabase.removeChannel(userChannel);
         };
-    }, [role]);
+    }, [role, isProgrammer]);
 
     // Atualiza ids vistos quando entra na página
     useEffect(() => {
         if (location.pathname === '/pcp/aguardando' && aguardandoIds.length > 0) {
-            setSeenIds(prev => {
-                const newSeen = Array.from(new Set([...prev, ...aguardandoIds]));
-                localStorage.setItem('seenAguardandoIds', JSON.stringify(newSeen));
-                return newSeen;
-            });
+            const hasNew = aguardandoIds.some(id => !seenIds.includes(id));
+            if (hasNew) {
+                setSeenIds(prev => {
+                    const newSeen = Array.from(new Set([...prev, ...aguardandoIds]));
+                    localStorage.setItem('seenAguardandoIds', JSON.stringify(newSeen));
+                    return newSeen;
+                });
+            }
         }
     }, [location.pathname, aguardandoIds]);
 
@@ -124,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
 
             <nav className="sidebar-nav">
                 {/* ACESSO COMUM: Painel visível para PCP e Gestor, ou todos no WEB se não for cliente */}
-                {['gestor', 'pcp'].includes(role || '') && (
+                {['gestor', 'pcp', 'programador'].includes(role || '') && (
                     <NavLink to="/dashboard" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <LayoutDashboard size={20} />
                         <span>Painel</span>
@@ -278,7 +286,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                 )}
 
                 {/* 7. GESTOR */}
-                {role === 'gestor' && (
+                {(role === 'gestor' || role === 'programador') && (
                     <>
                         <NavLink to="/nova-peritagem" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <PlusCircle size={20} />
@@ -323,15 +331,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                             <QrCode size={20} />
                             <span>Gerar QR code</span>
                         </NavLink>
-                        <NavLink to="/admin/usuarios" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                            <Settings size={20} />
-                            <span>Gestão de Usuários</span>
-                            {pendingUsersCount > 0 && <div className="notification-badge">{pendingUsersCount}</div>}
-                        </NavLink>
-                        <NavLink to="/admin/empresas" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
-                            <Building2 size={20} />
-                            <span>Gestão de Clientes</span>
-                        </NavLink>
+                        {isProgrammer && (
+                            <NavLink to="/admin/usuarios" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                                <Settings size={20} />
+                                <span>Gestão de Usuários</span>
+                                {pendingUsersCount > 0 && <div className="notification-badge">{pendingUsersCount}</div>}
+                            </NavLink>
+                        )}
+                        {isProgrammer && (
+                            <NavLink to="/admin/empresas" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                                <Building2 size={20} />
+                                <span>Gestão de Clientes</span>
+                            </NavLink>
+                        )}
+                        {!isProgrammer && role === 'gestor' && (
+                             <NavLink to="/admin/usuarios" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                                <Settings size={20} />
+                                <span>Equipe da Empresa</span>
+                            </NavLink>
+                        )}
                         <NavLink to="/databook" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                             <Book size={20} />
                             <span>Databook</span>
@@ -340,7 +358,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                 )}
 
                 {/* ACESSO COMUM: Fluxo de Processo (Tutorial) */}
-                {['gestor', 'pcp', 'perito', 'montagem', 'comercial', 'qualidade'].includes(role || '') && (
+                {['gestor', 'pcp', 'perito', 'montagem', 'comercial', 'qualidade', 'programador'].includes(role || '') && (
                     <NavLink to="/fluxo-processo" onClick={handleLinkClick} className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <HelpCircle size={20} />
                         <span>Fluxo do Sistema</span>
@@ -355,7 +373,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = false, onClose }) => 
                     </div>
                     <div className="user-details">
                         <span className="user-name">{user?.email?.split('@')[0] || 'Usuário'}</span>
-                        <span className="user-role">{role?.toUpperCase() || 'CARREGANDO...'}</span>
+                        <span className="user-role">{isProgrammer ? 'PROGRAMADOR' : (role?.toUpperCase() || 'CARREGANDO...')}</span>
                     </div>
                 </div>
                 <button className="btn-logout" onClick={handleLogout}>
